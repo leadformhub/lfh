@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { createUserWithEmailOnly, sendEmailVerification } from "@/services/auth.service";
+
+const bodySchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(100),
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const parsed = bodySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+    const { email, password } = parsed.data;
+    const user = await createUserWithEmailOnly(email, password);
+    const baseUrl = req.nextUrl.origin;
+    await sendEmailVerification(user.id, baseUrl);
+
+    // Do not set session: user must verify email before they can log in or perform any action.
+    // Welcome email is sent only after they verify (see verify-email route).
+    return NextResponse.json({
+      success: true,
+      requiresVerification: true,
+      message: "Check your email to verify your account. You can sign in after verification.",
+      user: {
+        id: user.id,
+        email: user.email,
+        emailVerifiedAt: user.emailVerifiedAt,
+      },
+    });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Signup failed";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}

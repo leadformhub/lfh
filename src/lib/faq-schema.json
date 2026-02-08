@@ -1,0 +1,126 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is LeadFormHub?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeadFormHub is a verified lead capture platform built for Indian businesses. It helps agencies, B2B startups, sales teams, and marketers collect qualified leads through branded forms with optional mobile OTP verification and a centralized lead dashboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is LeadFormHub a form builder or a lead capture platform?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeadFormHub is a lead capture platform, not a general form builder. It focuses on capturing and verifying leads for sales and marketing, with features like OTP verification and a centralized dashboard designed for lead management."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does OTP verification work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When a visitor submits a form, they receive a one-time password on their mobile number. They enter the code to confirm their identity. Only submissions that complete this step are stored as verified leads in your dashboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is OTP verification mandatory?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. OTP verification is optional and configurable per form. Enable it where lead quality matters most, such as demo requests or high-value offers. Leave it off for low-friction forms like newsletter signups."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I create branded forms with my own URL?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. LeadFormHub supports branded lead capture forms with your own domain or custom URL. Forms can be shared via link or embedded on your site for a consistent brand experience."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How quickly can I set up a form?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most teams are live in minutes. Sign up, create a form, and share the link or embed it. OTP and additional settings require only a few more steps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does LeadFormHub support Indian payment methods?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. LeadFormHub offers monthly pricing in INR and supports UPI, cards, and net banking. No international payment or currency conversion is required for Indian teams."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is LeadFormHub suitable for agencies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. LeadFormHub is built for agencies managing multiple clients. The centralized dashboard, branded forms, and verified lead capture help agencies deliver quality leads and scale operations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I export leads from LeadFormHub?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can export leads from the centralized dashboard. Export and CSV options make it straightforward to move leads into LeadFormHub or out to your CRM or other tools."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What integrations are available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeadFormHub offers integrations for common workflows. You can export leads via CSV and connect with other tools. Check the integrations page for the latest supported platforms and APIs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How secure is my lead data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Lead data is stored in secure, access-controlled environments. Data in transit and at rest is encrypted, and access is limited and logged. We design with Indian data and privacy expectations in mind."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free plan?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeadFormHub offers a free tier to get started. Check the pricing page for current plan details and limits."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is pricing monthly or annual?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LeadFormHub uses monthly pricing in INR. You pay each month for the plan you choose. Clear billing with no hidden fees. Upgrade or change plans as your needs change."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I upgrade my plan later?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. You can upgrade when you need more leads, OTP verifications, or integrations. Your hub and data carry over. You can also downgrade or change options as your needs evolve."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does LeadFormHub work without a CRM?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. LeadFormHub works as a standalone lead capture platform. The centralized dashboard lets you view, manage, and export leads without a CRM. You can add CRM integrations when needed."
+      }
+    }
+  ]
+}

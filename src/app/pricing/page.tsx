@@ -1,0 +1,209 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Navbar, PricingPreview, CTA, Footer } from "@/components/landing";
+import { Container } from "@/components/ui/Container";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Form Builder SaaS Pricing – Lead Capture Software Plans (INR)",
+  description:
+    "Simple monthly pricing in INR. Start Free or upgrade for OTP verification, higher lead limits, form analytics, and integrations.",
+  path: "/pricing",
+});
+
+const pricingSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "LeadFormHub",
+  description: "Lead capture software with OTP verification. Pay in INR.",
+  brand: { "@type": "Brand", name: "LeadFormHub" },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "INR",
+      description: "1 form, 50 leads/month, branded subdomain",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro",
+      price: "499",
+      priceCurrency: "INR",
+      description: "Unlimited forms, 2,000 leads/month, OTP verification",
+    },
+    {
+      "@type": "Offer",
+      name: "Business",
+      price: "1999",
+      priceCurrency: "INR",
+      description: "10,000 leads/month, CRM integrations, API",
+    },
+  ],
+};
+
+const trustBullets = [
+  {
+    title: "Transparent monthly billing",
+    desc: "You pay monthly. Clear pricing with no hidden fees. Budget with confidence and scale when you need to.",
+    icon: (
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Pay in INR",
+    desc: "UPI, cards, and net banking supported. Pricing that matches how Indian teams think about cost.",
+    icon: (
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Start free, upgrade when ready",
+    desc: "No credit card required to begin. Your data and hub stay the same when you upgrade.",
+    icon: (
+      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    ),
+  },
+];
+
+export default function PricingPage() {
+  return (
+    <div className="min-h-screen bg-[var(--background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}
+      />
+      <Navbar />
+      <main>
+        {/* Hero */}
+        <section
+          className="hero-section relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28"
+          aria-labelledby="pricing-hero-heading"
+        >
+          <div className="hero-bg absolute inset-0" />
+          <div className="hero-orb hero-orb-1" aria-hidden />
+          <div className="hero-orb hero-orb-2" aria-hidden />
+          <div className="hero-orb hero-orb-3" aria-hidden />
+
+          <Container size="default" className="relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="hero-content mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+                Pricing
+              </p>
+              <h1
+                id="pricing-hero-heading"
+                className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
+              >
+                Transparent pricing in{" "}
+                <span className="hero-highlight">INR. No hidden fees.</span>
+              </h1>
+              <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
+                Start free. Pay monthly when you upgrade. UPI, card, and net banking supported — simple, predictable pricing for Indian teams.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  href="#pricing"
+                  className="btn-base inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-xl bg-[var(--color-accent)] px-6 text-base font-medium text-white shadow-[var(--shadow-cta)] transition-all hover:scale-[1.02] hover:bg-[var(--color-accent-hover)] hover:shadow-[0_12px_32px_rgba(37,99,235,0.35)] active:scale-[0.98]"
+                >
+                  See plans
+                  <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/signup"
+                  className="btn-base inline-flex h-12 min-h-[44px] items-center justify-center rounded-xl border-2 border-[var(--border-strong)] bg-white px-6 text-base font-medium text-[var(--foreground-heading)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)] hover:text-[var(--color-accent)]"
+                >
+                  Start Free
+                </Link>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* Trust strip */}
+        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
+          <Container size="default" className="px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
+                Simple pricing — no subscriptions, no lock-in
+              </h2>
+              <p className="mt-3 text-[var(--foreground-muted)]">
+                You see the plan, the price, and what&apos;s included. Pay monthly in INR.
+              </p>
+            </div>
+            <ul className="mx-auto mt-10 grid gap-6 sm:grid-cols-3 max-w-4xl">
+              {trustBullets.map((item) => (
+                <li
+                  key={item.title}
+                  className="animate-in flex flex-col items-center rounded-xl border border-[var(--border-default)] bg-[var(--neutral-50)]/50 p-6 text-center transition-shadow hover:shadow-[var(--shadow-md)]"
+                >
+                  <span className="flex size-12 items-center justify-center rounded-xl bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
+                    {item.icon}
+                  </span>
+                  <h3 className="mt-4 font-heading font-semibold text-[var(--foreground-heading)]">{item.title}</h3>
+                  <p className="mt-2 text-sm text-[var(--foreground-muted)]">{item.desc}</p>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+
+        {/* Pricing plans — PricingPreview */}
+        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
+          <Container size="default" className="px-4 sm:px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+                Compare Free vs Pro vs Business
+              </h2>
+              <p className="mt-4 text-[var(--foreground-muted)]">
+                Full feature list and limits. Choose the plan that matches your volume and needs.
+              </p>
+            </div>
+          </Container>
+        </section>
+
+        <PricingPreview />
+
+        {/* Final CTA strip */}
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+          <Container size="default" className="px-4 text-center sm:px-6">
+            <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Get started</p>
+            <h2 className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+              Start on the free plan. Upgrade when you&apos;re ready.
+            </h2>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              {["No credit card required", "Pay in INR", "Cancel anytime", "All plans include support"].map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full border border-[var(--border-default)] bg-white px-4 py-2 text-sm font-medium text-[var(--foreground-heading)] shadow-[var(--shadow-xs)]"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+            <Link
+              href="/signup"
+              className="mt-10 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--color-accent)] px-6 text-base font-medium text-white shadow-[var(--shadow-cta)] transition-all hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]"
+            >
+              Get Started Free
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </Link>
+            <p className="mt-6 text-[var(--foreground-muted)]">
+              Questions? See our <Link href="/faq" className="font-medium text-[var(--color-accent)] hover:underline">FAQ</Link>.
+            </p>
+          </Container>
+        </section>
+
+        <CTA />
+        <Footer />
+      </main>
+    </div>
+  );
+}

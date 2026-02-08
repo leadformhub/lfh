@@ -1,0 +1,264 @@
+// LeadFormHub - Multi-tenant SaaS
+// https://leadformhub.com
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserPlan {
+  free
+  pro
+  business
+}
+
+enum UserStatus {
+  active
+  banned
+}
+
+// Form/lead field definitions live in JSON only. No DB column mapping.
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  username          String    @unique
+  email             String    @unique
+  password          String
+  plan              UserPlan  @default(free)
+  status            UserStatus @default(active)
+  emailVerifiedAt   DateTime? @map("email_verified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  forms                Form[]
+  leads                Lead[]
+  subscriptions        Subscription[]
+  passwordResets       PasswordReset[]
+  verificationTokens   VerificationToken[]
+  emailChangeRequests  EmailChangeRequest[]
+  payments             Payment[]
+  auditLogs            AuditLog[]
+  supportRequests      SupportRequest[]
+}
+
+model EmailChangeRequest {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  newEmail  String   @map("new_email")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("email_change_requests")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  action    String   // e.g. lead_export
+  metadata  String?  // JSON: { format?, formId?, count?, ... }
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verification_tokens")
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  userId    String?   @map("user_id")
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Form {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  name       String
+  schemaJson String   @db.Text @map("schema_json") // JSON: { fields: FormFieldSchema[], settings?: object }
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leads                  Lead[]
+  otpVerifications       OtpVerification[]
+  emailOtpVerifications  EmailOtpVerification[]
+  smsLogs                SmsLog[]
+  analyticsEvents        AnalyticsEvent[]
+}
+
+model EmailOtpVerification {
+  id         String    @id @default(cuid())
+  formId     String    @map("form_id")
+  email      String
+  otp        String
+  expiresAt DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId, email])
+  @@map("email_otp_verifications")
+}
+
+model Lead {
+  id         String   @id @default(cuid())
+  formId     String?  @map("form_id") // null when form was deleted; leads are kept
+  userId     String?  @map("user_id")  // null when user deleted; leads kept but unmapped
+  dataJson   String   @db.Text @map("data_json") // JSON of submitted field values (keyed by field id)
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  form Form? @relation(fields: [formId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([formId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  name        String   @unique // free, pro, business
+  maxForms    Int      @map("max_forms")
+  otpLimit   Int?     @map("otp_limit") // null = no OTP
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  planId    String   @map("plan_id")
+  otpUsedThisMonth Int @default(0) @map("otp_used_this_month")
+  monthStart DateTime @map("month_start")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+}
+
+model OtpVerification {
+  id        String    @id @default(cuid())
+  formId    String    @map("form_id")
+  phone     String
+  otp       String
+  expiresAt DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId, phone])
+  @@map("otp_verifications")
+}
+
+model SmsLog {
+  id        String   @id @default(cuid())
+  formId    String   @map("form_id")
+  phone     String
+  status    String   // sent, failed
+  createdAt DateTime @default(now()) @map("created_at")
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("sms_logs")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  formId    String   @map("form_id")
+  type      String   // view, submission
+  metadata  String?  // JSON
+  createdAt DateTime @default(now()) @map("created_at")
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+model Payment {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  razorpayOrderId  String   @unique @map("razorpay_order_id")
+  razorpayPaymentId String? @map("razorpay_payment_id")
+  plan             String   // pro | business
+  amount           Int      // paise
+  currency         String   @default("INR")
+  status           String   // created | captured | failed
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("payments")
+}
+
+model SupportRequest {
+  id              String    @id @default(cuid())
+  ticketNumber    String?   @unique @map("ticket_number") // e.g. LFH-000001 (optional for legacy rows)
+  userId          String    @map("user_id")
+  category        String    // billing | bug | feature | general | other
+  subject         String
+  message         String    @db.Text
+  status          String    @default("open") // open | in_progress | resolved
+  lastActivityAt  DateTime? @map("last_activity_at") // for auto-close after 7 days
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies SupportRequestReply[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([ticketNumber])
+  @@index([lastActivityAt])
+  @@map("support_requests")
+}
+
+model SupportRequestReply {
+  id              String   @id @default(cuid())
+  supportRequestId String   @map("support_request_id")
+  body            String   @db.Text
+  isFromStaff     Boolean  @map("is_from_staff")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  supportRequest SupportRequest @relation(fields: [supportRequestId], references: [id], onDelete: Cascade)
+
+  @@index([supportRequestId])
+  @@map("support_request_replies")
+}

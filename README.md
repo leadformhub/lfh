@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LeadFormHub
 
-## Getting Started
+Multi-tenant SaaS for lead capture forms with optional mobile OTP verification.
 
-First, run the development server:
+**Domain:** https://leadformhub.com  
+**Routes:** `https://leadformhub.com/{username}/dashboard`, `/forms`, `/leads`, etc.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Documentation:** [API & Webhooks](docs/API-AND-WEBHOOKS.md) — endpoints, auth, and inbound email webhook for support tickets.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js 16** (App Router)
+- **Node.js** API routes
+- **MySQL** + **Prisma ORM**
+- **Tailwind CSS**
+- **JWT** session (httpOnly cookie)
+- **Fast2SMS** for mobile OTP (server-only)
+- **Razorpay** for plan upgrades (Pro / Business)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. **Clone and install**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Environment**
+   - Copy `.env.example` to `.env`
+   - Set `DATABASE_URL` (MySQL), `JWT_SECRET`, and optionally `FAST2SMS_API_KEY`, `RESEND_API_KEY`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Database**
+   ```bash
+   npx prisma db push
+   npm run db:seed
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run**
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` – development server
+- `npm run build` – production build
+- `npm run start` – start production server
+- `npm run db:push` – push Prisma schema to DB
+- `npm run db:migrate` – run migrations
+- `npm run db:seed` – seed plans (free, pro, business)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture
+
+- **`/app`** – App Router: `(auth)`, `(dashboard)/[username]`, `api`
+- **`/services`** – auth, forms, leads, otp, analytics (no direct DB in UI)
+- **`/lib`** – db, jwt, plans, sms, email
+
+## Features
+
+- **Auth:** Signup, login, email verification, forgot/reset password, logout
+- **Dashboard:** Widgets (forms, submissions, automations), plan badge
+- **Forms:** List, create, design (drag-and-drop fields), embed, public `/f/[slug]`
+- **Leads:** Table, search, filter by form, export CSV, 25 per page
+- **OTP:** Fast2SMS, 5 min expiry, max 3 per phone per hour; only when `mobileOtpEnabled`
+- **Plans:** Free (3 forms, no OTP), Pro (unlimited forms, 500 OTP/mo), Business (5000 OTP/mo)
+- **Payments:** Razorpay checkout in Settings; one-time upgrade to Pro (₹499) or Business (₹1,999); session updated after verification
+- **SEO:** title, meta description, canonical, OpenGraph, sitemap.xml, robots.txt
+
+## Security
+
+- Passwords hashed with bcrypt
+- JWT in httpOnly cookie
+- Fast2SMS API key server-only
+- Prisma parameterized queries (SQL injection safe)
+- File upload and input validation in forms
+
+## Deploy
+
+- **Vercel:** Connect repo, set env vars, use MySQL (e.g. PlanetScale, Railway).
+- **VPS:** `npm run build && npm run start`, reverse proxy (e.g. Nginx) to Node, MySQL on same host or managed DB.
+
+Ensure `DATABASE_URL`, `JWT_SECRET`, and (optional) `FAST2SMS_API_KEY`, `RESEND_API_KEY`, `RAZORPAY_KEY_ID`, and `RAZORPAY_KEY_SECRET` are set in production. Run `npx prisma db push` after adding the `Payment` model if you haven’t migrated yet.
