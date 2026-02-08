@@ -135,7 +135,9 @@ export function LeadsTable({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
 
-  const [form, setForm] = useState<ApiForm>(initialFormId && initialForm ? initialForm : null);
+  const [form, setForm] = useState<ApiForm>(
+    initialFormId && initialForm ? (initialForm as ApiForm) : null
+  );
   const [leads, setLeads] = useState<LeadRow[]>(initialLeads);
   const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(initialPage);

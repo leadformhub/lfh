@@ -27,9 +27,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ formId: string }> }
 ) {
-  const result = await getVerifiedSessionOrResponse();
-  if ("response" in result) return result.response;
-  const session = result.session;
+  const auth = await getVerifiedSessionOrResponse();
+  if ("response" in auth) return auth.response;
+  const session = auth.session;
   const { formId } = await params;
   const body = await req.json();
   const plan = (session.plan ?? "free") as PlanKey;

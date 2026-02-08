@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
         formId: formId!,
         search: search || undefined,
       })
-    : { leads: [], total: 0, page: 1, perPage: 25 };
+    : { leads: [], total: 0, perPage: 25 };
 
   let form: { id: string; name: string; schema_json: { fields: unknown[] } } | null = null;
   if (formId) {

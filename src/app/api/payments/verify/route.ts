@@ -12,9 +12,9 @@ const bodySchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const result = await getVerifiedSessionOrResponse();
-  if ("response" in result) return result.response;
-  const session = result.session;
+  const auth = await getVerifiedSessionOrResponse();
+  if ("response" in auth) return auth.response;
+  const session = auth.session;
   const parsed = bodySchema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });

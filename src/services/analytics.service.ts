@@ -267,8 +267,8 @@ export async function getRecentLeads(userId: string, limit = 5) {
     }
     return {
       id: l.id,
-      formTitle: l.form.name,
-      formId: l.form.id,
+      formTitle: l.form?.name ?? "Form Deleted",
+      formId: l.form?.id ?? "",
       preview,
       submittedAt: l.createdAt,
     };

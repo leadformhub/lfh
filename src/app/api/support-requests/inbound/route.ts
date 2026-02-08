@@ -77,10 +77,10 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     from = String(formData.get("from") ?? formData.get("sender") ?? "").trim();
     subject = String(formData.get("subject") ?? "").trim();
-    text = formData.get("text") ?? formData.get("body-plain") ?? null;
-    if (text != null) text = String(text);
-    html = formData.get("html") ?? formData.get("body-html") ?? null;
-    if (html != null) html = String(html);
+    const rawText = formData.get("text") ?? formData.get("body-plain") ?? null;
+    text = rawText != null && typeof rawText === "string" ? rawText : null;
+    const rawHtml = formData.get("html") ?? formData.get("body-html") ?? null;
+    html = rawHtml != null && typeof rawHtml === "string" ? rawHtml : null;
   }
 
   if (!from) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { findOrCreateUserByGoogle } from "@/services/auth.service";
+import { findOrCreateUserByGoogle, type GoogleProfile } from "@/services/auth.service";
 import { sendWelcomeEmail } from "@/lib/email";
 import { createToken } from "@/lib/jwt";
 import { getSessionCookieName, getSessionMaxAge } from "@/lib/jwt";
@@ -45,7 +45,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL(`${errorPath}?error=invalid_state`, baseUrl));
   }
 
-  const baseUrl = getBaseUrl(req);
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
   const tokenRes = await fetch(TOKEN_URL, {
@@ -79,11 +78,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL(`${errorPath}?error=userinfo_failed`, baseUrl));
   }
 
-  const profile = (await userInfoRes.json()) as {
+  const raw = (await userInfoRes.json()) as {
     id: string;
     email?: string | null;
     name?: string | null;
     picture?: string | null;
+  };
+  const profile: GoogleProfile = {
+    id: raw.id,
+    email: raw.email ?? null,
+    name: raw.name ?? null,
+    picture: raw.picture ?? null,
   };
 
   let user: Awaited<ReturnType<typeof findOrCreateUserByGoogle>>["user"];

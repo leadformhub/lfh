@@ -45,15 +45,15 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ leadId: string }> }
 ) {
-  const result = await getVerifiedSessionOrResponse();
-  if ("response" in result) return result.response;
-  const session = result.session;
+  const auth = await getVerifiedSessionOrResponse();
+  if ("response" in auth) return auth.response;
+  const session = auth.session;
 
   const { leadId } = await params;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
 
-  const result = await deleteLead(leadId, session.userId);
-  if (result.count === 0) {
+  const deleteResult = await deleteLead(leadId, session.userId);
+  if (deleteResult.count === 0) {
     return NextResponse.json({ error: "Lead not found" }, { status: 404 });
   }
 
