@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireVerifiedSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getOtpUsageForUser } from "@/services/otp.service";
+import { getOtpLimitForPlan } from "@/lib/plan-quotas";
 import { getPlanLimits, type PlanKey } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
@@ -43,9 +44,10 @@ export default async function DashboardLayout({
   const leadsThisMonth = await prisma.lead.count({
     where: { userId: session.userId, createdAt: { gte: startOfMonth } },
   });
-  const [formsCount, otpUsage] = await Promise.all([
+  const [formsCount, otpUsage, otpLimit] = await Promise.all([
     prisma.form.count({ where: { userId: session.userId } }),
     getOtpUsageForUser(session.userId),
+    getOtpLimitForPlan(planKey),
   ]);
   const planQuota = {
     plan: planKey,
@@ -54,7 +56,7 @@ export default async function DashboardLayout({
     leadsUsed: leadsThisMonth,
     leadsLimit: limits.maxLeadsPerMonth,
     otpUsed: otpUsage.used,
-    otpLimit: limits.otpLimit,
+    otpLimit,
   };
   return (
     <DashboardSidebarProvider>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getPlanLimits, type PlanKey } from "@/lib/plans";
+import { getOtpLimitForPlan } from "@/lib/plan-quotas";
 import { getOtpUsageForUser } from "@/services/otp.service";
 import { UpgradePlanCard } from "@/components/UpgradePlanCard";
 import { ChangeEmailForm } from "@/components/ChangeEmailForm";
@@ -109,14 +110,14 @@ export default async function SettingsPage({
   const startOfMonth = new Date();
   startOfMonth.setUTCDate(1);
   startOfMonth.setUTCHours(0, 0, 0, 0);
-  const [formsCount, otpUsage, leadsThisMonth] = await Promise.all([
+  const [formsCount, otpUsage, leadsThisMonth, otpLimit] = await Promise.all([
     prisma.form.count({ where: { userId: session.userId } }),
     getOtpUsageForUser(session.userId),
     prisma.lead.count({ where: { userId: session.userId, createdAt: { gte: startOfMonth } } }),
+    getOtpLimitForPlan(planKey),
   ]);
   const formsLimit = limits.maxForms === Infinity ? null : limits.maxForms;
   const leadsLimit = limits.maxLeadsPerMonth;
-  const otpLimit = limits.otpLimit;
 
   return (
     <div className="min-w-0 p-4 sm:p-5 md:p-6 lg:p-8">

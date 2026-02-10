@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db";
+import { getOtpLimitForPlan } from "@/lib/plan-quotas";
 import { sendOtpViaFast2SMS } from "@/lib/sms";
 import { sendOtpEmail } from "@/lib/email";
-import { hasOtpRemaining, canUseOtp } from "@/lib/plans";
+import { canUseOtp } from "@/lib/plans";
 import type { UserPlan } from "@prisma/client";
 import { parseFormSchema } from "@/lib/form-schema";
 
@@ -64,8 +65,10 @@ export async function checkOtpLimit(userId: string): Promise<{ allowed: boolean;
   if (!user) return { allowed: false, message: "User not found" };
   const plan = user.plan as UserPlan;
   if (!canUseOtp(plan)) return { allowed: false, message: "OTP not available on your plan" };
+  const limit = await getOtpLimitForPlan(plan);
+  if (limit === null) return { allowed: false, message: "OTP not available on your plan" };
   const { used } = await getOtpUsageForUser(userId);
-  if (!hasOtpRemaining(plan, used)) return { allowed: false, message: "Monthly OTP limit exceeded. Please upgrade." };
+  if (used >= limit) return { allowed: false, message: "Monthly OTP limit exceeded. Please upgrade." };
   return { allowed: true };
 }
 
