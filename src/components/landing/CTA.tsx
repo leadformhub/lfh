@@ -7,7 +7,7 @@ export function CTA() {
     <section className="section-padding bg-[var(--color-primary)]">
       <Container size="narrow">
         <div className="text-center">
-          <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--footer-heading)] sm:text-4xl">
+          <h2 className="font-heading text-3xl font-bold tracking-tight !text-white sm:text-4xl [text-shadow:0_0_20px_rgba(255,255,255,0.12)]">
             Get Started with LeadFormHub Today
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-lg text-[var(--footer-text)]">

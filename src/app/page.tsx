@@ -23,7 +23,7 @@ import {
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Lead Capture Form Builder for High-Converting Leads | LeadFormHub",
+  title: "Lead Capture Software for India | LeadFormHub",
   description:
     "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
   path: "/",

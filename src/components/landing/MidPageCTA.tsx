@@ -102,7 +102,7 @@ export function MidPageCTA() {
             Free plan: 3 forms, 50 leads/month. Upgrade anytime.
           </p>
           <p
-            className="mt-2 text-xs text-white"
+            className="mt-2 text-xs text-black"
           >
             Secure sign-up · Your data is protected with SSL encryption.
           </p>

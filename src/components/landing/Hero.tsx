@@ -39,11 +39,11 @@ export function Hero() {
               id="hero-heading"
               className="font-heading max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
             >
-              <span>Lead Capture Form Builder</span>
-              <span className="hero-highlight"> for Modern Businesses</span>
+              <span>Lead Capture Software</span>
+              <span className="hero-highlight"> for India</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--color-secondary)]">
-              Create high-converting lead generation forms with our online form builder. Get a branded hub, optional OTP verification, and a lead management dashboard with form analytics—built for teams that care about lead quality.
+              Create high-converting lead generation forms with our lead capture software. Get a branded hub, optional OTP verification, and a lead management dashboard with form analytics—built for teams in India, with pricing in INR.
             </p>
             <p className="mt-4 text-base text-[var(--foreground-subtle)]">
               No credit card required · Collect Verified Leads · Built for India
@@ -88,7 +88,7 @@ export function Hero() {
                 Book a Demo
               </Link>
             </div>
-            <p className="mt-4 text-base text-white">
+            <p className="mt-4 text-base text-black">
               Secure sign-up · Your data is protected with SSL encryption.
             </p>
           </div>
