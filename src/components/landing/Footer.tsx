@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { FeedbackTrigger } from "@/components/FeedbackModal";
 import { cn } from "@/lib/utils";
 
 const TRUST_DISCLAIMER =
@@ -45,10 +46,11 @@ const resourcesLinks = [
   { label: "API Docs", href: "/api-docs" },
 ];
 
-const companyLinks = [
+const companyLinks: { label: string; href?: string; isFeedback?: boolean }[] = [
   { label: "About", href: "/about" },
   { label: "Contact Us", href: "/contact" },
   { label: "Raise Support Request", href: "/support" },
+  { label: "Feedback", isFeedback: true },
 ];
 
 const legalLinks = [
@@ -100,7 +102,7 @@ function FooterSection({
   onToggle,
 }: {
   title: string;
-  links: { label: string; href: string }[];
+  links: { label: string; href?: string; isFeedback?: boolean }[];
   open: boolean;
   onToggle: () => void;
 }) {
@@ -128,9 +130,15 @@ function FooterSection({
       <ul className={cn("space-y-0.5 py-2 sm:mt-4 sm:space-y-1 sm:py-0", open ? "block" : "hidden sm:block")}>
         {links.map((l) => (
           <li key={l.label}>
-            <Link href={l.href} className={linkBase}>
-              {l.label}
-            </Link>
+            {l.isFeedback ? (
+              <FeedbackTrigger className={linkBase}>
+                {l.label}
+              </FeedbackTrigger>
+            ) : (
+              <Link href={l.href!} className={linkBase}>
+                {l.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>

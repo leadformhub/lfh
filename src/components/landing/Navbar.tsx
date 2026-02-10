@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Container } from "@/components/ui/Container";
+import { FeedbackTrigger } from "@/components/FeedbackModal";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -45,6 +46,9 @@ export function Navbar() {
             <Link href="/pricing" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Pricing</Link>
             <Link href="/integrations" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Integrations</Link>
             <Link href="/faq" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">FAQ</Link>
+            <FeedbackTrigger className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4 cursor-pointer bg-transparent border-0 p-0 font-inherit">
+              Feedback
+            </FeedbackTrigger>
           </div>
 
           <div className="hidden items-center gap-3 md:flex">
@@ -142,6 +146,15 @@ export function Navbar() {
             </svg>
             FAQ
           </Link>
+          <FeedbackTrigger
+            onOpen={() => setMobileOpen(false)}
+            className="flex min-h-[48px] w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-medium text-[var(--header-nav)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--header-logo)] active:bg-[var(--neutral-200)]"
+          >
+            <svg className="size-5 shrink-0 text-[var(--foreground-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+            Feedback
+          </FeedbackTrigger>
         </div>
 
         {/* Divider */}

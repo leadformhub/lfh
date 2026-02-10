@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSidebar } from "@/components/DashboardSidebarContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { FeedbackTrigger } from "@/components/FeedbackModal";
 import { cn } from "@/lib/utils";
 
 function getTitle(pathname: string): string {
@@ -47,8 +48,12 @@ export function DashboardTopbar({ username, email }: { username: string; email: 
         </h1>
       </div>
 
-      {/* Profile dropdown - top right */}
-      <div className="relative shrink-0">
+      {/* Feedback + Profile - top right */}
+      <div className="flex items-center gap-2 shrink-0">
+        <FeedbackTrigger className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60">
+          Feedback
+        </FeedbackTrigger>
+        <div className="relative">
         <button
           type="button"
           onClick={() => setUserMenuOpen((o) => !o)}
@@ -105,6 +110,7 @@ export function DashboardTopbar({ username, email }: { username: string; email: 
             </div>
           </>
         )}
+        </div>
       </div>
     </header>
   );

@@ -44,6 +44,7 @@ model User {
   payments             Payment[]
   auditLogs            AuditLog[]
   supportRequests      SupportRequest[]
+  feedback             Feedback[]
 }
 
 model EmailChangeRequest {
@@ -262,4 +263,17 @@ model SupportRequestReply {
 
   @@index([supportRequestId])
   @@map("support_request_replies")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  message   String   @db.Text
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("feedback")
 }

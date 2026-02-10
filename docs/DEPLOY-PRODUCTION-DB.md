@@ -34,10 +34,13 @@ Set all other required vars from `.env.example` (e.g. `JWT_SECRET`, `GOOGLE_CLIE
 Your `npm run build` already runs:
 
 ```txt
-prisma generate && prisma db push && next build
+prisma generate && prisma db push && tsx scripts/update-plan-quotas.ts && next build
 ```
 
-So on **first deploy**, set `DATABASE_URL` in the hosting dashboard and deploy. The build will run `prisma db push` against the production DB and create/update tables.
+So on **first deploy**, set `DATABASE_URL` in the hosting dashboard and deploy. The build will run `prisma generate` and `prisma db push` against the production DB and create/update tables.
+
+- **Vercel:** `vercel.json` sets `buildCommand` to `npm run build`, so every production deploy runs the full script (Prisma + Next.js build).
+- **Other platforms:** Use **Build Command** = `npm run build` so Prisma runs before the Next.js build.
 
 **Option B – Run from your machine once**  
 If you prefer to push the schema before deploying the app:
