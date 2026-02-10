@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { getFormsByUserId } from "@/services/forms.service";
 import { getViewCountsForFormIds } from "@/services/analytics.service";
 import { FormsList } from "@/components/FormsList";
-import { CreateFormButton } from "@/components/CreateFormButton";
 import { canCreateForm, getPlanLimits, type PlanKey } from "@/lib/plans";
+
+const CreateFormButton = dynamic(
+  () => import("@/components/CreateFormButton").then((m) => ({ default: m.CreateFormButton })),
+  { ssr: true }
+);
 import { prisma } from "@/lib/db";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { SITE_URL } from "@/lib/seo";

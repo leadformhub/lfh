@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireVerifiedSession } from "@/lib/auth";
-import { prisma } from "@/lib/db";
-import { getOtpUsageForUser } from "@/services/otp.service";
-import { getOtpLimitForPlan } from "@/lib/plan-quotas";
-import { getPlanLimits, type PlanKey } from "@/lib/plans";
+import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
+import { type PlanKey } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
@@ -37,28 +35,7 @@ export default async function DashboardLayout({
   if (username.toLowerCase() !== session.username.toLowerCase()) {
     redirect(`/${session.username}/dashboard`);
   }
-  const planKey = session.plan as PlanKey;
-  const limits = getPlanLimits(planKey);
-  const startOfMonth = new Date();
-  startOfMonth.setUTCDate(1);
-  startOfMonth.setUTCHours(0, 0, 0, 0);
-  const leadsThisMonth = await prisma.lead.count({
-    where: { userId: session.userId, createdAt: { gte: startOfMonth } },
-  });
-  const [formsCount, otpUsage, otpLimit] = await Promise.all([
-    prisma.form.count({ where: { userId: session.userId } }),
-    getOtpUsageForUser(session.userId),
-    getOtpLimitForPlan(planKey),
-  ]);
-  const planQuota = {
-    plan: planKey,
-    formsUsed: formsCount,
-    formsLimit: limits.maxForms,
-    leadsUsed: leadsThisMonth,
-    leadsLimit: limits.maxLeadsPerMonth,
-    otpUsed: otpUsage.used,
-    otpLimit,
-  };
+  const planQuota = await getDashboardPlanQuotaCached(session.userId, session.plan as PlanKey);
   return (
     <DashboardSidebarProvider>
         <div className="flex h-screen min-h-screen overflow-hidden bg-[var(--dashboard-main-bg)]">

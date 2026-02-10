@@ -1,11 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSidebar } from "@/components/DashboardSidebarContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { FeedbackTrigger } from "@/components/FeedbackModal";
 import { cn } from "@/lib/utils";
+
+const FeedbackTrigger = dynamic(
+  () => import("@/components/FeedbackModal").then((m) => ({ default: m.FeedbackTrigger })),
+  { ssr: false }
+);
 
 function getTitle(pathname: string): string {
   const segment = pathname.split("/").filter(Boolean)[1] ?? "dashboard";

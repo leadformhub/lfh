@@ -1,21 +1,23 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
-  getDashboardStats,
   getRecentLeads,
   getSubmissionsOverTime,
   getTopForms,
-  getLeadsToday,
-  getLeadsThisMonth,
   getConversionRate,
   getTopPerformingForm,
 } from "@/services/analytics.service";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
+import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
 import { canUseAnalytics } from "@/lib/plan-features";
 import { canCreateForm, type PlanKey } from "@/lib/plans";
-import { prisma } from "@/lib/db";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { CreateFormButton } from "@/components/CreateFormButton";
+
+const CreateFormButton = dynamic(
+  () => import("@/components/CreateFormButton").then((m) => ({ default: m.CreateFormButton })),
+  { ssr: true }
+);
 
 export const metadata = {
   title: "Dashboard",
@@ -38,41 +40,33 @@ function formatRelativeTime(date: Date): string {
 export default async function DashboardPage({
   params,
 }: { params: Promise<{ username: string }> }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username } = await params;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) {
     return null;
   }
 
+  const planQuota = await getDashboardPlanQuotaCached(session.userId, session.plan as PlanKey);
+  const { leadsToday, leadsThisMonth, totalSubmissions, formsUsed } = {
+    leadsToday: planQuota.leadsToday,
+    leadsThisMonth: planQuota.leadsUsed,
+    totalSubmissions: planQuota.totalSubmissions,
+    formsUsed: planQuota.formsUsed,
+  };
+
   const plan = session.plan as PlanKey;
   const showAnalytics = canUseAnalytics(plan);
-  const [
-    stats,
-    recentLeads,
-    topForms,
-    submissionsOverTime,
-    leadsToday,
-    leadsThisMonth,
-    conversionRate,
-    topPerformingForm,
-  ] = await Promise.all([
-    getDashboardStats(session.userId),
+  const [recentLeads, topForms, submissionsOverTime, conversionRate, topPerformingForm] = await Promise.all([
     getRecentLeads(session.userId, 5),
     getTopForms(session.userId, 5),
     showAnalytics ? getSubmissionsOverTime(session.userId, 30) : Promise.resolve([]),
-    getLeadsToday(session.userId),
-    getLeadsThisMonth(session.userId),
     getConversionRate(session.userId),
     getTopPerformingForm(session.userId),
   ]);
 
   const maxSubmissions = Math.max(1, ...submissionsOverTime.map((d) => d.submissions));
   const planLabel = session.plan.charAt(0).toUpperCase() + session.plan.slice(1);
-  const [formsCount] = await Promise.all([
-    prisma.form.count({ where: { userId: session.userId } }),
-  ]);
-  const planForCreate = (session.plan ?? "free") as PlanKey;
-  const canCreate = canCreateForm(planForCreate, formsCount);
+  const canCreate = canCreateForm(plan, formsUsed);
   const razorpayKeyId = getRazorpayKeyId();
 
   return (
@@ -163,7 +157,7 @@ export default async function DashboardPage({
               <CardContent className="p-3 sm:p-4">
                 <p className="text-xs font-medium text-neutral-500 sm:text-sm">Forms</p>
                 <p className="mt-1 font-heading text-lg font-bold text-neutral-900 sm:text-xl">
-                  {stats.totalForms}
+                  {formsUsed}
                 </p>
               </CardContent>
             </Card>
@@ -171,7 +165,7 @@ export default async function DashboardPage({
               <CardContent className="p-3 sm:p-4">
                 <p className="text-xs font-medium text-neutral-500 sm:text-sm">Total leads</p>
                 <p className="mt-1 font-heading text-lg font-bold text-neutral-900 sm:text-xl">
-                  {stats.totalSubmissions}
+                  {totalSubmissions}
                 </p>
               </CardContent>
             </Card>

@@ -146,16 +146,20 @@ export async function getTopForms(userId: string, limit = 5) {
   }));
 }
 
-/** Submissions per day for last N days (from Lead table) */
+/** Submissions per day for last N days (from Lead table). Uses DB aggregation for scale. */
 export async function getSubmissionsOverTime(userId: string, days = 30) {
   const since = new Date();
   since.setDate(since.getDate() - days);
   since.setHours(0, 0, 0, 0);
 
-  const leads = await prisma.lead.findMany({
-    where: { userId, createdAt: { gte: since } },
-    select: { createdAt: true },
-  });
+  type Row = { date: Date; submissions: bigint };
+  const rows = await prisma.$queryRaw<Row[]>`
+    SELECT DATE(created_at) as date, COUNT(*) as submissions
+    FROM Lead
+    WHERE user_id = ${userId} AND created_at >= ${since}
+    GROUP BY DATE(created_at)
+    ORDER BY date
+  `;
 
   const byDay: Record<string, number> = {};
   for (let i = 0; i < days; i++) {
@@ -163,13 +167,15 @@ export async function getSubmissionsOverTime(userId: string, days = 30) {
     d.setDate(d.getDate() - (days - 1 - i));
     byDay[d.toISOString().slice(0, 10)] = 0;
   }
-  for (const l of leads) {
-    const key = l.createdAt.toISOString().slice(0, 10);
-    if (byDay[key] != null) byDay[key]++;
+  for (const row of rows) {
+    const dateKey = row.date instanceof Date ? row.date.toISOString().slice(0, 10) : String(row.date).slice(0, 10);
+    if (byDay[dateKey] != null) {
+      byDay[dateKey] = Number(row.submissions);
+    }
   }
   return Object.entries(byDay)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, count]) => ({ date, submissions: count }));
+    .map(([date, submissions]) => ({ date, submissions }));
 }
 
 /** Views per day for last N days (from AnalyticsEvent) across all user forms */

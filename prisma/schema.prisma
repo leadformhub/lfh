@@ -144,6 +144,7 @@ model Lead {
   @@index([formId])
   @@index([userId])
   @@index([createdAt])
+  @@index([userId, createdAt])
 }
 
 model Plan {
@@ -208,6 +209,7 @@ model AnalyticsEvent {
 
   @@index([formId])
   @@index([createdAt])
+  @@index([formId, type])
   @@map("analytics_events")
 }
 

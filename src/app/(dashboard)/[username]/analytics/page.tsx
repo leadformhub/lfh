@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { canUseAnalytics } from "@/lib/plan-features";
@@ -11,13 +12,26 @@ import {
   getAllFormsWithStats,
   getTotalViews,
 } from "@/services/analytics.service";
-import {
-  SubmissionsOverTimeChart,
-  ViewsVsSubmissionsChart,
-  FormPerformanceBarChart,
-  ConversionRateBarChart,
-} from "@/components/AnalyticsCharts";
 import { SITE_URL } from "@/lib/seo";
+
+const chartFallback = <div className="h-[280px] w-full animate-pulse rounded-lg bg-[var(--neutral-100)]" />;
+
+const SubmissionsOverTimeChart = dynamic(
+  () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.SubmissionsOverTimeChart })),
+  { ssr: false, loading: () => chartFallback }
+);
+const ViewsVsSubmissionsChart = dynamic(
+  () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ViewsVsSubmissionsChart })),
+  { ssr: false, loading: () => chartFallback }
+);
+const FormPerformanceBarChart = dynamic(
+  () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.FormPerformanceBarChart })),
+  { ssr: false, loading: () => chartFallback }
+);
+const ConversionRateBarChart = dynamic(
+  () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ConversionRateBarChart })),
+  { ssr: false, loading: () => chartFallback }
+);
 
 type Props = { params: Promise<{ username: string }> };
 
