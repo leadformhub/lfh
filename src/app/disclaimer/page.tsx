@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
@@ -61,11 +62,11 @@ export default function DisclaimerPage() {
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">8. Contact</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                For questions about this Disclaimer, contact us at{" "}
-                <a href="mailto:support@leadformhub.com" className="font-medium text-[var(--color-accent)] hover:underline">
-                  support@leadformhub.com
-                </a>
-                .
+                For questions about this Disclaimer, contact us via the{" "}
+                <Link href="/contact" className="font-medium text-[var(--color-accent)] hover:underline">contact</Link>
+                {" "}or{" "}
+                <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">support</Link>
+                {" "}form on our website.
               </p>
             </div>
           </Container>

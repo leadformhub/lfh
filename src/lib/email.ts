@@ -412,6 +412,37 @@ export async function sendSupportRequestNotification(
   return sendEmail(supportEmail, subject, html, { replyTo: payload.userEmail });
 }
 
+/** Notify support when someone submits the public support form (no login). */
+export async function sendPublicSupportFormNotification(
+  supportEmail: string,
+  payload: { name: string; email: string; subject: string; message: string }
+): Promise<boolean> {
+  const subject = `[Support] ${payload.subject}`;
+  const html = buildPublicSupportFormEmailHtml(payload);
+  return sendEmail(supportEmail, subject, html, { replyTo: payload.email });
+}
+
+function buildPublicSupportFormEmailHtml(payload: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  const { name, email, subject, message } = payload;
+  const body = `
+    <p style="margin:0 0 12px; font-size:14px; color:${EMAIL_STYLE.mutedColor};">From: <strong>${escapeHtml(name)}</strong> &lt;<a href="mailto:${escapeHtml(email)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none;">${escapeHtml(email)}</a>&gt;</p>
+    <p style="margin:0 0 8px; font-size:14px; font-weight:600; color:${EMAIL_STYLE.bodyColor};">Subject:</p>
+    <p style="margin:0 0 16px; font-size:15px; color:${EMAIL_STYLE.headerColor};">${escapeHtml(subject)}</p>
+    <p style="margin:0 0 8px; font-size:14px; font-weight:600; color:${EMAIL_STYLE.bodyColor};">Message:</p>
+    <p style="margin:0; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(message)}</p>
+  `;
+  return buildBrandedEmail({
+    headerSubtitle: "New support form submission",
+    body,
+    title: "Support form",
+  });
+}
+
 /** Email the user when support posts a reply (e.g. from dashboard). Uses Re: + thread subject so it stays in the same thread. */
 export async function sendSupportReplyToUser(
   userEmail: string,

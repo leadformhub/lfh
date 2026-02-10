@@ -26,16 +26,7 @@ export default function ContactPage() {
             </p>
             <div className="mt-10 space-y-8">
               <div>
-                <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Email</h2>
-                <p className="mt-1 text-[var(--foreground-muted)]">
-                  For general inquiries:{" "}
-                  <a href="mailto:support@leadformhub.com" className="font-medium text-[var(--color-accent)] hover:underline">
-                    support@leadformhub.com
-                  </a>
-                </p>
-              </div>
-              <div>
-                <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Support</h2>
+                <h2 className="font-heading text-lg font-semibold text-[var(--foreground)]">Support/Queries</h2>
                 <p className="mt-1 text-[var(--foreground-muted)]">
                   Need help with your account or a technical issue?{" "}
                   <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
@@ -46,7 +47,7 @@ export default function PrivacyPolicyPage() {
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">5. Your Rights</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                You may access, correct, or delete your account data. You can export your lead data from the dashboard. If you have questions or wish to exercise your rights, contact us at support@leadformhub.com.
+                You may access, correct, or delete your account data. You can export your lead data from the dashboard. If you have questions or wish to exercise your rights, contact us via the contact or support form on our website.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">6. Cookies and Similar Technologies</h2>
@@ -61,11 +62,11 @@ export default function PrivacyPolicyPage() {
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">8. Contact</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                For privacy-related questions or requests, contact us at{" "}
-                <a href="mailto:support@leadformhub.com" className="font-medium text-[var(--color-accent)] hover:underline">
-                  support@leadformhub.com
-                </a>
-                .
+                For privacy-related questions or requests, contact us via the{" "}
+                <Link href="/contact" className="font-medium text-[var(--color-accent)] hover:underline">contact</Link>
+                {" "}or{" "}
+                <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">support</Link>
+                {" "}form on our website.
               </p>
             </div>
           </Container>

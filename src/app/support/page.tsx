@@ -8,17 +8,31 @@ import Link from "next/link";
 export default function SupportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // In production, POST to an API or email service
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/support/public", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError((data.error as string) || "Something went wrong. Please try again.");
+        return;
+      }
+      setError("");
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   }
 
   return (
@@ -37,7 +51,7 @@ export default function SupportPage() {
               <div className="mt-10 rounded-xl border border-[var(--color-success)]/30 bg-green-50 p-6 text-center">
                 <p className="font-medium text-[var(--foreground)]">Request received</p>
                 <p className="mt-1 text-base text-[var(--foreground-muted)]">
-                  We&apos;ll respond to your email shortly. For urgent issues, you can also email support@leadformhub.com.
+                  We&apos;ll respond to your request shortly.
                 </p>
                 <button
                   type="button"
@@ -49,6 +63,11 @@ export default function SupportPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+                {error && (
+                  <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                    {error}
+                  </p>
+                )}
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-[var(--foreground)]">
                     Name
@@ -116,11 +135,7 @@ export default function SupportPage() {
               </form>
             )}
             <p className="mt-8 text-base text-[var(--foreground-muted)]">
-              You can also email us directly at{" "}
-              <a href="mailto:support@leadformhub.com" className="font-medium text-[var(--color-accent)] hover:underline">
-                support@leadformhub.com
-              </a>
-              . Back to{" "}
+              Back to{" "}
               <Link href="/contact" className="font-medium text-[var(--color-accent)] hover:underline">Contact</Link>.
             </p>
           </Container>
