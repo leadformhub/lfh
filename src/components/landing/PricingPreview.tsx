@@ -19,7 +19,7 @@ const planMeta = [
   {
     key: "pro" as PlanKey,
     name: "Pro",
-    price: "₹499",
+    price: "₹1",
     period: "/month",
     description: "For growing teams",
     cta: "Start Free, Upgrade Later",

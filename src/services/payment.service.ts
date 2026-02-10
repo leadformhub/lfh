@@ -2,9 +2,9 @@ import { prisma } from "@/lib/db";
 import { createRazorpayOrder, verifyRazorpaySignature } from "@/lib/razorpay";
 import type { UserPlan } from "@prisma/client";
 
-// Amount in paise (INR)
+// Amount in paise (INR) — Pro set to ₹1 for testing
 export const PLAN_AMOUNTS: Record<string, number> = {
-  pro: 49900,      // ₹499
+  pro: 100,        // ₹1 (testing)
   business: 199900, // ₹1999
 };
 

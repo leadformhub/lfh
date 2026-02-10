@@ -28,7 +28,7 @@ const pricingSchema = {
     {
       "@type": "Offer",
       name: "Pro",
-      price: "499",
+      price: "1",
       priceCurrency: "INR",
       description: "Unlimited forms, 2,000 leads/month, OTP verification",
     },
