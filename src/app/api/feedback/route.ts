@@ -12,8 +12,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) {
-      const msg = parsed.error.errors.map((e) => e.message).join(" ");
-      return NextResponse.json({ error: msg }, { status: 400 });
+      return NextResponse.json(
+        { error: parsed.error.message },
+        { status: 400 }
+      );
     }
 
     const session = await getSession();
