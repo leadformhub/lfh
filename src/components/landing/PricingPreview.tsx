@@ -19,7 +19,7 @@ const planMeta = [
   {
     key: "pro" as PlanKey,
     name: "Pro",
-    price: "₹1",
+    price: "₹299",
     period: "/month",
     description: "For growing teams",
     cta: "Start Free, Upgrade Later",
@@ -29,7 +29,7 @@ const planMeta = [
   {
     key: "business" as PlanKey,
     name: "Business",
-    price: "₹1,999",
+    price: "₹999",
     period: "/month",
     description: "For agencies & scale",
     cta: "Start Free, Upgrade Later",

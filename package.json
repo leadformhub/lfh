@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build --webpack",
+    "build": "prisma generate && prisma db push && tsx scripts/update-plan-quotas.ts && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "db:push": "prisma db push",
@@ -12,6 +12,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "script:create-business-user": "tsx scripts/create-business-user.ts",
     "script:backfill-email-verified": "tsx scripts/backfill-email-verified.ts",
+    "script:update-plan-quotas": "tsx scripts/update-plan-quotas.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {

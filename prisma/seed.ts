@@ -11,13 +11,13 @@ async function main() {
   });
   await prisma.plan.upsert({
     where: { name: "pro" },
-    create: { name: "pro", maxForms: 9999, otpLimit: 500 },
-    update: {},
+    create: { name: "pro", maxForms: 9999, otpLimit: 100 },
+    update: { maxForms: 9999, otpLimit: 100 },
   });
   await prisma.plan.upsert({
     where: { name: "business" },
-    create: { name: "business", maxForms: 9999, otpLimit: 5000 },
-    update: {},
+    create: { name: "business", maxForms: 9999, otpLimit: 1000 },
+    update: { maxForms: 9999, otpLimit: 1000 },
   });
   console.log("Plans seeded");
 

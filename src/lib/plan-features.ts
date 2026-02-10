@@ -29,7 +29,7 @@ export const PLAN_FEATURES: PlanFeatureRow[] = [
   { category: "Forms & leads", label: "Email alert on new lead", free: false, pro: true, business: true },
   { category: "Forms & leads", label: "Form builder (drag, fields, settings)", free: true, pro: true, business: true },
   // Verification
-  { category: "Verification", label: "OTP verification (SMS)", free: false, pro: "500/month", business: "5,000/month" },
+  { category: "Verification", label: "OTP verification (SMS)", free: false, pro: "100/month", business: "1,000/month" },
   { category: "Verification", label: "Phone verification before submit", free: false, pro: true, business: true },
   // Dashboard & export
   { category: "Dashboard & export", label: "Unified leads dashboard", free: true, pro: true, business: true },
@@ -100,9 +100,9 @@ export function getPlanFeatureBullets(plan: PlanKey): string[] {
     case "free":
       return ["3 forms", "50 leads/month", "CSV export", "Dashboard", "Form embed", "Form builder", "Redirect after submit"];
     case "pro":
-      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "500 OTP/month", "Analytics", "Remove branding", "Priority support"];
+      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "100 OTP/month", "Analytics", "Remove branding", "Priority support"];
     case "business":
-      return ["Everything in Pro", "5,000 OTP/month", "CRM integrations", "API & webhooks", "Dedicated support"];
+      return ["Everything in Pro", "1,000 OTP/month", "CRM integrations", "API & webhooks", "Dedicated support"];
     default:
       return getPlanFeatureBullets("free");
   }

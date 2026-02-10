@@ -23,8 +23,8 @@ declare global {
 }
 
 const PLANS = [
-  { plan: "pro" as const, name: "Pro", price: "₹1/month" },
-  { plan: "business" as const, name: "Business", price: "₹1,999/month" },
+  { plan: "pro" as const, name: "Pro", price: "₹299/month" },
+  { plan: "business" as const, name: "Business", price: "₹999/month" },
 ];
 
 export function UpgradePlanCard({

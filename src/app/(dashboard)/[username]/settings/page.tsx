@@ -219,7 +219,7 @@ export default async function SettingsPage({
                 <p className="text-2xl font-bold text-[var(--foreground-heading)]">{planLabel}</p>
               <p className="mt-1 text-base text-[var(--foreground-muted)]">
                 {planLabel === "Free" && "Upgrade to unlock OTP verification and more forms."}
-                {planLabel === "Pro" && "You have unlimited forms and 500 OTP/month."}
+                {planLabel === "Pro" && "You have unlimited forms and 100 OTP/month."}
                 {planLabel === "Business" && "Full access to all features."}
               </p>
             </div>
@@ -246,11 +246,11 @@ export default async function SettingsPage({
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" aria-hidden />
-                    <span><strong>Pro:</strong> Unlimited forms, 500 OTP/month</span>
+                    <span><strong>Pro:</strong> Unlimited forms, 100 OTP/month</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="size-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" aria-hidden />
-                    <span><strong>Business:</strong> Unlimited forms, 5000 OTP/month</span>
+                    <span><strong>Business:</strong> Unlimited forms, 1,000 OTP/month</span>
                   </li>
                 </ul>
                 <Link

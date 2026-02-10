@@ -5,8 +5,8 @@ export const PLAN_LIMITS: Record<
   { maxForms: number; maxLeadsPerMonth: number | null; otpLimit: number | null }
 > = {
   free: { maxForms: 3, maxLeadsPerMonth: 50, otpLimit: null },
-  pro: { maxForms: Infinity, maxLeadsPerMonth: null, otpLimit: 500 },
-  business: { maxForms: Infinity, maxLeadsPerMonth: null, otpLimit: 5000 },
+  pro: { maxForms: Infinity, maxLeadsPerMonth: null, otpLimit: 100 },
+  business: { maxForms: Infinity, maxLeadsPerMonth: null, otpLimit: 1000 },
 };
 
 export function getPlanLimits(plan: PlanKey) {

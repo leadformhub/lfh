@@ -2,10 +2,10 @@ import { prisma } from "@/lib/db";
 import { createRazorpayOrder, verifyRazorpaySignature } from "@/lib/razorpay";
 import type { UserPlan } from "@prisma/client";
 
-// Amount in paise (INR) — Pro set to ₹1 for testing
+// Amount in paise (INR)
 export const PLAN_AMOUNTS: Record<string, number> = {
-  pro: 100,        // ₹1 (testing)
-  business: 199900, // ₹1999
+  pro: 29900,      // ₹299
+  business: 99900, // ₹999
 };
 
 export async function createOrder(userId: string, plan: string): Promise<{ orderId: string; amount: number; currency: string } | null> {
@@ -46,7 +46,7 @@ export async function verifyAndFulfill(
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: payment.id },
-      data: { razorpayPaymentId, status: "captured" },
+      data: { razorpayPaymentId, status: "captured", appliedAt: new Date() },
     }),
     prisma.user.update({
       where: { id: userId },
@@ -67,12 +67,12 @@ export async function verifyAndFulfill(
 
 const PLAN_RANK: Record<string, number> = { free: 0, pro: 1, business: 2 };
 
-/** Sync user plan from their latest captured payment (e.g. if verify never ran). Returns current plan from DB. */
+/** Sync user plan from their latest captured payment that we haven't applied yet (e.g. if verify never ran). Returns current plan from DB. Does not re-apply payments already applied (so manual downgrade to free stays). */
 export async function syncPlanFromCapturedPayment(userId: string): Promise<UserPlan> {
   const latest = await prisma.payment.findFirst({
-    where: { userId, status: "captured" },
+    where: { userId, status: "captured", appliedAt: null },
     orderBy: { createdAt: "desc" },
-    select: { plan: true },
+    select: { id: true, plan: true },
   });
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -84,10 +84,16 @@ export async function syncPlanFromCapturedPayment(userId: string): Promise<UserP
   if (paidRank <= currentRank) return user.plan as UserPlan;
 
   const paidPlan = latest!.plan as UserPlan;
-  await prisma.user.update({
-    where: { id: userId },
-    data: { plan: paidPlan },
-  });
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: { id: latest!.id },
+      data: { appliedAt: new Date() },
+    }),
+    prisma.user.update({
+      where: { id: userId },
+      data: { plan: paidPlan },
+    }),
+  ]);
   const planRecord = await prisma.plan.findFirst({ where: { name: paidPlan } });
   if (planRecord) {
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);

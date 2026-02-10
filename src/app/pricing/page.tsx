@@ -28,16 +28,16 @@ const pricingSchema = {
     {
       "@type": "Offer",
       name: "Pro",
-      price: "1",
+      price: "299",
       priceCurrency: "INR",
-      description: "Unlimited forms, 2,000 leads/month, OTP verification",
+      description: "Unlimited forms, 100 OTP/month, OTP verification",
     },
     {
       "@type": "Offer",
       name: "Business",
-      price: "1999",
+      price: "999",
       priceCurrency: "INR",
-      description: "10,000 leads/month, CRM integrations, API",
+      description: "1,000 OTP/month, CRM integrations, API",
     },
   ],
 };
