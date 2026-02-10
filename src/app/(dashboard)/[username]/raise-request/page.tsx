@@ -197,7 +197,7 @@ export default function RaiseRequestPage() {
     <div className="min-w-0 p-4 sm:p-5 md:p-6 lg:p-8">
       <div className="mx-auto max-w-3xl">
         <header className="mb-6 sm:mb-8">
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+          <h1 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
             Raise Request
           </h1>
           <p className="mt-1 text-base text-[var(--foreground-muted)]">
@@ -308,7 +308,7 @@ export default function RaiseRequestPage() {
                     <span className="font-mono text-sm font-bold text-[var(--foreground-heading)]">
                       {req.ticketNumber ? (req.ticketNumber.startsWith("#") ? req.ticketNumber : `#${req.ticketNumber}`) : `#REF-${req.id.slice(-6)}`}
                     </span>
-                    <span className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">
+                    <span className="text-xs font-medium text-[var(--foreground-muted)]">
                       {CATEGORIES.find((c) => c.value === req.category)?.label ?? req.category}
                     </span>
                     {statusBadge(req.status)}

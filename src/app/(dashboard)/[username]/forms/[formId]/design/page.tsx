@@ -26,24 +26,24 @@ export default async function FormDesignPage({
             className="rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)] sm:p-5"
             aria-label="Form analytics"
           >
-            <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
+            <h2 className="font-heading text-sm font-semibold text-[var(--foreground-muted)]">
               Form analytics
             </h2>
             <div className="mt-3 grid grid-cols-3 gap-4">
               <div>
-                <p className="text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+                <p className="text-xl font-bold tracking-tight text-[var(--foreground-heading)]">
                   {formStats.views.toLocaleString()}
                 </p>
                 <p className="text-xs text-[var(--foreground-muted)]">Views</p>
               </div>
               <div>
-                <p className="text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+                <p className="text-xl font-bold tracking-tight text-[var(--foreground-heading)]">
                   {formStats.submissions.toLocaleString()}
                 </p>
                 <p className="text-xs text-[var(--foreground-muted)]">Submissions</p>
               </div>
               <div>
-                <p className="text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+                <p className="text-xl font-bold tracking-tight text-[var(--foreground-heading)]">
                   {formStats.conversionRate.toFixed(1)}%
                 </p>
                 <p className="text-xs text-[var(--foreground-muted)]">Conversion</p>

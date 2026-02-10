@@ -205,7 +205,7 @@ export function FormBuilder({
       if (res.ok) {
         setSaveMessage({ type: "success", text: "Form design saved." });
         router.refresh();
-        router.push(`/${username}/forms`);
+        router.replace(`/${username}/forms`);
       } else {
         setSaveMessage({ type: "error", text: (data.error as string) || "Failed to save." });
       }

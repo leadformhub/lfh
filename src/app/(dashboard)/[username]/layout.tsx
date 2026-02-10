@@ -8,6 +8,7 @@ import { getPlanLimits, type PlanKey } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
+import { DashboardFooter } from "@/components/DashboardFooter";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -70,8 +71,11 @@ export default async function DashboardLayout({
         </div>
         <div className="flex min-w-0 flex-1 flex-col min-h-0">
           <DashboardTopbar username={session.username} email={session.email} />
-          <main className="flex min-h-0 flex-1 flex-col overflow-auto">
-            {children}
+          <main className="flex min-h-0 flex-1 flex-col overflow-auto" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom, 0px))" }}>
+            <div className="flex min-h-0 flex-1 flex-col">
+              {children}
+              <DashboardFooter />
+            </div>
           </main>
         </div>
       </div>

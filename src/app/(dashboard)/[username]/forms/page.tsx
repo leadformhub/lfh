@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { getFormsByUserId } from "@/services/forms.service";
 import { getViewCountsForFormIds } from "@/services/analytics.service";
@@ -55,7 +56,15 @@ export default async function FormsPage({
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="font-heading text-xl font-semibold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">Create and manage lead forms</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-heading text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:text-xl">Create and manage lead forms</h1>
+          <Link
+            href={`/${username}/analytics`}
+            className="text-sm font-medium text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-hover)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+          >
+            Form analytics
+          </Link>
+        </div>
         <CreateFormButton
           username={username}
           canCreate={canCreate}

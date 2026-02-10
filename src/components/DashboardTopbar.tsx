@@ -43,15 +43,20 @@ export function DashboardTopbar({ username, email }: { username: string; email: 
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <h1 className="font-heading text-xl font-semibold tracking-tight !text-white lg:text-2xl">
+        <h1 className="min-w-0 truncate font-heading text-lg font-semibold tracking-tight !text-white lg:text-xl lg:text-2xl">
           {title}
         </h1>
       </div>
 
       {/* Feedback + Profile - top right */}
-      <div className="flex items-center gap-2 shrink-0">
-        <FeedbackTrigger className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60">
-          Feedback
+      <div className="flex shrink-0 items-center gap-2">
+        <FeedbackTrigger className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/15 px-2 py-2 text-slate-200 shadow-sm transition-all hover:scale-[1.02] hover:border-white/30 hover:bg-white/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60 sm:px-3 sm:py-2 sm:text-sm sm:font-medium">
+          <span className="flex size-8 items-center justify-center sm:size-auto sm:contents" aria-hidden>
+            <svg className="size-5 sm:mr-1 sm:size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </span>
+          <span className="hidden sm:inline">Feedback</span>
         </FeedbackTrigger>
         <div className="relative">
         <button

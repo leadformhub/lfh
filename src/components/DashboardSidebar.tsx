@@ -13,7 +13,7 @@ const navItems = [
   { href: "forms", label: "Forms", icon: FormsIcon },
   { href: "leads", label: "Leads", icon: LeadsIcon },
   { href: "analytics", label: "Analytics", icon: AnalyticsIcon },
-  { href: "raise-request", label: "Raise Request", icon: RaiseRequestIcon },
+  { href: "raise-request", label: "Raise request", icon: RaiseRequestIcon },
   { href: "settings", label: "Settings", icon: SettingsIcon },
 ];
 

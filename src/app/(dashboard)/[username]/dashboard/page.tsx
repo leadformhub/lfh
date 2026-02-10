@@ -84,7 +84,7 @@ export default async function DashboardPage({
             <p className="text-base text-neutral-500">
               Welcome back
             </p>
-            <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-neutral-900 lg:text-3xl">
+            <h2 className="mt-1 font-heading text-xl font-semibold tracking-tight text-neutral-900 lg:text-2xl">
               Here’s your overview
             </h2>
           </div>
@@ -110,7 +110,7 @@ export default async function DashboardPage({
             <Card className="min-w-0 transition-shadow duration-200">
               <CardContent className="p-4 sm:p-6">
                 <p className="text-sm font-medium text-neutral-500">Leads today</p>
-                <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+                <p className="mt-2 font-heading text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
                   {leadsToday}
                 </p>
               </CardContent>
@@ -118,7 +118,7 @@ export default async function DashboardPage({
             <Card className="min-w-0 transition-shadow duration-200">
               <CardContent className="p-4 sm:p-6">
                 <p className="text-sm font-medium text-neutral-500">Leads this month</p>
-                <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+                <p className="mt-2 font-heading text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
                   {leadsThisMonth}
                 </p>
               </CardContent>
@@ -126,7 +126,7 @@ export default async function DashboardPage({
             <Card className="min-w-0 transition-shadow duration-200">
               <CardContent className="p-4 sm:p-6">
                 <p className="text-sm font-medium text-neutral-500">Conversion rate</p>
-                <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl">
+                <p className="mt-2 font-heading text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
                   {conversionRate}%
                 </p>
               </CardContent>
@@ -137,12 +137,12 @@ export default async function DashboardPage({
                 {topPerformingForm ? (
                   <Link
                     href={`/${username}/forms/${topPerformingForm.id}/design`}
-                    className="mt-2 block font-heading text-lg font-semibold tracking-tight text-neutral-900 transition-colors hover:text-blue-600 sm:text-xl"
+                    className="mt-2 block font-heading text-base font-semibold tracking-tight text-neutral-900 transition-colors hover:text-blue-600 sm:text-lg"
                   >
                     <span className="line-clamp-2">{topPerformingForm.name}</span>
                   </Link>
                 ) : (
-                  <p className="mt-2 font-heading text-lg font-semibold text-neutral-400 sm:text-xl">
+                  <p className="mt-2 font-heading text-base font-semibold text-neutral-400 sm:text-lg">
                     —
                   </p>
                 )}
@@ -162,7 +162,7 @@ export default async function DashboardPage({
             <Card className="min-w-0 transition-shadow duration-200">
               <CardContent className="p-3 sm:p-4">
                 <p className="text-xs font-medium text-neutral-500 sm:text-sm">Forms</p>
-                <p className="mt-1 font-heading text-xl font-bold text-neutral-900 sm:text-2xl">
+                <p className="mt-1 font-heading text-lg font-bold text-neutral-900 sm:text-xl">
                   {stats.totalForms}
                 </p>
               </CardContent>
@@ -170,7 +170,7 @@ export default async function DashboardPage({
             <Card className="min-w-0 transition-shadow duration-200">
               <CardContent className="p-3 sm:p-4">
                 <p className="text-xs font-medium text-neutral-500 sm:text-sm">Total leads</p>
-                <p className="mt-1 font-heading text-xl font-bold text-neutral-900 sm:text-2xl">
+                <p className="mt-1 font-heading text-lg font-bold text-neutral-900 sm:text-xl">
                   {stats.totalSubmissions}
                 </p>
               </CardContent>

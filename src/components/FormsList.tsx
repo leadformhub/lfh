@@ -81,15 +81,15 @@ export function FormsList({
             key={f.id}
             className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="min-w-0 flex-1 truncate font-medium text-[var(--foreground-heading)]">
-                {f.name}
-              </h3>
+            <h3 className="w-full text-base font-semibold text-[var(--foreground-heading)] break-words">
+              {f.name}
+            </h3>
+            <div className="mt-2 flex items-center gap-2">
               <select
                 value={f.status}
                 onChange={(e) => handleStatusChange(f.id, e.target.value as "PUBLIC" | "PRIVATE")}
                 disabled={updatingStatus === f.id}
-                className="form-input-base shrink-0 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30 disabled:opacity-50"
+                className="form-input-base w-auto min-w-0 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30 disabled:opacity-50"
               >
                 <option value="PUBLIC">Public</option>
                 <option value="PRIVATE">Private</option>

@@ -14,7 +14,7 @@ export default async function FormEmbedPage({
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="500" frameborder="0"></iframe>`;
   return (
     <div className="min-w-0 p-4 sm:p-6 lg:p-8 max-w-2xl">
-      <h1 className="font-heading text-xl font-bold text-[var(--foreground-heading)] sm:text-2xl mb-2">Embed form</h1>
+      <h1 className="font-heading text-lg font-bold text-[var(--foreground-heading)] sm:text-xl mb-2">Embed form</h1>
       <p className="text-[var(--foreground-muted)] text-base mb-4 truncate">{form.name}</p>
       <div className="mb-4">
         <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1">Form URL</label>

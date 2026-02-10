@@ -101,7 +101,7 @@ export default async function AnalyticsPage({
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+            <h1 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
               Form analytics and lead conversion tracking
             </h1>
             <p className="mt-1 text-base text-[var(--foreground-muted)]">
@@ -119,37 +119,37 @@ export default async function AnalyticsPage({
         {/* KPI cards */}
         <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Key metrics">
           <div className="rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)] sm:p-6">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)] sm:text-sm">
+            <p className="text-xs font-medium text-[var(--foreground-muted)] sm:text-sm">
               Total views
             </p>
-            <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+            <p className="mt-2 font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
               {totalViews.toLocaleString()}
             </p>
             <p className="mt-1 text-xs text-[var(--foreground-muted)]">Total form page visits</p>
           </div>
           <div className="rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)] sm:p-6">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)] sm:text-sm">
+            <p className="text-xs font-medium text-[var(--foreground-muted)] sm:text-sm">
               Submissions
             </p>
-            <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+            <p className="mt-2 font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
               {stats.totalSubmissions.toLocaleString()}
             </p>
             <p className="mt-1 text-xs text-[var(--foreground-muted)]">Total leads captured</p>
           </div>
           <div className="rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)] sm:p-6">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)] sm:text-sm">
+            <p className="text-xs font-medium text-[var(--foreground-muted)] sm:text-sm">
               Active forms
             </p>
-            <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+            <p className="mt-2 font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
               {stats.totalForms}
             </p>
             <p className="mt-1 text-xs text-[var(--foreground-muted)]">Forms in your account</p>
           </div>
           <div className="col-span-2 rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)] sm:col-span-1 sm:p-6">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)] sm:text-sm">
+            <p className="text-xs font-medium text-[var(--foreground-muted)] sm:text-sm">
               Avg. conversion
             </p>
-            <p className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+            <p className="mt-2 font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
               {avgConversion.toFixed(1)}%
             </p>
             <p className="mt-1 text-xs text-[var(--foreground-muted)]">Views → submissions</p>

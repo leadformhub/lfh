@@ -60,8 +60,13 @@ export function NewFormClient({
         setError(data.error || "Failed to create form");
         return;
       }
-      router.push(`/${username}/forms/${data.form?.id}/design`);
-      router.refresh();
+      const formId = data.form?.id ?? data.id;
+      if (formId) {
+        router.replace(`/${username}/forms/${formId}/design`);
+        router.refresh();
+      } else {
+        window.location.href = `/${username}/forms`;
+      }
     } catch {
       setError("Something went wrong");
     } finally {

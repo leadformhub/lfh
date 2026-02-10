@@ -123,7 +123,7 @@ export default async function SettingsPage({
     <div className="min-w-0 p-4 sm:p-5 md:p-6 lg:p-8">
       <div className="mx-auto max-w-6xl">
         <header className="mb-6 sm:mb-8">
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[var(--foreground-heading)] tracking-tight">
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-[var(--foreground-heading)] tracking-tight">
             Settings
           </h1>
           <p className="mt-1 text-[var(--foreground-muted)] text-base">
@@ -151,8 +151,8 @@ export default async function SettingsPage({
               </div>
               <div className="divide-y divide-[var(--border-default)]">
                 <div className="px-4 sm:px-5 md:px-6 py-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">Forms</p>
-                  <p className="mt-1 text-2xl font-bold text-[var(--foreground-heading)]">
+                  <p className="text-xs font-medium text-[var(--foreground-muted)]">Forms</p>
+                  <p className="mt-1 text-xl font-bold text-[var(--foreground-heading)]">
                     {formsCount}
                     {formsLimit !== null && (
                       <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ {formsLimit}</span>
@@ -163,8 +163,8 @@ export default async function SettingsPage({
                   </p>
                 </div>
                 <div className="px-4 sm:px-5 md:px-6 py-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">Leads this month</p>
-                  <p className="mt-1 text-2xl font-bold text-[var(--foreground-heading)]">
+                  <p className="text-xs font-medium text-[var(--foreground-muted)]">Leads this month</p>
+                  <p className="mt-1 text-xl font-bold text-[var(--foreground-heading)]">
                     {leadsThisMonth}
                     {leadsLimit !== null && (
                       <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ {leadsLimit}</span>
@@ -172,8 +172,8 @@ export default async function SettingsPage({
                   </p>
                 </div>
                 <div className="px-4 sm:px-5 md:px-6 py-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">OTP sent this month</p>
-                  <p className="mt-1 text-2xl font-bold text-[var(--foreground-heading)]">
+                  <p className="text-xs font-medium text-[var(--foreground-muted)]">OTP sent this month</p>
+                  <p className="mt-1 text-xl font-bold text-[var(--foreground-heading)]">
                     {otpUsage.used}
                     {otpLimit !== null && (
                       <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ {otpLimit}</span>
@@ -217,7 +217,7 @@ export default async function SettingsPage({
                 </h2>
               </div>
               <div className="px-4 sm:px-5 md:px-6 py-4">
-                <p className="text-2xl font-bold text-[var(--foreground-heading)]">{planLabel}</p>
+                <p className="text-xl font-bold text-[var(--foreground-heading)]">{planLabel}</p>
               <p className="mt-1 text-base text-[var(--foreground-muted)]">
                 {planLabel === "Free" && "Upgrade to unlock OTP verification and more forms."}
                 {planLabel === "Pro" && "You have unlimited forms and 100 OTP/month."}
@@ -301,9 +301,9 @@ export default async function SettingsPage({
               </h2>
             </div>
             <div className="px-4 sm:px-5 md:px-6 py-4">
-              <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">Current email</p>
+              <p className="text-xs font-medium text-[var(--foreground-muted)]">Current email</p>
               <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] break-all">{session.email}</p>
-              <p className="mt-3 text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">Change email</p>
+              <p className="mt-3 text-xs font-medium text-[var(--foreground-muted)]">Change email</p>
               <p className="mt-0.5 text-base text-[var(--foreground-muted)] mb-3">We&apos;ll send a verification link to your new address. After you verify, your email will be updated.</p>
               <ChangeEmailForm />
             </div>
@@ -323,7 +323,7 @@ export default async function SettingsPage({
               </h2>
             </div>
             <div className="px-4 sm:px-5 md:px-6 py-4">
-              <p className="text-xs font-medium uppercase tracking-wider text-[var(--foreground-muted)]">Current username</p>
+              <p className="text-xs font-medium text-[var(--foreground-muted)]">Current username</p>
               <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] mb-2">@{session.username}</p>
               <p className="text-base text-[var(--foreground-muted)] mb-3">{`Your profile URL will update to /${session.username} after you change it.`}</p>
               <ChangeUsernameForm currentUsername={session.username} />

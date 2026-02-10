@@ -27,7 +27,7 @@ export default async function DashboardPricingPage({
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl">
       <header className="mb-8">
-        <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[var(--foreground-heading)] tracking-tight">
+        <h1 className="font-heading text-xl sm:text-2xl font-bold text-[var(--foreground-heading)] tracking-tight">
           Upgrade plan
         </h1>
         <p className="mt-1 text-[var(--foreground-muted)] text-base">
@@ -41,7 +41,7 @@ export default async function DashboardPricingPage({
 
       {/* Full feature comparison for all plans */}
       <section className="mt-10">
-        <h2 className="font-heading text-xl font-bold text-[var(--foreground-heading)] mb-4">
+        <h2 className="font-heading text-lg font-bold text-[var(--foreground-heading)] mb-4">
           All plan features
         </h2>
         <div className="rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden">
@@ -72,7 +72,7 @@ export default async function DashboardPricingPage({
                       <tr>
                         <td
                           colSpan={4}
-                          className="px-4 py-2 font-medium text-[var(--foreground-muted)] bg-[var(--neutral-50)] text-xs uppercase tracking-wider"
+                          className="px-4 py-2 font-medium text-[var(--foreground-muted)] bg-[var(--neutral-50)] text-xs"
                         >
                           {category}
                         </td>

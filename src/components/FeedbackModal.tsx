@@ -62,9 +62,17 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
     <Modal open={open} onClose={handleClose} title="Feedback" description="Share your feedback with us. We read every message." size="md">
       <ModalCloseButton onClose={handleClose} />
       {success ? (
-        <p className="text-center py-4 text-[var(--foreground)] font-medium">Thank you! Your feedback has been submitted.</p>
+        <div className="flex flex-col items-center gap-3 py-6">
+          <div className="flex size-12 items-center justify-center rounded-full bg-[var(--color-success)]/10 text-[var(--color-success)]" aria-hidden>
+            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-center text-[var(--foreground)] font-medium">Thank you! Your feedback has been submitted.</p>
+        </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <p className="text-sm text-[var(--foreground-muted)]">We’d love to hear from you — suggestions, bugs, or ideas. Your input helps us improve.</p>
           <div>
             <label htmlFor="feedback-message" className="mb-1.5 block text-sm font-medium text-[var(--foreground-heading)]">
               Your feedback
@@ -78,7 +86,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
               maxLength={10000}
               disabled={submitting}
               className={cn(
-                "form-input-base w-full resize-y min-h-[100px]",
+                "form-input-base w-full resize-y min-h-[100px] focus:ring-2 focus:ring-[var(--color-accent)]/30 md:min-h-[120px]",
                 error && "form-input-error"
               )}
               aria-invalid={!!error}
@@ -94,7 +102,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
             <Button type="button" variant="secondary" onClick={handleClose} disabled={submitting}>
               Cancel
             </Button>
-            <Button type="submit" loading={submitting} disabled={submitting}>
+            <Button type="submit" loading={submitting} disabled={submitting} className="min-w-[140px]">
               Submit feedback
             </Button>
           </div>

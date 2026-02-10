@@ -83,7 +83,7 @@ export default async function LeadsPage({
 
   return (
     <div className="max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
-      <h1 className="font-heading mb-5 text-xl font-semibold tracking-tight text-[var(--foreground-heading)] sm:mb-6 sm:text-2xl">Lead management dashboard</h1>
+      <h1 className="font-heading mb-5 text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:mb-6 sm:text-xl">Lead management dashboard</h1>
       <Suspense
         fallback={
           <div className="min-w-0 space-y-5">
