@@ -18,12 +18,11 @@ const trustBadges = [
 ] as const;
 
 /** Enterprise Footer — grouped by user intent; accordion on mobile, grid on desktop */
-const productLinks = [
+const productLinks: { label: string; href?: string; isFeedback?: boolean }[] = [
   { label: "Features", href: "/features" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Integrations", href: "/integrations" },
-  { label: "API", href: "/api-docs#api" },
-  { label: "Webhooks", href: "/api-docs#webhooks" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Feedback", isFeedback: true },
 ];
 
 const useCaseLinks = [
@@ -40,17 +39,17 @@ const compareLinks = [
 ];
 
 const resourcesLinks = [
-  { label: "FAQ", href: "/faq" },
+  { label: "Webhooks", href: "/api-docs#webhooks" },
+  { label: "Integrations", href: "/integrations" },
   { label: "Knowledge Base", href: "/knowledge-base" },
-  { label: "Blog", href: "/blog" },
   { label: "API Docs", href: "/api-docs" },
 ];
 
-const companyLinks: { label: string; href?: string; isFeedback?: boolean }[] = [
+const companyLinks = [
   { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
   { label: "Raise Support Request", href: "/support" },
-  { label: "Feedback", isFeedback: true },
 ];
 
 const legalLinks = [
