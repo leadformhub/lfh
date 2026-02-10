@@ -46,7 +46,7 @@ Use the dashboard to see all leads, filter by form or date, and export to CSV or
 Agencies run multiple client campaigns from one account. Startups need fast setup and real leads without heavy tools. Sales teams want one source of truth for follow-up. LeadFormHub fits all three: lightweight, focused, and India-ready.
 
 ### H2: Trusted by Indian SMBs and B2B Marketers
-Indian SMBs and B2B marketers use LeadFormHub for ads, landing pages, events, and webinars. Pay in INR, get verified leads, and keep control of your data and brand.
+Indian SMBs and B2B marketers use LeadFormHub for ads, landing pages, events, and webinars. Flexible pricing, get verified leads, and keep control of your data and brand.
 
 ### H2: One-Time Pricing in INR — No Subscriptions
 Start free. When you upgrade, pay once in INR via UPI, card, or net banking. No recurring surprise bills. Predictable cost for teams that prefer simplicity.
@@ -412,7 +412,7 @@ Verified leads mean better conversion and cleaner CRM. Export or sync to your to
 See the comparison table for a direct view: branding, verification, dashboard, pricing. When lead generation is the goal, LeadFormHub is built for it; Google Forms is a general-purpose form tool.
 
 ### H2: Built for Indian Teams: INR Pricing and Support
-Pay in INR with UPI, cards, or net banking. No USD or conversion. Support and product are oriented to Indian B2B teams.
+Flexible payment options: UPI, cards, or net banking. No USD or conversion. Support and product are oriented to Indian B2B teams.
 
 ### H2: Switch to LeadFormHub for Serious Lead Capture
 If you’re ready for branded forms, verified leads, and one dashboard, start with the free plan. No credit card required.

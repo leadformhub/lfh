@@ -204,7 +204,7 @@ export default function GoogleFormsAlternativePage() {
               Built for Indian teams: INR pricing and support
             </h2>
             <p className="mt-4 text-[var(--foreground-muted)]">
-              Pay in INR with UPI, cards, or net banking. No USD or conversion. Support and product are oriented to Indian B2B teams.
+              Flexible payment options: UPI, cards, or net banking. No USD or conversion. Support and product are oriented to Indian B2B teams.
             </p>
           </Container>
         </section>
@@ -250,7 +250,7 @@ export default function GoogleFormsAlternativePage() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Branded hub</span>
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">OTP verification</span>
-              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Pay in INR</span>
+              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Flexible pricing</span>
             </div>
             <Link
               href="/signup"

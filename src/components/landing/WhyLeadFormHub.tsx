@@ -17,7 +17,7 @@ const reasons = [
   },
   {
     title: "India-first pricing",
-    description: "Pay in INR with UPI, cards, or net banking. Monthly plans, transparent pricing.",
+    description: "Flexible payment options: UPI, cards, or net banking. Monthly plans, transparent pricing.",
   },
   {
     title: "Sales-ready dashboard",

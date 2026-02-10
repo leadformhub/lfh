@@ -17,7 +17,7 @@ export function HowItWorks() {
             Trusted by Indian SMBs and B2B Marketers
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-            Indian SMBs and B2B marketers use LeadFormHub for ads, landing pages, events, and webinars. Pay in INR, get verified leads, and keep control of your data and brand.
+            Indian SMBs and B2B marketers use LeadFormHub for ads, landing pages, events, and webinars. Flexible pricing, get verified leads, and keep control of your data and brand.
           </p>
         </div>
         <div className="mx-auto mt-16 grid gap-8 sm:grid-cols-3">

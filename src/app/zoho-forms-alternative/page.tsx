@@ -249,7 +249,7 @@ export default function ZohoFormsAlternativePage() {
             <p className="mt-2 text-[var(--foreground-muted)]">Create your account and your first form in minutes.</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Standalone</span>
-              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Pay in INR</span>
+              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Flexible pricing</span>
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">OTP included</span>
             </div>
             <Link

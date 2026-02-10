@@ -15,7 +15,7 @@ const pricingSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "LeadFormHub",
-  description: "Lead capture software with OTP verification. Pay in INR.",
+  description: "Lead capture software with OTP verification. Flexible pricing.",
   brand: { "@type": "Brand", name: "LeadFormHub" },
   offers: [
     {
@@ -53,7 +53,7 @@ const trustBullets = [
     ),
   },
   {
-    title: "Pay in INR",
+    title: "Flexible pricing",
     desc: "UPI, cards, and net banking supported. Pricing that matches how Indian teams think about cost.",
     icon: (
       <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -179,7 +179,7 @@ export default function PricingPage() {
               Start on the free plan. Upgrade when you&apos;re ready.
             </h2>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              {["No credit card required", "Pay in INR", "Cancel anytime", "All plans include support"].map((label) => (
+              {["No credit card required", "Flexible pricing", "Cancel anytime", "All plans include support"].map((label) => (
                 <span
                   key={label}
                   className="rounded-full border border-[var(--border-default)] bg-white px-4 py-2 text-sm font-medium text-[var(--foreground-heading)] shadow-[var(--shadow-xs)]"

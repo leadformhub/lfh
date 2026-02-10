@@ -203,7 +203,7 @@ export default function FAQPage() {
                 OTP verification
               </span>
               <span className="rounded-full border border-[var(--border-default)] bg-white px-4 py-2 text-sm font-medium text-[var(--foreground-heading)] shadow-[var(--shadow-xs)]">
-                Pay in INR
+                Flexible pricing
               </span>
               <span className="rounded-full border border-[var(--border-default)] bg-white px-4 py-2 text-sm font-medium text-[var(--foreground-heading)] shadow-[var(--shadow-xs)]">
                 One dashboard
