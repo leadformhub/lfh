@@ -13,10 +13,16 @@ export async function generateMetadata({
 }: { params: Promise<{ slug: string }> }) {
   const { slug: formId } = await params;
   const form = await getFormByIdForPublic(formId);
-  if (!form) return { title: "Form not found | LeadFormHub" };
+  if (!form) {
+    return {
+      title: "Form not found | LeadFormHub",
+      robots: { index: false, follow: true },
+    };
+  }
   return {
     title: `${form.name} | LeadFormHub`,
     description: form.schema?.settings?.description || `Fill out ${form.name}`,
+    robots: { index: false, follow: true },
   };
 }
 
