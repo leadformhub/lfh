@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Container } from "@/components/ui/Container";
@@ -153,10 +154,10 @@ export function Footer() {
           <div className="shrink-0">
             <Link
               href="/"
-              className="inline-flex items-baseline font-heading text-xl font-semibold text-[var(--footer-heading)] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--footer-heading)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--footer-bg)] rounded-md px-1 -ml-1"
+              className="inline-flex items-center transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--footer-heading)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--footer-bg)] rounded-md -ml-1"
               aria-label="LeadFormHub home"
             >
-              LeadFormHub
+              <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-10 w-auto object-contain" />
             </Link>
             <p className="mt-4 max-w-sm text-base leading-6 text-[var(--footer-text)]">
               Lead capture form builder with OTP verification and analytics. Built for Indian businesses.
