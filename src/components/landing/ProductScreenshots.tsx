@@ -138,7 +138,7 @@ export function ProductScreenshots() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-4xl">
-            Built for clarity, not clutter
+            Built For Clarity, Not Clutter
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Calm, professional UX — not flashy UI.

@@ -14,7 +14,7 @@ export function Integrations() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-4xl">
-            Fits into your existing stack
+            Fits Into Your Existing Stack
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Fits seamlessly into your existing stack.

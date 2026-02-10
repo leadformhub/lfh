@@ -206,7 +206,7 @@ export default function TypeformVsLeadformhubPage() {
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                Frequently asked questions
+                Frequently Asked Questions
               </h2>
               <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
                 Is LeadFormHub a good Typeform alternative for lead capture?

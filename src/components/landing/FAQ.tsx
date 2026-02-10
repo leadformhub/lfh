@@ -40,7 +40,7 @@ export function FAQ() {
       <Container size="narrow">
         <div className="text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-4xl">
-            Frequently asked questions
+            Frequently Asked Questions
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Clear answers to common questions about LeadFormHub.

@@ -233,7 +233,7 @@ export default function GoogleFormsAlternativePage() {
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] text-center">
-              Frequently asked questions
+              Frequently Asked Questions
             </h2>
             <ComparisonFAQ items={faqItems} className="mt-10" />
           </Container>

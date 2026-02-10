@@ -63,7 +63,7 @@ export function MidPageCTA() {
             className="mt-4 font-heading text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
             style={{ color: "#ffffff" }}
           >
-            Ready to capture verified leads?
+            Ready To Capture Verified Leads?
           </h2>
           <p
             className="mt-6 text-lg leading-relaxed sm:text-xl"

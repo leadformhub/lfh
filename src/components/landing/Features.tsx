@@ -65,7 +65,7 @@ export function Features() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-4xl">
-            Built for lead quality, not just forms
+            Built For Lead Quality, Not Just Forms
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Verified leads, sales-ready contacts, and one dashboard. Purpose-built for Indian B2B teams who need to stop chasing fake numbers.

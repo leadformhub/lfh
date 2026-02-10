@@ -35,7 +35,7 @@ export function UseCases() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-4xl">
-            Built for how teams actually work
+            Built For How Teams Actually Work
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Trusted by agencies, startups, marketing teams, and sales organizations to capture and verify leads.
