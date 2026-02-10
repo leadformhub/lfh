@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { sendPublicSupportFormNotification } from "@/lib/email";
+import { isEmailConfigured, sendPublicSupportFormNotification } from "@/lib/email";
 
 const bodySchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -28,8 +28,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!isEmailConfigured()) {
+      console.error("[api/support/public] SUPPORT_EMAIL is set but SMTP is not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD).");
+      return NextResponse.json(
+        { error: "Support email delivery is not configured. Please try again later." },
+        { status: 503 }
+      );
+    }
+
     const sent = await sendPublicSupportFormNotification(supportEmail, parsed.data);
     if (!sent) {
+      console.error("[api/support/public] sendPublicSupportFormNotification returned false. Check server logs for 'Email send error'.");
       return NextResponse.json(
         { error: "Failed to send your request. Please try again." },
         { status: 500 }

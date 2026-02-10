@@ -45,6 +45,11 @@ function getTransport() {
   });
 }
 
+/** True if SMTP is configured (MAIL_MAILER=smtp and MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD set). */
+export function isEmailConfigured(): boolean {
+  return getTransport() !== null;
+}
+
 /** Shared branded layout: gradient bar, LeadFormHub header, body slot, footer. */
 function buildBrandedEmail(options: {
   headerSubtitle: string;
@@ -710,8 +715,10 @@ async function sendEmail(
   if (!transport) {
     if (process.env.NODE_ENV === "development") {
       console.log("[DEV] Email would be sent to", to, subject, options?.replyTo ? `replyTo=${options.replyTo}` : "");
+      return true;
     }
-    return true;
+    console.error("[email] SMTP not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD). Email not sent.");
+    return false;
   }
   const { address, name } = getFrom();
   try {
