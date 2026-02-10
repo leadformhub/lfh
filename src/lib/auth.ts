@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { verifyToken, getSessionCookieName, type SessionPayload } from "./jwt";
 import { prisma } from "./db";
+import { syncPlanFromCapturedPayment } from "@/services/payment.service";
 
 export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
@@ -16,7 +17,7 @@ export async function requireSession(): Promise<SessionPayload> {
   return session;
 }
 
-/** Use for dashboard and protected APIs. Ensures user has verified their email; throws if not. */
+/** Use for dashboard and protected APIs. Ensures user has verified their email; throws if not. Plan is synced from captured payments so paid users always see the right plan. */
 export async function requireVerifiedSession(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
@@ -25,7 +26,8 @@ export async function requireVerifiedSession(): Promise<SessionPayload> {
     select: { emailVerifiedAt: true },
   });
   if (!user || !user.emailVerifiedAt) throw new Error("EMAIL_NOT_VERIFIED");
-  return session;
+  const plan = await syncPlanFromCapturedPayment(session.userId);
+  return { ...session, plan };
 }
 
 /** For API routes: returns session or a NextResponse to return (401 or 403). */

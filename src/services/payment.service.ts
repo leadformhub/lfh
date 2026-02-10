@@ -64,3 +64,38 @@ export async function verifyAndFulfill(
   }
   return { success: true, plan: payment.plan as UserPlan };
 }
+
+const PLAN_RANK: Record<string, number> = { free: 0, pro: 1, business: 2 };
+
+/** Sync user plan from their latest captured payment (e.g. if verify never ran). Returns current plan from DB. */
+export async function syncPlanFromCapturedPayment(userId: string): Promise<UserPlan> {
+  const latest = await prisma.payment.findFirst({
+    where: { userId, status: "captured" },
+    orderBy: { createdAt: "desc" },
+    select: { plan: true },
+  });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: true },
+  });
+  if (!user) return "free";
+  const paidRank = latest ? PLAN_RANK[latest.plan] ?? 0 : 0;
+  const currentRank = PLAN_RANK[user.plan] ?? 0;
+  if (paidRank <= currentRank) return user.plan as UserPlan;
+
+  const paidPlan = latest!.plan as UserPlan;
+  await prisma.user.update({
+    where: { id: userId },
+    data: { plan: paidPlan },
+  });
+  const planRecord = await prisma.plan.findFirst({ where: { name: paidPlan } });
+  if (planRecord) {
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    await prisma.subscription.upsert({
+      where: { userId },
+      create: { userId, planId: planRecord.id, monthStart, otpUsedThisMonth: 0 },
+      update: { planId: planRecord.id, monthStart, otpUsedThisMonth: 0 },
+    });
+  }
+  return paidPlan;
+}

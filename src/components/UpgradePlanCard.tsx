@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { getPlanFeatureBullets } from "@/lib/plan-features";
 
 declare global {
@@ -12,11 +12,12 @@ declare global {
       order_id: string;
       name: string;
       description: string;
-      handler: (res: {
+      handler?: (res: {
         razorpay_payment_id: string;
         razorpay_order_id: string;
         razorpay_signature: string;
       }) => void;
+      callback_url?: string;
     }) => { open: () => void };
   }
 }
@@ -33,7 +34,8 @@ export function UpgradePlanCard({
   currentPlan: string;
   razorpayKeyId: string | null;
 }) {
-  const router = useRouter();
+  const pathname = usePathname();
+  const username = pathname?.split("/")[1] ?? "";
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
 
@@ -60,6 +62,7 @@ export function UpgradePlanCard({
       const res = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ plan }),
       });
       const data = await res.json();
@@ -78,10 +81,14 @@ export function UpgradePlanCard({
         order_id: data.orderId,
         name: "LeadFormHub",
         description: `Upgrade to ${plan.charAt(0).toUpperCase() + plan.slice(1)}`,
+        callback_url: typeof window !== "undefined" && username
+          ? `${window.location.origin}/${username}/payment-success`
+          : undefined,
         handler: async (response) => {
           const verifyRes = await fetch("/api/payments/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -90,7 +97,8 @@ export function UpgradePlanCard({
           });
           const verifyData = await verifyRes.json();
           if (verifyRes.ok && verifyData.success) {
-            router.refresh();
+            // Full reload so the new session cookie (with updated plan) is used
+            window.location.reload();
           } else {
             setError(verifyData.error ?? "Payment verification failed");
           }

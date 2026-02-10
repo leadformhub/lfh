@@ -42,11 +42,13 @@ Multi-tenant SaaS for lead capture forms with optional mobile OTP verification.
 ## Scripts
 
 - `npm run dev` – development server
-- `npm run build` – production build
+- `npm run build` – production build (includes `prisma generate` and `prisma db push`)
 - `npm run start` – start production server
 - `npm run db:push` – push Prisma schema to DB
 - `npm run db:migrate` – run migrations
 - `npm run db:seed` – seed plans (free, pro, business)
+
+**Production DB:** See [docs/DEPLOY-PRODUCTION-DB.md](docs/DEPLOY-PRODUCTION-DB.md) for deploying with a production MySQL database.
 
 ## Architecture
 
