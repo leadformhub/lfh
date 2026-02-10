@@ -18,19 +18,19 @@ const chartFallback = <div className="h-[280px] w-full animate-pulse rounded-lg 
 
 const SubmissionsOverTimeChart = dynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.SubmissionsOverTimeChart })),
-  { ssr: false, loading: () => chartFallback }
+  { loading: () => chartFallback }
 );
 const ViewsVsSubmissionsChart = dynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ViewsVsSubmissionsChart })),
-  { ssr: false, loading: () => chartFallback }
+  { loading: () => chartFallback }
 );
 const FormPerformanceBarChart = dynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.FormPerformanceBarChart })),
-  { ssr: false, loading: () => chartFallback }
+  { loading: () => chartFallback }
 );
 const ConversionRateBarChart = dynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ConversionRateBarChart })),
-  { ssr: false, loading: () => chartFallback }
+  { loading: () => chartFallback }
 );
 
 type Props = { params: Promise<{ username: string }> };
