@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.errors[0]?.message ?? "Invalid input" },
+        { error: parsed.error.message },
         { status: 400 }
       );
     }
