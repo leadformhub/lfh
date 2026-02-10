@@ -59,8 +59,8 @@ export default function SignupPage() {
 
   return (
     <article className="w-full max-w-full overflow-x-hidden" aria-label="Sign up form">
-      <div className="mx-auto mb-6 flex h-20 w-80 shrink-0 items-center justify-center overflow-hidden sm:mb-8" style={{ width: 320, height: 80 }}>
-        <Image src="/logo-w.png" alt="LeadFormHub" width={320} height={80} className="h-full w-full object-contain object-center scale-[3]" />
+      <div className="mx-auto mb-6 flex h-12 shrink-0 items-center justify-center sm:mb-8 sm:h-14">
+        <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized />
       </div>
       <h1 className="mt-6 text-center text-2xl font-bold leading-tight tracking-tight text-white sm:mt-8 sm:text-3xl md:text-[2.25rem] lg:text-[2.75rem]" style={{ color: "#ffffff" }}>
         Create A LeadFormHub Account
