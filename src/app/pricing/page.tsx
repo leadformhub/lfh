@@ -5,9 +5,9 @@ import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Form Builder SaaS Pricing – Lead Capture Software Plans (INR)",
+  title: "Lead Capture Software Pricing – Start Free | LeadFormHub",
   description:
-    "Simple monthly pricing in INR. Start Free or upgrade for OTP verification, higher lead limits, form analytics, and integrations.",
+    "Lead capture software pricing made simple: transparent monthly plans for India. Start free, no hidden fees—upgrade for OTP verification, lead limits, and analytics.",
   path: "/pricing",
 });
 
@@ -100,11 +100,11 @@ export default function PricingPage() {
                 id="pricing-hero-heading"
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
-                Transparent pricing in{" "}
-                <span className="hero-highlight">INR. No hidden fees.</span>
+                Lead Capture Software Pricing —{" "}
+                <span className="hero-highlight">Transparent, no hidden fees.</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Start free. Pay monthly when you upgrade. UPI, card, and net banking supported — simple, predictable pricing for Indian teams.
+                Our lead capture software pricing is transparent and simple for business: start free, pay monthly when you upgrade. UPI, card, and net banking for teams in India—no hidden fees, no lock-in.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link

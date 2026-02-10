@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Form Builder with Analytics & Secure Lead Capture Features",
+  title: "Lead Capture Features",
   description:
     "Explore LeadFormHub features: drag and drop form builder, branded forms, OTP verification, form analytics, and a unified lead management dashboard.",
   path: "/features",
@@ -98,11 +98,11 @@ export default function FeaturesPage() {
                 id="features-hero-heading"
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
-                Lead capture built for{" "}
-                <span className="hero-highlight">verified, high-quality leads</span>
+                Lead Capture Features Built for{" "}
+                <span className="hero-highlight">Verified, High-Quality Leads</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                OTP verification, branded forms, one dashboard, and analytics. Everything you need to stop chasing fake numbers and focus on real prospects.
+                Our lead capture features include OTP verification, branded forms, one dashboard, and analytics. Everything you need to stop chasing fake numbers and focus on real prospects.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
@@ -179,7 +179,7 @@ export default function FeaturesPage() {
         </section>
 
         {/* Branded Forms */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+        <section id="lead-capture" className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
           <Container size="default" className="px-4 sm:px-6">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
               <div className="order-2 lg:order-1 animate-in">

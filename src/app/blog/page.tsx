@@ -9,9 +9,9 @@ import { buildPageMetadata } from "@/lib/seo";
  * lead generation best practices.
  */
 export const metadata: Metadata = buildPageMetadata({
-  title: "Blog | What Is a Lead Capture Form & Lead Generation Best Practices | LeadFormHub",
+  title: "Lead Capture Form Blog – Lead Generation Forms & Form Builder Best Practices | LeadFormHub",
   description:
-    "Learn what a lead capture form is, how to create high-converting forms, and lead generation best practices. Tips for form builder users and marketing teams.",
+    "Learn what a lead capture form is, how to build high-converting lead generation forms, and form builder best practices. Tips for marketing teams and form builder users.",
   path: "/blog",
 });
 
@@ -47,10 +47,10 @@ export default function BlogPage() {
         <section className="border-b border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 text-center sm:px-6">
             <h1 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-              What is a lead capture form? Tips and best practices
+              Lead Capture Form & Lead Generation Forms: Tips and Best Practices
             </h1>
             <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-              Learn how to create high-converting lead generation forms and apply lead generation best practices with our form builder.
+              Learn what a lead capture form is and how to create high-converting lead generation forms. Get form builder best practices and lead generation tips in one place.
             </p>
           </Container>
         </section>

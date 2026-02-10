@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/integrations", priority: 0.8, changeFrequency: "monthly" },
     { path: "/about", priority: 0.7, changeFrequency: "monthly" },
     { path: "/blog", priority: 0.8, changeFrequency: "weekly" },
+    { path: "/blog/what-is-a-lead-capture-form", priority: 0.8, changeFrequency: "weekly" },
     { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
     { path: "/support", priority: 0.7, changeFrequency: "monthly" },
     { path: "/privacy-policy", priority: 0.6, changeFrequency: "monthly" },
