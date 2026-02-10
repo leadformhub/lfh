@@ -16,15 +16,36 @@ export default function TypeformVsLeadformhubPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Navbar />
       <main>
-        <section className="border-b border-[var(--border-subtle)] bg-white py-16 sm:py-24">
+        <section
+          className="hero-section relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28"
+          aria-labelledby="article-heading"
+        >
+          <div className="hero-bg absolute inset-0" />
+          <div className="hero-orb hero-orb-1" aria-hidden />
+          <div className="hero-orb hero-orb-2" aria-hidden />
+          <div className="hero-orb hero-orb-3" aria-hidden />
+
+          <Container size="default" className="relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="hero-content mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+                Blog
+              </p>
+              <h1
+                id="article-heading"
+                className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
+              >
+                Typeform vs <span className="hero-highlight">LeadFormHub</span>
+              </h1>
+              <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
+                Two different takes on the same need: collecting information from people online. Typeform excels at conversational, one-question-at-a-time forms and surveys. LeadFormHub is lead capture software built around verified leads, a branded hub, and a single dashboard. This comparison covers ease of use, lead capture features, pricing, verification (including OTP), and best use cases so you can decide which tool fits your goals.
+              </p>
+            </div>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-              Typeform vs LeadFormHub
-            </h1>
-            <p className="mt-4 text-[var(--foreground-muted)]">
-              If you&apos;re comparing <strong>typeform vs leadformhub</strong>, you&apos;re looking at two different takes on the same need: collecting information from people online. Typeform is a well-known online form builder that excels at conversational, one-question-at-a-time forms and surveys. LeadFormHub is lead capture software built around verified leads, a branded hub, and a single dashboard for follow-up. Both can power lead generation forms; the right choice depends on whether you care most about form experience and design, or about lead quality, verification, and acting on submissions. This comparison covers ease of use, lead capture and form features, form builder pricing, data ownership and verification (including OTP and quality leads), and best use cases so you can decide which tool fits your goals.
-            </p>
-            <div className="prose prose-neutral mt-10 max-w-none">
+            <div className="prose prose-neutral max-w-none">
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 Overview: Typeform vs LeadFormHub
               </h2>

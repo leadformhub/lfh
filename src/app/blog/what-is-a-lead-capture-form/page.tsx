@@ -16,15 +16,36 @@ export default function WhatIsALeadCaptureFormPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Navbar />
       <main>
-        <section className="border-b border-[var(--border-subtle)] bg-white py-16 sm:py-24">
+        <section
+          className="hero-section relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28"
+          aria-labelledby="article-heading"
+        >
+          <div className="hero-bg absolute inset-0" />
+          <div className="hero-orb hero-orb-1" aria-hidden />
+          <div className="hero-orb hero-orb-2" aria-hidden />
+          <div className="hero-orb hero-orb-3" aria-hidden />
+
+          <Container size="default" className="relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="hero-content mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+                Blog
+              </p>
+              <h1
+                id="article-heading"
+                className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
+              >
+                What Is a <span className="hero-highlight">Lead Capture Form?</span>
+              </h1>
+              <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
+                A lead capture form is a web form that collects contact information from visitors so your business can follow up and turn them into leads or customers. In this post we define what a lead capture form is, why it matters for businesses, show real-world examples, share best practices, and highlight common mistakes to avoid.
+              </p>
+            </div>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-              What Is a Lead Capture Form?
-            </h1>
-            <p className="mt-4 text-[var(--foreground-muted)]">
-              A <strong>lead capture form</strong> is a web form that collects contact information from visitors so your business can follow up and turn them into leads or customers. When someone fills out a lead capture form, they share details like name, email, or phone in exchange for something you offer—a demo, a guide, or simply a conversation. In this post we&apos;ll define what a lead capture form is, why it matters for businesses, show real-world examples, share lead capture best practices, and highlight common mistakes to avoid.
-            </p>
-            <div className="prose prose-neutral mt-10 max-w-none">
+            <div className="prose prose-neutral max-w-none">
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 What is a lead capture form? (definition)
               </h2>

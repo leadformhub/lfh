@@ -16,21 +16,36 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <Navbar />
       <main>
-        <section className="border-b border-[var(--border-subtle)] bg-white py-16 sm:py-24">
+        <section
+          className="hero-section relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28"
+          aria-labelledby="article-heading"
+        >
+          <div className="hero-bg absolute inset-0" />
+          <div className="hero-orb hero-orb-1" aria-hidden />
+          <div className="hero-orb hero-orb-2" aria-hidden />
+          <div className="hero-orb hero-orb-3" aria-hidden />
+
+          <Container size="default" className="relative z-10">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="hero-content mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+                Blog
+              </p>
+              <h1
+                id="article-heading"
+                className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
+              >
+                Google Forms vs <span className="hero-highlight">Business Form Builders</span>
+              </h1>
+              <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
+                Choosing between a simple, free tool and dedicated lead capture software built for teams. Google Forms is easy for internal surveys and basic lead generation forms; modern business form builders focus on branded experiences, better data, and follow-up. This guide walks through ease of use, customization, lead capture features, data quality, analytics, and pricing.
+              </p>
+            </div>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-              Google Forms vs Business Form Builders
-            </h1>
-            <p className="mt-4 text-[var(--foreground-muted)]">
-              When you compare <strong>google forms vs business form builders</strong>, you are really choosing
-              between a simple, free tool and dedicated lead capture software built for teams. Google Forms is an
-              easy way to collect responses, especially for internal surveys and basic lead generation forms. Modern{" "}
-              <strong>online form builder for business</strong> platforms focus on branded experiences, better data,
-              and follow-up. This guide walks through ease of use, customization, lead capture features, data quality,
-              analytics, and pricing so you can decide which approach fits how your business actually captures and
-              converts leads.
-            </p>
-            <div className="prose prose-neutral mt-10 max-w-none">
+            <div className="prose prose-neutral max-w-none">
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 Overview: Google Forms vs Business Form Builders
               </h2>
