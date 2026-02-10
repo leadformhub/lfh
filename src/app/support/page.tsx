@@ -5,20 +5,35 @@ import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import Link from "next/link";
 
+const SUBJECT_CATEGORIES = [
+  "General Inquiry",
+  "Billing & Payments",
+  "Bug Report",
+  "Feature Request",
+  "Technical Support",
+] as const;
+
+const OTHER_VALUE = "Other";
+
 export default function SupportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", subjectOther: "", message: "" });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const subjectToSend = formData.subject === OTHER_VALUE ? formData.subjectOther.trim() : formData.subject;
+    if (!subjectToSend) {
+      setError(formData.subject === OTHER_VALUE ? "Please enter your subject." : "Please select a subject.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/support/public", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, subject: subjectToSend }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -27,7 +42,7 @@ export default function SupportPage() {
       }
       setError("");
       setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", subject: "", subjectOther: "", message: "" });
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -98,15 +113,30 @@ export default function SupportPage() {
                   <label htmlFor="subject" className="block text-sm font-medium text-[var(--foreground)]">
                     Subject
                   </label>
-                  <input
+                  <select
                     id="subject"
-                    type="text"
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData((d) => ({ ...d, subject: e.target.value }))}
-                    placeholder="e.g. Billing question, Bug report"
-                    className="mt-1 w-full rounded-lg border border-[var(--border-default)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)]"
-                  />
+                    className="mt-1 w-full rounded-lg border border-[var(--border-default)] px-3 py-2 text-[var(--foreground)] bg-white"
+                  >
+                    <option value="">Select a category</option>
+                    {SUBJECT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                    <option value={OTHER_VALUE}>{OTHER_VALUE}</option>
+                  </select>
+                  {formData.subject === OTHER_VALUE && (
+                    <input
+                      type="text"
+                      required
+                      value={formData.subjectOther}
+                      onChange={(e) => setFormData((d) => ({ ...d, subjectOther: e.target.value }))}
+                      placeholder="Please describe your subject"
+                      className="mt-3 w-full rounded-lg border border-[var(--border-default)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-subtle)]"
+                      aria-label="Custom subject"
+                    />
+                  )}
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-[var(--foreground)]">
