@@ -114,7 +114,7 @@ export function DashboardSidebar({
             className="flex items-center transition-opacity hover:opacity-90"
             onClick={() => setOpen(false)}
           >
-            <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-[9rem] w-auto sm:h-[10.5rem]" />
+            <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-8 w-auto object-contain lg:h-10" />
           </Link>
           <button
             type="button"
