@@ -211,16 +211,17 @@ model AnalyticsEvent {
 }
 
 model Payment {
-  id               String   @id @default(cuid())
-  userId           String   @map("user_id")
-  razorpayOrderId  String   @unique @map("razorpay_order_id")
-  razorpayPaymentId String? @map("razorpay_payment_id")
-  plan             String   // pro | business
-  amount           Int      // paise
-  currency         String   @default("INR")
-  status           String   // created | captured | failed
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id               String    @id @default(cuid())
+  userId           String    @map("user_id")
+  razorpayOrderId  String    @unique @map("razorpay_order_id")
+  razorpayPaymentId String?  @map("razorpay_payment_id")
+  plan             String    // pro | business
+  amount           Int       // paise
+  currency         String    @default("INR")
+  status           String    // created | captured | failed
+  appliedAt        DateTime? @map("applied_at") // when we upgraded user from this payment (so we don't re-apply after manual downgrade)
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
