@@ -183,11 +183,9 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
 /** Enterprise-level welcome email: same layout as verification email. */
 function buildWelcomeEmail(name?: string): string {
   const greeting = name ? `Hi ${escapeHtml(name)},` : "Hi there,";
-  const baseUrl =
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-    "https://leadformhub.com";
-  const dashboardUrl = `${baseUrl.replace(/\/$/, "")}/login`;
+  const appUrl = process.env.APP_URL?.trim();
+  if (!appUrl) throw new Error("APP_URL must be set for welcome email dashboard link (e.g. https://leadformhub.com)");
+  const dashboardUrl = `${appUrl.replace(/\/$/, "")}/login`;
 
   return `
 <!DOCTYPE html>
