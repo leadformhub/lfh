@@ -3,7 +3,8 @@ import { getSessionCookieName } from "@/lib/jwt";
 
 function clearSessionCookie(origin: string, redirectTo?: string) {
   const url = redirectTo && redirectTo.startsWith("/") ? `${origin}${redirectTo}` : `${origin}/login`;
-  const res = NextResponse.redirect(url);
+  // Use 303 so the browser follows with GET (307 would re-POST to /login and the page wouldn't load)
+  const res = NextResponse.redirect(url, 303);
   res.cookies.set(getSessionCookieName(), "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
