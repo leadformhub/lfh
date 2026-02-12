@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const AUTH_DARK_PATHS = ["/login", "/signup", "/forgot-password"];
+const AUTH_DARK_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password"];
 
 export default function AuthShell({
   children,
