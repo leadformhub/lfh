@@ -33,8 +33,8 @@ const useCaseLinks = [
 ];
 
 const compareLinks = [
-  { label: "Typeform alternative", href: "/typeform-alternative" },
-  { label: "Google Forms alternative", href: "/google-forms-alternative" },
+  { label: "Typeform alternative", href: "/blog/typeform-alternative" },
+  { label: "Google Forms alternative", href: "/blog/google-forms-alternative" },
   { label: "Zoho Forms alternative", href: "/zoho-forms-alternative" },
 ];
 

@@ -25,6 +25,20 @@ export const BLOG_POSTS: BlogPost[] = [
     publishedAt: "2025-02-01",
   },
   {
+    slug: "typeform-alternative",
+    title: "Typeform Alternative for Verified Lead Capture Forms",
+    description:
+      "Looking for a Typeform alternative? Use LeadFormHub as your lead capture form builder with OTP verification, form analytics, and a sales-ready dashboard.",
+    publishedAt: "2025-02-01",
+  },
+  {
+    slug: "google-forms-alternative",
+    title: "Google Forms Alternative – Online Form Builder for Lead Generation",
+    description:
+      "Upgrade from Google Forms to a professional online form builder and lead capture platform with branding, OTP verification, and form analytics.",
+    publishedAt: "2025-02-01",
+  },
+  {
     slug: "google-forms-vs-business-form-builders",
     title: "Google Forms vs Business Form Builders",
     description:

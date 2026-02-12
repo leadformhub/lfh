@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Reusable comparison table for positioning LeadFormHub vs competitors.
- * Used on: Homepage, /typeform-alternative, /google-forms-alternative, /zoho-forms-alternative.
+ * Used on: Homepage, /blog/typeform-alternative, /blog/google-forms-alternative, /zoho-forms-alternative.
  * Rows: OTP verification, Branded hub, Lead dashboard, Pricing model, India-first payments, Setup speed.
  */
 export type ComparisonRow = {

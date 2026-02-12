@@ -18,7 +18,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: "Typeform Alternative for Verified Lead Capture Forms",
   description:
     "Looking for a Typeform alternative? Use LeadFormHub as your lead capture form builder with OTP verification, form analytics, and a sales-ready dashboard.",
-  path: "/typeform-alternative",
+  path: "/blog/typeform-alternative",
 });
 
 const typeformCompetitorCells = {
@@ -79,7 +79,7 @@ const productSchema = {
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
   description: "Verified lead capture platform with OTP verification. Typeform alternative for Indian B2B teams. Branded hub, monthly INR pricing.",
-  url: `${SITE_URL}/typeform-alternative`,
+  url: `${SITE_URL}/blog/typeform-alternative`,
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
 

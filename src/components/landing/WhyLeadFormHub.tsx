@@ -59,9 +59,9 @@ export function WhyLeadFormHub() {
         </ul>
         <p className="mx-auto mt-10 max-w-xl text-center text-base text-[var(--foreground-muted)]">
           Comparing options? See how we stack up:{" "}
-          <Link href="/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link>
+          <Link href="/blog/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link>
           {" · "}
-          <Link href="/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Google Forms alternative</Link>
+          <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Google Forms alternative</Link>
           {" · "}
           <Link href="/zoho-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Zoho Forms alternative</Link>
         </p>

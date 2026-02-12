@@ -70,9 +70,9 @@ export default function BlogPage() {
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Your resource hub for the lead capture form and lead generation forms—definitions, form builder best practices, and comparisons. Explore guides and compare our form builder:{" "}
-                <Link href="/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link>
+                <Link href="/blog/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link>
                 {", "}
-                <Link href="/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Google Forms alternative</Link>
+                <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Google Forms alternative</Link>
                 {", "}
                 <Link href="/zoho-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Zoho Forms alternative</Link>.
               </p>

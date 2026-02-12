@@ -55,7 +55,7 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
                 better control over fields, and workflows that help sales and marketing act on submissions. If you
                 already use Google Workspace, Google Forms feels natural and fast; if your priority is lead quality,
                 verification, and a clear pipeline, a dedicated{" "}
-                <Link href="/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
                   Google Forms alternative
                 </Link>{" "}
                 will usually be a better long-term fit.

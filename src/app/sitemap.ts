@@ -33,8 +33,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/privacy-policy", priority: 0.6, changeFrequency: "monthly" },
     { path: "/terms-and-conditions", priority: 0.6, changeFrequency: "monthly" },
     { path: "/disclaimer", priority: 0.6, changeFrequency: "monthly" },
-    { path: "/typeform-alternative", priority: 0.8, changeFrequency: "monthly" },
-    { path: "/google-forms-alternative", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/blog/typeform-alternative", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/blog/google-forms-alternative", priority: 0.8, changeFrequency: "monthly" },
     { path: "/zoho-forms-alternative", priority: 0.8, changeFrequency: "monthly" },
   ];
 

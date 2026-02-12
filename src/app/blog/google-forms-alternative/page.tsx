@@ -18,7 +18,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: "Google Forms Alternative – Online Form Builder for Lead Generation",
   description:
     "Upgrade from Google Forms to a professional online form builder and lead capture platform with branding, OTP verification, and form analytics.",
-  path: "/google-forms-alternative",
+  path: "/blog/google-forms-alternative",
 });
 
 const googleCompetitorCells = {
@@ -79,7 +79,7 @@ const productSchema = {
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
   description: "Verified lead capture platform with OTP verification. Google Forms alternative for professional lead generation. Branded hub, India-first pricing.",
-  url: `${SITE_URL}/google-forms-alternative`,
+  url: `${SITE_URL}/blog/google-forms-alternative`,
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
 

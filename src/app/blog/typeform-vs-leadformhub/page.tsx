@@ -50,7 +50,7 @@ export default function TypeformVsLeadformhubPage() {
                 Overview: Typeform vs LeadFormHub
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                At a glance, Typeform focuses on form and survey experience: one question per screen, strong visuals, and a polished feel. LeadFormHub focuses on lead capture: a dedicated hub for your forms, optional OTP verification so you get real phone numbers, and a unified lead view. If you need a <Link href="/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link> that prioritises verified, sales-ready leads, LeadFormHub is built for that. The table below summarises the main differences.
+                At a glance, Typeform focuses on form and survey experience: one question per screen, strong visuals, and a polished feel. LeadFormHub focuses on lead capture: a dedicated hub for your forms, optional OTP verification so you get real phone numbers, and a unified lead view. If you need a <Link href="/blog/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Typeform alternative</Link> that prioritises verified, sales-ready leads, LeadFormHub is built for that. The table below summarises the main differences.
               </p>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[400px] border-collapse text-sm">
