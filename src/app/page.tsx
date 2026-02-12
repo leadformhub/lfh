@@ -23,9 +23,9 @@ import {
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Free Online Form Builder with Unlimited Submissions",
+  title: "Free Online Form Builder with Unlimited Submissions | LeadFormHub",
   description:
-    "Build unlimited online forms in minutes. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.",
+    "Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.",
   path: "/",
 });
 

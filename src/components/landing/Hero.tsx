@@ -39,11 +39,10 @@ export function Hero() {
               id="hero-heading"
               className="font-heading max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
             >
-              <span>Lead Capture Software</span>
-              <span className="hero-highlight"> for India</span>
+              Free Online Form Builder with <span className="text-[var(--color-accent)]">Unlimited Submissions</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--color-secondary)]">
-              Create high-converting lead generation forms with our lead capture software. Get a branded hub, optional OTP verification, and a lead management dashboard with form analytics—built for teams in India, with pricing in INR.
+              Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.
             </p>
             <p className="mt-4 text-base text-[var(--foreground-subtle)]">
               No credit card required · Collect Verified Leads · Built for India

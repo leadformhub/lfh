@@ -45,7 +45,7 @@ export function PricingPreview() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
-            Monthly Pricing in INR
+            Monthly Pricing (No Auto Renewal)
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
             Start Free. When you upgrade, pay monthly in INR via UPI, card, or net banking. Simple, predictable pricing for teams.
