@@ -158,7 +158,7 @@ export default async function SettingsPage({
                       <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ {formsLimit}</span>
                     )}
                     {formsLimit === null && (
-                      <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">in use</span>
+                      <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ ∞</span>
                     )}
                   </p>
                 </div>
@@ -166,8 +166,10 @@ export default async function SettingsPage({
                   <p className="text-xs font-medium text-[var(--foreground-muted)]">Leads this month</p>
                   <p className="mt-1 text-xl font-bold text-[var(--foreground-heading)]">
                     {leadsThisMonth}
-                    {leadsLimit !== null && (
+                    {leadsLimit !== null ? (
                       <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ {leadsLimit}</span>
+                    ) : (
+                      <span className="ml-2 text-base font-normal text-[var(--foreground-muted)]">/ ∞</span>
                     )}
                   </p>
                 </div>

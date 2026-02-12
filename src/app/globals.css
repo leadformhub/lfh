@@ -115,6 +115,7 @@ footer[role="contentinfo"] h4 {
 
 /* Dark theme — full black: dashboard, sidebar, and all main surfaces */
 [data-theme="dark"] {
+  color-scheme: dark; /* Native form controls (select dropdowns) use dark styling */
   --background: #000000;
   --background-alt: #000000;
   --background-elevated: #0a0a0a;
@@ -183,6 +184,12 @@ footer[role="contentinfo"] h4 {
 [data-theme="dark"] .divide-neutral-200 > * + * { border-color: var(--border-default); }
 [data-theme="dark"] .hover\:bg-neutral-50:hover { background-color: var(--neutral-50); }
 [data-theme="dark"] .hover\:text-blue-600:hover { color: var(--color-accent); }
+
+/* Dark theme: ensure select dropdown options are visible (light text on dark bg) */
+[data-theme="dark"] select option {
+  background-color: var(--background-elevated);
+  color: var(--foreground);
+}
 
 /* Site uses light theme by default; dark theme via Toggle Theme in dashboard. */
 

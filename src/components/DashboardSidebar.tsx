@@ -181,7 +181,7 @@ export function DashboardSidebar({
                   <span className="text-slate-400">Forms</span>
                   <span className="text-white">
                     {planQuota.formsUsed}
-                    {planQuota.formsLimit === Infinity ? " (unlimited)" : ` / ${planQuota.formsLimit}`}
+                    {planQuota.formsLimit === Infinity ? " / ∞" : ` / ${planQuota.formsLimit}`}
                   </span>
                 </div>
                 {planQuota.formsLimit !== Infinity && (
@@ -202,7 +202,7 @@ export function DashboardSidebar({
                   <span className="text-slate-400">Leads this month</span>
                   <span className="text-white">
                     {planQuota.leadsUsed}
-                    {planQuota.leadsLimit === null ? " (unlimited)" : ` / ${planQuota.leadsLimit}`}
+                    {planQuota.leadsLimit === null ? " / ∞" : ` / ${planQuota.leadsLimit}`}
                   </span>
                 </div>
                 {planQuota.leadsLimit !== null && (
