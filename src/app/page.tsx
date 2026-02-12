@@ -23,9 +23,9 @@ import {
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Lead Capture Software for India | LeadFormHub",
+  title: "Free Online Form Builder with Unlimited Submissions",
   description:
-    "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+    "Build unlimited online forms in minutes. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.",
   path: "/",
 });
 
