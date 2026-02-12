@@ -29,6 +29,7 @@ export function LeadsPageView({
   forms,
   initialFormId,
   initialForm,
+  initialStages,
   currentSearch,
 }: {
   username: string;
@@ -39,6 +40,7 @@ export function LeadsPageView({
   forms: { id: string; name: string }[];
   initialFormId: string;
   initialForm: ApiForm;
+  initialStages: { id: string; name: string }[];
   currentSearch: string;
 }) {
   const router = useRouter();
@@ -86,6 +88,7 @@ export function LeadsPageView({
           forms={forms}
           initialFormId={initialFormId}
           initialForm={initialForm}
+          initialStages={initialStages}
           currentSearch={currentSearch}
         />
       )}

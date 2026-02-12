@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
+import { getPipelineByFormId } from "@/services/pipelines.service";
 import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
 
@@ -54,9 +55,16 @@ export default async function LeadsPage({
   let total = 0;
   let perPage = 25;
   let initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null = null;
+  let initialStages: { id: string; name: string }[] = [];
 
   if (formIdClean) {
-    const formRow = await getFormById(formIdClean, session.userId);
+    const [formRow, pipeline] = await Promise.all([
+      getFormById(formIdClean, session.userId),
+      getPipelineByFormId(session.userId, formIdClean),
+    ]);
+    if (pipeline?.stages?.length) {
+      initialStages = pipeline.stages.map((s) => ({ id: s.id, name: s.name }));
+    }
     if (formRow) {
       initialForm = {
         id: formRow.id,
@@ -109,6 +117,7 @@ export default async function LeadsPage({
           forms={formsForSelect}
           initialFormId={formIdClean ?? ""}
           initialForm={initialForm}
+          initialStages={initialStages}
           currentSearch={searchClean ?? ""}
         />
       </Suspense>

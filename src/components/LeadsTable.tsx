@@ -121,6 +121,7 @@ export function LeadsTable({
   forms,
   initialFormId,
   initialForm,
+  initialStages,
   currentSearch,
 }: {
   username: string;
@@ -131,6 +132,7 @@ export function LeadsTable({
   forms: { id: string; name: string }[];
   initialFormId: string;
   initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null;
+  initialStages: { id: string; name: string }[];
   currentSearch: string;
 }) {
   const router = useRouter();
@@ -147,17 +149,23 @@ export function LeadsTable({
   const [page, setPage] = useState(initialPage);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [stages, setStages] = useState<PipelineStage[]>([]);
+  const [stages, setStages] = useState<PipelineStage[]>(initialStages ?? []);
   const [updatingStageLeadId, setUpdatingStageLeadId] = useState<string | null>(null);
 
   const currentFormId = initialFormId;
 
-  // Fetch pipeline stages for the current form (for Status dropdown)
+  // Sync stages from server when form or initialStages change (e.g. after navigation)
+  useEffect(() => {
+    setStages(initialStages ?? []);
+  }, [initialStages]);
+
+  // Fetch pipeline stages only when form has none from server (e.g. pipeline not created yet)
   useEffect(() => {
     if (!currentFormId) {
       setStages([]);
       return;
     }
+    if (initialStages.length > 0) return;
     fetch(`/api/pipelines?formId=${encodeURIComponent(currentFormId)}`, { credentials: "same-origin" })
       .then((r) => r.ok ? r.json() : null)
       .then((body: { pipelines?: { stages?: { id: string; name: string }[] }[] } | null) => {
@@ -165,7 +173,7 @@ export function LeadsTable({
         setStages(pipelineStages);
       })
       .catch(() => setStages([]));
-  }, [currentFormId]);
+  }, [currentFormId, initialStages.length]);
 
   const schemaColumns = React.useMemo(() => getOrderedSchemaColumns(form), [form]);
   const schemaLoaded = form != null && form.schema_json != null;
