@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import type { UserPlan, UserStatus } from "@prisma/client";
-import { sendVerificationEmail, sendPasswordResetEmail, sendEmailChangeVerification } from "@/lib/email";
+import { sendVerificationEmail, sendPasswordResetEmail, sendEmailChangeVerification, sendDeleteAccountConfirmation } from "@/lib/email";
 import { nanoid } from "nanoid";
 
 const SALT_ROUNDS = 12;
@@ -35,6 +35,7 @@ export async function createUser(input: CreateUserInput) {
       username,
       email: input.email.toLowerCase(),
       password: hashed,
+      authProvider: "email",
       plan: "free" as UserPlan,
       status: "active" as UserStatus,
     },
@@ -68,6 +69,7 @@ export async function createUserWithEmailOnly(email: string, password: string) {
       username,
       email: normalizedEmail,
       password: hashed,
+      authProvider: "email",
       plan: "free" as UserPlan,
       status: "active" as UserStatus,
     },
@@ -155,6 +157,39 @@ export async function deleteAccount(userId: string, password: string): Promise<v
   await prisma.user.delete({
     where: { id: userId },
   });
+}
+
+/** Create delete-account token and send confirmation email. For Google users who may not have a password. */
+export async function createDeleteAccountToken(userId: string): Promise<string> {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("User not found");
+
+  await prisma.accountDeletionRequest.deleteMany({ where: { userId } });
+  const token = nanoid(32);
+  const expiresAt = new Date(Date.now() + RESET_EXPIRY_HOURS * 60 * 60 * 1000);
+  await prisma.accountDeletionRequest.create({
+    data: { userId, token, expiresAt },
+  });
+  const baseUrl =
+    process.env.NEXTAUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL || "leadformhub.com"}` : null) ||
+    "https://leadformhub.com";
+  await sendDeleteAccountConfirmation(user.email, `${baseUrl}/confirm-delete?token=${token}`);
+  return token;
+}
+
+/** Consume delete-account token and delete user. Returns userId if valid. */
+export async function consumeDeleteAccountToken(token: string): Promise<string | null> {
+  const req = await prisma.accountDeletionRequest.findUnique({
+    where: { token },
+  });
+  if (!req || req.usedAt || req.expiresAt < new Date()) return null;
+  await prisma.accountDeletionRequest.update({
+    where: { id: req.id },
+    data: { usedAt: new Date() },
+  });
+  await prisma.user.delete({ where: { id: req.userId } });
+  return req.userId;
 }
 
 export async function updatePassword(userId: string, newPassword: string) {
@@ -270,6 +305,7 @@ export async function findOrCreateUserByGoogle(profile: GoogleProfile): Promise<
       username,
       email,
       password: passwordPlaceholder,
+      authProvider: "google",
       plan: "free" as UserPlan,
       status: "active" as UserStatus,
       emailVerifiedAt: new Date(),

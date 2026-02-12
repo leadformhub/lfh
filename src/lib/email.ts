@@ -337,6 +337,20 @@ function buildOtpVerificationEmail(otp: string): string {
 </html>`;
 }
 
+export async function sendDeleteAccountConfirmation(to: string, confirmUrl: string): Promise<boolean> {
+  const subject = "Confirm account deletion · LeadFormHub";
+  const html = buildBrandedEmail({
+    headerSubtitle: "Confirm account deletion",
+    body: `
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You requested to delete your LeadFormHub account. Click the button below to permanently delete your account. This cannot be undone.</p>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td style="border-radius:8px; background:#dc2626;"><a href="${confirmUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Delete my account</a></td></tr></table>
+      <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">This link expires in 1 hour.</p>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't request this, you can safely ignore this email. Your account is safe.</p>
+    `,
+  });
+  return sendEmail(to, subject, html);
+}
+
 export async function sendEmailChangeVerification(to: string, verifyUrl: string): Promise<boolean> {
   const subject = "Confirm your new email address";
   const html = buildBrandedEmail({

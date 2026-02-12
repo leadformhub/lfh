@@ -24,11 +24,11 @@ export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload |
   if (!session) return null;
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { emailVerifiedAt: true },
+    select: { emailVerifiedAt: true, authProvider: true },
   });
   if (!user || !user.emailVerifiedAt) throw new Error("EMAIL_NOT_VERIFIED");
   const plan = await syncPlanFromCapturedPayment(session.userId);
-  return { ...session, plan };
+  return { ...session, plan, authProvider: user.authProvider ?? session.authProvider ?? undefined };
 });
 
 /** Use for dashboard and protected APIs. Ensures user has verified their email; throws if not. Plan is synced from captured payments so paid users always see the right plan. */

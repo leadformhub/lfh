@@ -29,6 +29,7 @@ model User {
   username          String    @unique
   email             String    @unique
   password          String
+  authProvider      String?   @map("auth_provider") // 'google' | 'email'; null for legacy
   plan              UserPlan  @default(free)
   status            UserStatus @default(active)
   emailVerifiedAt   DateTime? @map("email_verified_at")
@@ -38,8 +39,9 @@ model User {
   forms                Form[]
   leads                Lead[]
   subscriptions        Subscription[]
-  passwordResets       PasswordReset[]
-  verificationTokens   VerificationToken[]
+  passwordResets           PasswordReset[]
+  accountDeletionRequests  AccountDeletionRequest[]
+  verificationTokens       VerificationToken[]
   emailChangeRequests  EmailChangeRequest[]
   payments             Payment[]
   auditLogs            AuditLog[]
@@ -97,6 +99,21 @@ model PasswordReset {
   createdAt DateTime  @default(now()) @map("created_at")
   userId    String?   @map("user_id")
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AccountDeletionRequest {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("account_deletion_requests")
 }
 
 model Form {

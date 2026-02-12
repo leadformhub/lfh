@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -89,7 +89,7 @@ export default async function SettingsPage({
   params: Promise<{ username: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username } = await params;
   const { tab: tabParam } = await searchParams;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) redirect("/login");
@@ -330,7 +330,7 @@ export default async function SettingsPage({
             </div>
           </section>
 
-          {/* Row 2 – Card 1: Change password */}
+          {/* Row 2 – Card 1: Change password / Set password */}
           <section
             className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden transition-shadow hover:shadow-[var(--shadow-md)]"
             aria-labelledby="change-password-heading"
@@ -340,18 +340,22 @@ export default async function SettingsPage({
                 <IconKey className="size-4 sm:size-5" />
               </span>
               <h2 id="change-password-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
-                Change password
+                {session.authProvider === "google" ? "Set a password" : "Change password"}
               </h2>
             </div>
             <div className="px-4 sm:px-5 md:px-6 py-4">
-              <p className="text-base text-[var(--foreground-muted)] mb-3">We&apos;ll send a reset link to your email so you can set a new password.</p>
+              <p className="text-base text-[var(--foreground-muted)] mb-3">
+                {session.authProvider === "google"
+                  ? "Add a password to also log in with email. We'll send a reset link to your email so you can set it."
+                  : "We'll send a reset link to your email so you can set a new password. If you signed up with Google, you can add a password here to also log in with email."}
+              </p>
               <Link
                 href="/forgot-password"
                 className="inline-flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 hover:text-[var(--color-accent-hover)] transition-colors min-h-[44px] border border-[var(--border-default)]"
               >
                 <span className="flex items-center gap-2">
                   <IconKey className="size-4 shrink-0" />
-                  Send password reset link
+                  {session.authProvider === "google" ? "Send link to set password" : "Send password reset link"}
                 </span>
                 <IconArrow className="size-4 shrink-0 opacity-70" />
               </Link>
@@ -410,7 +414,7 @@ export default async function SettingsPage({
               </h2>
             </div>
             <div className="px-4 sm:px-5 md:px-6 py-4">
-              <DeleteAccountForm />
+              <DeleteAccountForm authProvider={session.authProvider} />
             </div>
           </section>
         </div>

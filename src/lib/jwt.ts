@@ -12,6 +12,7 @@ export interface SessionPayload {
   username: string;
   email: string;
   plan: string;
+  authProvider?: string | null; // 'google' | 'email'; null/undefined for legacy
   iat?: number;
   exp?: number;
 }

@@ -4,6 +4,7 @@ import { findOrCreateUserByGoogle, type GoogleProfile } from "@/services/auth.se
 import { sendWelcomeEmail } from "@/lib/email";
 import { createToken } from "@/lib/jwt";
 import { getSessionCookieName, getSessionMaxAge } from "@/lib/jwt";
+import { prisma } from "@/lib/db";
 
 const STATE_COOKIE = "leadformhub_google_state";
 const FROM_COOKIE = "leadformhub_google_from";
@@ -107,6 +108,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL(`${errorPath}?error=no_user`, baseUrl));
   }
 
+  // Ensure existing Google users have authProvider set (legacy migration)
+  if (!isNewUser && !user.authProvider) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { authProvider: "google" },
+    });
+    user = { ...user, authProvider: "google" };
+  }
+
   if (isNewUser) {
     await sendWelcomeEmail(user.email, user.name);
   }
@@ -116,6 +126,7 @@ export async function GET(req: NextRequest) {
     username: user.username,
     email: user.email,
     plan: user.plan,
+    authProvider: user.authProvider ?? "google",
   });
 
   const redirect = NextResponse.redirect(new URL(`/${user.username}/dashboard`, baseUrl), 302);
