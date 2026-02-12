@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createUserWithEmailOnly, getBaseUrlForEmail, sendEmailVerification } from "@/services/auth.service";
+import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(100),
+  recaptchaToken: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -17,7 +19,24 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const { email, password } = parsed.data;
+    const { email, password, recaptchaToken } = parsed.data;
+
+    if (isRecaptchaConfigured()) {
+      const token = typeof recaptchaToken === "string" ? recaptchaToken.trim() : "";
+      if (!token) {
+        return NextResponse.json(
+          { error: "reCAPTCHA verification is required. Please refresh and try again." },
+          { status: 400 }
+        );
+      }
+      const { success } = await verifyRecaptcha(token);
+      if (!success) {
+        return NextResponse.json(
+          { error: "reCAPTCHA verification failed. Please try again." },
+          { status: 400 }
+        );
+      }
+    }
     const user = await createUserWithEmailOnly(email, password);
     await sendEmailVerification(user.id, getBaseUrlForEmail());
 

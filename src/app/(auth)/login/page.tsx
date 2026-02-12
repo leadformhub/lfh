@@ -31,10 +31,26 @@ function LoginForm() {
 
   useEffect(() => {
     if (!recaptchaSiteKey || typeof window === "undefined") return;
-    if (document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) {
+    const markReady = () => {
       setRecaptchaReady(true);
       setRecaptchaLoading(false);
-      return;
+    };
+    const scriptEl = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
+    if (scriptEl) {
+      setRecaptchaLoading(true);
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+      if (g?.ready) {
+        g.ready(markReady);
+        return;
+      }
+      const id = setInterval(() => {
+        const gr = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+        if (gr?.ready) {
+          clearInterval(id);
+          gr.ready(markReady);
+        }
+      }, 100);
+      return () => clearInterval(id);
     }
     setRecaptchaLoading(true);
     const script = document.createElement("script");
@@ -42,8 +58,9 @@ function LoginForm() {
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      setRecaptchaReady(true);
-      setRecaptchaLoading(false);
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+      if (g?.ready) g.ready(markReady);
+      else markReady();
     };
     script.onerror = () => setRecaptchaLoading(false);
     document.head.appendChild(script);

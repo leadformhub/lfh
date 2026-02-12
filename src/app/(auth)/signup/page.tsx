@@ -5,12 +5,60 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
+  `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [recaptchaLoading, setRecaptchaLoading] = useState(false);
   const router = useRouter();
+
+  const recaptchaSiteKey =
+    typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
+      ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
+      : null;
+  const recaptchaEnabled = Boolean(recaptchaSiteKey);
+
+  useEffect(() => {
+    if (!recaptchaSiteKey || typeof window === "undefined") return;
+    const markReady = () => {
+      setRecaptchaReady(true);
+      setRecaptchaLoading(false);
+    };
+    const scriptEl = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
+    if (scriptEl) {
+      setRecaptchaLoading(true);
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+      if (g?.ready) {
+        g.ready(markReady);
+        return;
+      }
+      const id = setInterval(() => {
+        const gr = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+        if (gr?.ready) {
+          clearInterval(id);
+          gr.ready(markReady);
+        }
+      }, 100);
+      return () => clearInterval(id);
+    }
+    setRecaptchaLoading(true);
+    const script = document.createElement("script");
+    script.src = RECAPTCHA_SCRIPT_URL(recaptchaSiteKey);
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
+      if (g?.ready) g.ready(markReady);
+      else markReady();
+    };
+    script.onerror = () => setRecaptchaLoading(false);
+    document.head.appendChild(script);
+  }, [recaptchaSiteKey]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -26,12 +74,43 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (recaptchaEnabled && recaptchaSiteKey) {
+      if (!recaptchaReady) {
+        setError("reCAPTCHA is still loading. Please wait a moment and try again.");
+        return;
+      }
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
+      if (!g) {
+        setError("reCAPTCHA could not run. Please refresh and try again.");
+        return;
+      }
+    }
     setLoading(true);
     try {
+      let recaptchaToken: string | undefined;
+      if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
+        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
+        try {
+          recaptchaToken = await new Promise<string>((resolve, reject) => {
+            g!.ready(() => {
+              g!.execute(recaptchaSiteKey, { action: "signup" }).then(resolve).catch(reject);
+            });
+          });
+        } catch {
+          setError("reCAPTCHA could not run. Please refresh and try again.");
+          setLoading(false);
+          return;
+        }
+        if (!recaptchaToken?.trim()) {
+          setError("reCAPTCHA verification failed. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, ...(recaptchaToken ? { recaptchaToken } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -155,6 +234,16 @@ export default function SignupPage() {
           >
             {loading ? "Creating account…" : "Create account"}
           </button>
+
+          {recaptchaEnabled && (
+            <p className="text-center text-xs text-white/50" role="status" aria-live="polite">
+              {recaptchaLoading && !recaptchaReady ? (
+                <>Loading reCAPTCHA…</>
+              ) : recaptchaReady ? (
+                <>Protected by reCAPTCHA</>
+              ) : null}
+            </p>
+          )}
         </form>
       </div>
 
