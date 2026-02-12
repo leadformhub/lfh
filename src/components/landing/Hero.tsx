@@ -84,7 +84,7 @@ export function Hero() {
                 href="/contact"
                 className="hero-cta-secondary btn-base inline-flex h-12 min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border-2 border-[var(--border-strong)] bg-transparent px-6 text-base font-medium text-[var(--foreground-heading)] transition-all hover:scale-[1.02] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)] hover:text-[var(--color-accent)] active:scale-[0.98]"
               >
-                Book a Demo
+                Get In Touch
               </Link>
             </div>
             <p className="mt-4 text-base text-black">

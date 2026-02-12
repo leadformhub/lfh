@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
-/** 12. Final Conversion CTA — strong headline, subtext, Get Started Free + Book a demo */
+/** 12. Final Conversion CTA — strong headline, subtext, Get Started Free + Get In Touch */
 export function CTA() {
   return (
     <section className="section-padding bg-[var(--color-primary)]">
@@ -21,10 +21,10 @@ export function CTA() {
               Get Started Free
             </Link>
             <Link
-              href="/signup"
+              href="/contact"
               className="btn-base inline-flex h-14 min-h-[44px] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-on-primary-border)] px-8 text-base font-medium text-[var(--footer-heading)] transition-colors hover:bg-[var(--color-on-primary-hover)]"
             >
-              Book a Demo
+              Get In Touch
             </Link>
           </div>
           <p className="mt-5 text-base text-white">

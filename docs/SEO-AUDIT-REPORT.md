@@ -88,7 +88,7 @@
 | **H2 structure** | In Hero, Problem, Solution, Features, etc. | Multiple sections; need single H1 then H2s | Ensure only one H1; verify H2s match doc (Why Indian B2B Teams, How It Works, Built for Agencies, etc.) |
 | **Keyword placement** | “lead capture,” “form builder” in copy | Good | Add “lead capture software” in first 100 words if targeting that term |
 | **Content depth** | Long landing with Features, HowItWorks, UseCases, Integrations, PricingPreview, FAQ | Strong | Add short intro paragraph under H1 with primary keyword (per PAGE-CONTENT-SEO) |
-| **CTA** | “Get Started Free,” “Book a Demo” | Good | Keep; ensure one primary CTA above fold |
+| **CTA** | “Get Started Free,” “Get In Touch” | Good | Keep; ensure one primary CTA above fold |
 | **Schema** | Organization, WebSite, SoftwareApplication, Product (reviews) | Good | Add BreadcrumbList for home if needed |
 
 **Bullet fixes (Home):**
@@ -391,7 +391,7 @@
 - **Clarity:** Pricing and “no credit card” are visible; keep above fold on Pricing and Home.
 
 ### 9.2 CTA placement
-- Home: Hero (Get Started Free, Book a Demo); multiple CTAs down the page. Good.
+- Home: Hero (Get Started Free, Get In Touch); multiple CTAs down the page. Good.
 - Features / Pricing / Integrations / FAQ: CTA strip and buttons. Good.
 - **Suggestion:** One sticky CTA on mobile (e.g. “Start Free”) for long pages.
 
