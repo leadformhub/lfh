@@ -16,12 +16,14 @@ export async function GET(req: NextRequest) {
 
   // Leads and form are returned ONLY when a specific form is selected (one form → many leads).
   const hasFormId = Boolean(formId);
+  const plan = (session.plan ?? "free") as string;
   const { leads, total, perPage } = hasFormId
     ? await getLeadsByUserId(session.userId, {
         page,
         perPage: 25,
         formId: formId!,
         search: search || undefined,
+        plan,
       })
     : { leads: [], total: 0, perPage: 25 };
 

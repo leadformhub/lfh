@@ -93,6 +93,7 @@ export default async function FormsPage({
             id: f.id,
             name: f.name,
             status,
+            locked: !!f.lockedAt,
             formType: "contact",
             submissionsCount: f._count.leads,
             viewsCount: viewCounts[f.id] ?? 0,

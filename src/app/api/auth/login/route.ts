@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       username: user.username,
       email: user.email,
       plan: user.plan,
+      planValidUntil: user.planValidUntil?.toISOString() ?? null,
       authProvider: user.authProvider ?? undefined,
     });
     const res = NextResponse.json({

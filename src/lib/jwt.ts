@@ -12,6 +12,7 @@ export interface SessionPayload {
   username: string;
   email: string;
   plan: string;
+  planValidUntil?: string | null; // ISO date when paid plan expires; null for free or legacy
   authProvider?: string | null; // 'google' | 'email'; null/undefined for legacy
   iat?: number;
   exp?: number;

@@ -126,6 +126,7 @@ export async function GET(req: NextRequest) {
     username: user.username,
     email: user.email,
     plan: user.plan,
+    planValidUntil: user.planValidUntil?.toISOString() ?? null,
     authProvider: user.authProvider ?? "google",
   });
 

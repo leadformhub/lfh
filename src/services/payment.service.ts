@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { createRazorpayOrder, verifyRazorpaySignature } from "@/lib/razorpay";
 import type { UserPlan } from "@prisma/client";
 
+const PLAN_VALIDITY_DAYS = Math.max(1, parseInt(process.env.PLAN_VALIDITY_DAYS ?? "30", 10) || 30);
+
 // Amount in paise (INR)
 export const PLAN_AMOUNTS: Record<string, number> = {
   pro: 29900,      // ₹299
@@ -43,6 +45,7 @@ export async function verifyAndFulfill(
   if (payment.status === "captured") return { success: true, plan: payment.plan as UserPlan };
   const valid = verifyRazorpaySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
   if (!valid) return { success: false, error: "Invalid signature" };
+  const planValidUntil = new Date(Date.now() + PLAN_VALIDITY_DAYS * 24 * 60 * 60 * 1000);
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: payment.id },
@@ -50,9 +53,10 @@ export async function verifyAndFulfill(
     }),
     prisma.user.update({
       where: { id: userId },
-      data: { plan: payment.plan as UserPlan },
+      data: { plan: payment.plan as UserPlan, planValidUntil },
     }),
   ]);
+  await prisma.form.updateMany({ where: { userId }, data: { lockedAt: null } });
   const planRecord = await prisma.plan.findFirst({ where: { name: payment.plan } });
   if (planRecord) {
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -84,6 +88,7 @@ export async function syncPlanFromCapturedPayment(userId: string): Promise<UserP
   if (paidRank <= currentRank) return user.plan as UserPlan;
 
   const paidPlan = latest!.plan as UserPlan;
+  const planValidUntil = new Date(Date.now() + PLAN_VALIDITY_DAYS * 24 * 60 * 60 * 1000);
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: latest!.id },
@@ -91,9 +96,10 @@ export async function syncPlanFromCapturedPayment(userId: string): Promise<UserP
     }),
     prisma.user.update({
       where: { id: userId },
-      data: { plan: paidPlan },
+      data: { plan: paidPlan, planValidUntil },
     }),
   ]);
+  await prisma.form.updateMany({ where: { userId }, data: { lockedAt: null } });
   const planRecord = await prisma.plan.findFirst({ where: { name: paidPlan } });
   if (planRecord) {
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);

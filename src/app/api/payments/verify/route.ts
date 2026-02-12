@@ -29,11 +29,17 @@ export async function POST(req: NextRequest) {
   if (!result.success) {
     return NextResponse.json({ error: result.error ?? "Verification failed" }, { status: 400 });
   }
+  const { prisma } = await import("@/lib/db");
+  const updated = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { planValidUntil: true },
+  });
   const newToken = await createToken({
     userId: session.userId,
     username: session.username,
     email: session.email,
     plan: result.plan!,
+    planValidUntil: updated?.planValidUntil?.toISOString() ?? null,
   });
   const res = NextResponse.json({ success: true, plan: result.plan });
   res.cookies.set(getSessionCookieName(), newToken, {

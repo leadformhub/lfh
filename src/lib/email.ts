@@ -533,6 +533,27 @@ export async function sendTicketConfirmationToUser(
   return sendEmail(userEmail, subject, html, opts);
 }
 
+/** Plan expiry reminder (3 days before). */
+export async function sendPlanExpiryReminder(
+  to: string,
+  planName: string,
+  expiryDate: Date,
+  upgradeUrl: string
+): Promise<boolean> {
+  const dateStr = expiryDate.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+  const body = `
+    <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">Your ${escapeHtml(planName)} plan expires on <strong>${escapeHtml(dateStr)}</strong>.</p>
+    <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">Renew to keep access to Pro features. After a 1-day grace period you'll be moved to Free and some features will be limited (e.g. only 3 active forms, 50 leads per month).</p>
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr><td><a href="${upgradeUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px;">Renew or upgrade</a></td></tr></table>
+  `;
+  const html = buildBrandedEmail({
+    headerSubtitle: "Plan expiry reminder",
+    body,
+    title: "Plan expiry reminder · LeadFormHub",
+  });
+  return sendEmail(to, "Your LeadFormHub plan expires soon", html);
+}
+
 /** User-facing ticket confirmation email. */
 function buildTicketConfirmationEmailHtml(options: {
   ticketNumber: string;

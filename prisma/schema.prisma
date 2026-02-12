@@ -31,6 +31,7 @@ model User {
   password          String
   authProvider      String?   @map("auth_provider") // 'google' | 'email'; null for legacy
   plan              UserPlan  @default(free)
+  planValidUntil    DateTime? @map("plan_valid_until")
   status            UserStatus @default(active)
   emailVerifiedAt   DateTime? @map("email_verified_at")
   createdAt         DateTime  @default(now()) @map("created_at")
@@ -117,11 +118,13 @@ model AccountDeletionRequest {
 }
 
 model Form {
-  id         String   @id @default(cuid())
-  userId     String   @map("user_id")
+  id         String    @id @default(cuid())
+  userId     String    @map("user_id")
   name       String
-  schemaJson String   @db.Text @map("schema_json") // JSON: { fields: FormFieldSchema[], settings?: object }
-  createdAt  DateTime @default(now()) @map("created_at")
+  schemaJson String    @db.Text @map("schema_json") // JSON: { fields: FormFieldSchema[], settings?: object }
+  lockedAt   DateTime? @map("locked_at") // when set, form is locked (no edits, no public submissions)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
 
   user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   leads                  Lead[]

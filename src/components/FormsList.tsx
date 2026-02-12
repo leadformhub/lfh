@@ -8,6 +8,7 @@ type FormRow = {
   id: string;
   name: string;
   status: string;
+  locked?: boolean;
   formType: string;
   submissionsCount: number;
   viewsCount: number;
@@ -81,14 +82,21 @@ export function FormsList({
             key={f.id}
             className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)]"
           >
-            <h3 className="w-full text-base font-semibold text-[var(--foreground-heading)] break-words">
-              {f.name}
-            </h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-semibold text-[var(--foreground-heading)] break-words">
+                {f.name}
+              </h3>
+              {f.locked && (
+                <span className="shrink-0 rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                  Locked
+                </span>
+              )}
+            </div>
             <div className="mt-2 flex items-center gap-2">
               <select
                 value={f.status}
                 onChange={(e) => handleStatusChange(f.id, e.target.value as "PUBLIC" | "PRIVATE")}
-                disabled={updatingStatus === f.id}
+                disabled={updatingStatus === f.id || f.locked}
                 className="form-input-base w-auto min-w-0 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30 disabled:opacity-50"
               >
                 <option value="PUBLIC">Public</option>
@@ -158,12 +166,21 @@ export function FormsList({
             <tbody>
               {forms.map((f) => (
                 <tr key={f.id} className="border-b border-[var(--neutral-100)] hover:bg-[var(--neutral-50)]/50 last:border-0">
-                  <td className="px-4 py-3 font-medium text-[var(--foreground-heading)]">{f.name}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--foreground-heading)]">
+                    <span className="inline-flex items-center gap-2 flex-wrap">
+                      {f.name}
+                      {f.locked && (
+                        <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                          Locked
+                        </span>
+                      )}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <select
                       value={f.status}
                       onChange={(e) => handleStatusChange(f.id, e.target.value as "PUBLIC" | "PRIVATE")}
-                      disabled={updatingStatus === f.id}
+                      disabled={updatingStatus === f.id || f.locked}
                       className="form-input-base rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-2 py-1.5 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30 disabled:opacity-50"
                     >
                       <option value="PUBLIC">Public</option>

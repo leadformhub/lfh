@@ -100,16 +100,37 @@ export async function POST(req: NextRequest) {
 
     const form = await prisma.form.findUnique({
       where: { id: formId },
-      include: { user: { select: { username: true, email: true } } },
+      include: { user: { select: { username: true, email: true, plan: true } } },
     });
     if (!form) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
+    }
+    if (form.lockedAt) {
+      return NextResponse.json(
+        { error: "This form is not accepting submissions. Upgrade to unlock." },
+        { status: 403 }
+      );
     }
 
     const schema = parseFormSchema(form.schemaJson);
     const status = schema.settings?.status ?? "PUBLIC";
     if (status !== "PUBLIC") {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
+    }
+
+    if (form.user?.plan === "free") {
+      const startOfMonth = new Date();
+      startOfMonth.setUTCDate(1);
+      startOfMonth.setUTCHours(0, 0, 0, 0);
+      const leadsThisMonth = await prisma.lead.count({
+        where: { userId: form.userId, createdAt: { gte: startOfMonth } },
+      });
+      if (leadsThisMonth >= 50) {
+        return NextResponse.json(
+          { error: "Monthly lead limit (50) reached for the free plan. Upgrade to accept more." },
+          { status: 403 }
+        );
+      }
     }
 
     const err = validateSubmission(formData, schema);
@@ -165,7 +186,7 @@ export async function POST(req: NextRequest) {
     await recordEvent(formId, "submission");
 
     const emailAlertEnabled = schema.settings?.emailAlertEnabled ?? true;
-    if (emailAlertEnabled && form.user?.email) {
+    if (emailAlertEnabled && form.user?.email && form.user.plan !== "free") {
       const name = getByKeys(structuredData, ["name", "Name", "full_name", "fullName"]);
       const email = getByKeys(structuredData, ["email", "Email"]);
       sendNewLeadNotification(form.user.email, {

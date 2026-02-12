@@ -31,7 +31,8 @@ export async function GET(req: NextRequest) {
   const userName = user?.name ?? session.username;
   const watermarkText = getWatermarkText(userName);
 
-  const leads = await getLeadsForExport(session.userId, formId);
+  const plan = (session.plan ?? "free") as string;
+  const leads = await getLeadsForExport(session.userId, formId, plan);
 
   let orderedFields: { storageKey: string; label: string }[];
   if (formId) {

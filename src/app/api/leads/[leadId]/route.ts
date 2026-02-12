@@ -12,7 +12,8 @@ export async function GET(
   const session = result.session;
   const { leadId } = await params;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
-  const lead = await getLeadById(leadId, session.userId);
+  const plan = (session.plan ?? "free") as string;
+  const lead = await getLeadById(leadId, session.userId, plan);
   if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
   const url = new URL(_req.url);
   if (url.searchParams.get("raw") === "1") {

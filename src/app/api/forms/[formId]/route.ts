@@ -41,6 +41,7 @@ export async function PATCH(
 
   const form = await getFormById(formId, session.userId);
   if (!form) return NextResponse.json({ error: "Form not found" }, { status: 404 });
+  if (form.lockedAt) return NextResponse.json({ error: "This form is locked. Upgrade to unlock." }, { status: 403 });
 
   let result = updates.name ? await updateForm(formId, session.userId, updates) : form;
   if (!result) return NextResponse.json({ error: "Form not found" }, { status: 404 });
@@ -73,7 +74,13 @@ export async function PATCH(
     schemaUpdated = true;
   }
   if (schemaUpdated) {
-    result = await updateFormSchema(formId, session.userId, { ...schema, settings }) ?? result;
+    try {
+      result = (await updateFormSchema(formId, session.userId, { ...schema, settings })) ?? result;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Update failed";
+      if (msg.includes("locked")) return NextResponse.json({ error: msg }, { status: 403 });
+      throw e;
+    }
   }
 
   return NextResponse.json({

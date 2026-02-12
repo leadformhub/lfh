@@ -80,4 +80,13 @@ Multi-tenant SaaS for lead capture forms with optional mobile OTP verification.
 - **Vercel:** Connect repo, set env vars, use MySQL (e.g. PlanetScale, Railway).
 - **VPS:** `npm run build && npm run start`, reverse proxy (e.g. Nginx) to Node, MySQL on same host or managed DB.
 
+## Cron (paid plan expiry)
+
+Paid plans are valid for 30 days (configurable via `PLAN_VALIDITY_DAYS`). Call these endpoints with `x-cron-secret: CRON_SECRET` or `Authorization: Bearer <CRON_SECRET>`:
+
+- **Expire plans** (run daily): `GET` or `POST` `/api/cron/expire-plans` — downgrades users whose plan validity + 1-day grace has passed to Free and locks excess forms (keeps 3 most recently updated active).
+- **Expiry reminders** (run daily): `GET` or `POST` `/api/cron/send-expiry-reminders` — sends one email to users whose plan expires in ~3 days.
+
+Optional env: `PLAN_VALIDITY_DAYS` (default 30).
+
 Ensure `DATABASE_URL`, `JWT_SECRET`, and (optional) `FAST2SMS_API_KEY`, `RESEND_API_KEY`, `RAZORPAY_KEY_ID`, and `RAZORPAY_KEY_SECRET` are set in production. Run `npx prisma db push` after adding the `Payment` model if you haven’t migrated yet.

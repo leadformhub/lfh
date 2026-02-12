@@ -7,6 +7,7 @@ import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
 import { DashboardFooter } from "@/components/DashboardFooter";
+import { PlanExpiryBanner } from "@/components/PlanExpiryBanner";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -49,6 +50,7 @@ export default async function DashboardLayout({
         <div className="flex min-w-0 flex-1 flex-col min-h-0">
           <DashboardTopbar username={session.username} email={session.email} />
           <main className="flex min-h-0 flex-1 flex-col overflow-auto" style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom, 0px))" }}>
+            <PlanExpiryBanner plan={session.plan} planValidUntil={session.planValidUntil ?? undefined} username={session.username} />
             <div className="flex min-h-full min-w-0 shrink-0 flex-col">
               <div className="min-h-0 flex-1">{children}</div>
               <DashboardFooter />

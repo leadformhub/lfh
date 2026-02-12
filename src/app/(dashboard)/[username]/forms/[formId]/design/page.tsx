@@ -14,6 +14,7 @@ export default async function FormDesignPage({
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) redirect("/login");
   const form = await getFormById(formId, session.userId);
   if (!form) redirect(`/${username}/forms`);
+  if (form.lockedAt) redirect(`/${username}/forms`);
   const formStats = await getFormStats(formId, session.userId);
   const plan = (session.plan ?? "free") as PlanKey;
   const razorpayKeyId = getRazorpayKeyId();
