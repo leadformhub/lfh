@@ -19,7 +19,7 @@ const testimonials = [
   },
   {
     quote:
-      "One branded hub, verified leads, and monthly INR pricing. We replaced spreadsheets and three different tools. Setup was fast; we were live the same day.",
+      "One branded hub, verified leads, and monthly pricing. We replaced spreadsheets and three different tools. Setup was fast; we were live the same day.",
     author: "Anitha Krishnan",
     role: "Marketing Lead, D2C Brand",
   },
@@ -30,7 +30,7 @@ export function SocialProof() {
     <section className="border-y border-[var(--border-subtle)] bg-[var(--background-elevated)] py-12 sm:py-16">
       <Container>
         <p className="mb-8 text-center text-sm font-medium uppercase tracking-[0.12em] text-[var(--foreground-subtle)]">
-          Trusted by teams across India
+          Trusted by teams worldwide
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14">
           {industries.map((name) => (

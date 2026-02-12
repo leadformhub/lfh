@@ -33,12 +33,12 @@ const pricingItems = [
   {
     question: "How Does Monthly Pricing Work?",
     answer:
-      "You pay monthly in INR for the plan you choose. Clear billing with no hidden fees. Your plan stays active; upgrade or change when your needs change.",
+      "You pay monthly for the plan you choose. Clear billing with no hidden fees. Your plan stays active; upgrade or change when your needs change.",
   },
   {
     question: "What Payment Methods Do You Accept?",
     answer:
-      "UPI, cards, and net banking via Razorpay. All in INR. No international payment or currency conversion needed for Indian teams.",
+      "Cards and other supported payment methods. Clear billing with no hidden fees.",
   },
   {
     question: "Can I Upgrade or Change Plans Later?",

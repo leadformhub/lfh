@@ -13,7 +13,7 @@ const items = [
   {
     question: "Do I need a credit card to start?",
     answer:
-      "No. The free plan does not require a credit card. You can create forms, collect up to 50 leads per month, and use your subdomain. When you upgrade, payment is in INR via UPI, card, or net banking (Razorpay).",
+      "No. The free plan does not require a credit card. You can create forms, collect up to 50 leads per month, and use your subdomain. When you upgrade, payment is via card or other supported methods.",
   },
   {
     question: "How does OTP verification work?",

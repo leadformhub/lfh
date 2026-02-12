@@ -26,7 +26,7 @@ const zohoCompetitorCells = {
   brandedHub: "Within Zoho ecosystem",
   leadDashboard: "Zoho CRM / Creator",
   pricingModel: "Subscription (suite)",
-  indiaPayments: "Yes (subscription)",
+  paymentOptions: "Yes (subscription)",
   setupSpeed: "Heavier setup",
 };
 
@@ -37,7 +37,7 @@ const useCases = [
   },
   {
     title: "Monthly pricing",
-    description: "Pay once in INR. No recurring subscription. Ideal for agencies and teams that prefer predictable, upfront cost.",
+    description: "Monthly pricing. No recurring subscription. Ideal for agencies and teams that prefer predictable, upfront cost.",
   },
   {
     title: "Fast deployment",
@@ -49,7 +49,7 @@ const faqItems = [
   {
     question: "Why choose LeadFormHub over Zoho Forms?",
     answer:
-      "Zoho Forms is part of a larger ecosystem and suits teams already using Zoho CRM or Creator. LeadFormHub is focused only on verified lead capture: OTP verification, branded hub, and a single dashboard. If you want simplicity, monthly INR pricing, and no ecosystem lock-in, LeadFormHub is a strong fit.",
+      "Zoho Forms is part of a larger ecosystem and suits teams already using Zoho CRM or Creator. LeadFormHub is focused only on verified lead capture: OTP verification, branded hub, and a single dashboard. If you want simplicity, monthly pricing, and no ecosystem lock-in, LeadFormHub is a strong fit.",
   },
   {
     question: "Do I need Zoho CRM to use LeadFormHub?",
@@ -78,7 +78,7 @@ const productSchema = {
   "@type": "SoftwareApplication",
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
-  description: "Lightweight verified lead capture. Zoho Forms alternative with OTP verification, branded hub, monthly INR pricing. No ecosystem lock-in.",
+  description: "Lightweight verified lead capture. Zoho Forms alternative with OTP verification, branded hub, monthly pricing. No ecosystem lock-in.",
   url: `${SITE_URL}/zoho-forms-alternative`,
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
@@ -86,7 +86,7 @@ const productSchema = {
 const whyBullets = [
   { title: "Focus on lead capture, not full ecosystem", desc: "Zoho Forms is part of a larger suite. LeadFormHub does one thing: verified lead capture. If you don't need CRM or Creator, a focused tool can be faster and simpler." },
   { title: "Simpler setup and fewer dependencies", desc: "No Zoho account or suite setup. Sign up, create forms, enable OTP, and go live. Fewer steps and fewer products to learn." },
-  { title: "Monthly pricing vs subscription stack", desc: "LeadFormHub offers monthly plans in INR. Zoho typically works on subscriptions and suite pricing. If you prefer pay-once and INR, LeadFormHub aligns with that." },
+  { title: "Monthly pricing vs subscription stack", desc: "LeadFormHub offers monthly plans. Zoho typically works on subscriptions and suite pricing. If you prefer transparent monthly pricing, LeadFormHub aligns with that." },
 ];
 
 const standaloneBullets = [
@@ -125,7 +125,7 @@ export default function ZohoFormsAlternativePage() {
                 <span className="hero-highlight">no suite required</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Zoho Forms fits teams already in the Zoho ecosystem. If you want a simple, standalone tool with OTP verification, a branded hub, and monthly INR pricing, LeadFormHub is built for that.
+                Zoho Forms fits teams already in the Zoho ecosystem. If you want a simple, standalone tool with OTP verification, a branded hub, and monthly pricing, LeadFormHub is built for that.
               </p>
               <Link
                 href="/signup"
@@ -186,10 +186,10 @@ export default function ZohoFormsAlternativePage() {
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl text-center">
-              LeadFormHub vs Zoho Forms: comparison for India
+              LeadFormHub vs Zoho Forms: comparison
             </h2>
             <p className="mt-4 text-center text-[var(--foreground-muted)] max-w-2xl mx-auto">
-              For teams that want simplicity, monthly INR pricing, and verified lead capture without the Zoho stack, LeadFormHub is a strong fit.
+              For teams that want simplicity, monthly pricing, and verified lead capture without the Zoho stack, LeadFormHub is a strong fit.
             </p>
             <div className="mt-10">
               <ComparisonTable competitorLabel="Zoho Forms" competitorCells={zohoCompetitorCells} />
@@ -204,7 +204,7 @@ export default function ZohoFormsAlternativePage() {
               Ideal for agencies, startups, and sales teams
             </h2>
             <p className="mt-4 text-[var(--foreground-muted)]">
-              Agencies running multiple campaigns, startups moving fast, and sales teams that need one source of truth. Lightweight, focused, India-ready.
+              Agencies running multiple campaigns, startups moving fast, and sales teams that need one source of truth. Lightweight, focused, ready to go.
             </p>
           </Container>
         </section>

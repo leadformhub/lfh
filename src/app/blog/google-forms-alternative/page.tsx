@@ -26,7 +26,7 @@ const googleCompetitorCells = {
   brandedHub: "No (forms.google.com URLs)",
   leadDashboard: "Sheets; manual setup",
   pricingModel: "Free / Workspace",
-  indiaPayments: "N/A",
+  paymentOptions: "N/A",
   setupSpeed: "Fast (but limited for B2B)",
 };
 
@@ -49,7 +49,7 @@ const faqItems = [
   {
     question: "Why switch from Google Forms to LeadFormHub for lead generation?",
     answer:
-      "Google Forms is a capable data collection tool for internal use. For B2B lead capture, teams often need a professional brand presence, mobile verification (OTP), and a dedicated lead dashboard. LeadFormHub is built for that: branded hub, OTP verification, and India-first pricing in INR.",
+      "Google Forms is a capable data collection tool for internal use. For B2B lead capture, teams often need a professional brand presence, mobile verification (OTP), and a dedicated lead dashboard. LeadFormHub is built for that: branded hub, OTP verification, and transparent monthly pricing.",
   },
   {
     question: "Is LeadFormHub free to start?",
@@ -78,7 +78,7 @@ const productSchema = {
   "@type": "SoftwareApplication",
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
-  description: "Verified lead capture platform with OTP verification. Google Forms alternative for professional lead generation. Branded hub, India-first pricing.",
+  description: "Verified lead capture platform with OTP verification. Google Forms alternative for professional lead generation. Branded hub, monthly pricing.",
   url: `${SITE_URL}/blog/google-forms-alternative`,
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
@@ -197,14 +197,14 @@ export default function GoogleFormsAlternativePage() {
           </Container>
         </section>
 
-        {/* India / INR strip */}
+        {/* Pricing and support strip */}
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
           <Container size="narrow" className="px-4 text-center sm:px-6">
             <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Built for Indian teams: INR pricing and support
+              Transparent pricing and support
             </h2>
             <p className="mt-4 text-[var(--foreground-muted)]">
-              Flexible payment options: UPI, cards, or net banking. No USD or conversion. Support and product are oriented to Indian B2B teams.
+              Flexible payment options. Support and product are oriented to B2B teams.
             </p>
           </Container>
         </section>

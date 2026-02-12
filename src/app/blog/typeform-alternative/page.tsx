@@ -26,7 +26,7 @@ const typeformCompetitorCells = {
   brandedHub: "Custom domain (paid add-on)",
   leadDashboard: "Basic; focus on form UX",
   pricingModel: "Subscription (USD)",
-  indiaPayments: "No",
+  paymentOptions: "No",
   setupSpeed: "Medium",
 };
 
@@ -49,12 +49,12 @@ const faqItems = [
   {
     question: "Why use LeadFormHub instead of Typeform for lead capture?",
     answer:
-      "Typeform is a design-first form builder focused on survey and form experience. LeadFormHub is built for lead quality: OTP verification, a dedicated branded hub, and a sales-ready dashboard. If your goal is verified, actionable leads (especially in India with INR pricing), LeadFormHub is the better fit.",
+      "Typeform is a design-first form builder focused on survey and form experience. LeadFormHub is built for lead quality: OTP verification, a dedicated branded hub, and a sales-ready dashboard. If your goal is verified, actionable leads with transparent monthly pricing, LeadFormHub is the better fit.",
   },
   {
     question: "Does LeadFormHub support monthly payment?",
     answer:
-      "Yes. LeadFormHub offers monthly plans in INR (UPI, card, net banking). No recurring subscription unless you prefer it.",
+      "Yes. LeadFormHub offers monthly plans. Multiple payment options; no recurring subscription unless you prefer it.",
   },
   {
     question: "Can I have a branded form URL like Typeform?",
@@ -78,7 +78,7 @@ const productSchema = {
   "@type": "SoftwareApplication",
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
-  description: "Verified lead capture platform with OTP verification. Typeform alternative for Indian B2B teams. Branded hub, monthly INR pricing.",
+  description: "Verified lead capture platform with OTP verification. Typeform alternative for B2B teams. Branded hub, monthly pricing.",
   url: `${SITE_URL}/blog/typeform-alternative`,
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
@@ -86,7 +86,7 @@ const productSchema = {
 const whyBullets = [
   { title: "Lead Verification and Quality Beyond Forms", desc: "Typeform focuses on form UX. LeadFormHub adds OTP verification and a lead-quality focus. You get real, reachable contacts, not just pretty forms." },
   { title: "Branded Hub and Domain Control", desc: "With LeadFormHub you get a dedicated hub at leadformhub.com/yourbrand. Typeform offers custom domains as a paid add-on. If owning the full lead-capture experience matters, LeadFormHub is built around that." },
-  { title: "Pricing in INR and Monthly Cost", desc: "LeadFormHub pricing is in INR with monthly payment options. No USD subscription or currency conversion. Built for teams that budget in rupees." },
+  { title: "Monthly pricing", desc: "LeadFormHub offers monthly payment options. Transparent pricing with no hidden fees." },
 ];
 
 export default function TypeformAlternativePage() {
@@ -119,7 +119,7 @@ export default function TypeformAlternativePage() {
                 <span className="hero-highlight">verified B2B leads</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Typeform is strong on form design. If you need verified leads, a branded hub, and sales-ready contacts with India-first pricing, LeadFormHub is built for that.
+                Typeform is strong on form design. If you need verified leads, a branded hub, and sales-ready contacts with transparent monthly pricing, LeadFormHub is built for that.
               </p>
               <Link
                 href="/signup"
@@ -136,7 +136,7 @@ export default function TypeformAlternativePage() {
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Why teams in India look for a Typeform alternative
+              Why teams look for a Typeform alternative
             </h2>
             <ul className="mt-8 space-y-6">
               {whyBullets.map((b) => (

@@ -7,25 +7,25 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "About LeadFormHub – Lead Capture Form Builder & Online Form Builder",
   description:
-    "About LeadFormHub: verified lead capture built for India. Mission, product philosophy, and India-first approach for agencies, startups, and sales teams.",
+    "About LeadFormHub: verified lead capture for modern businesses. Mission, product philosophy, and transparent pricing for agencies, startups, and sales teams.",
   path: "/about",
 });
 
 const missionBullets = [
-  { title: "Why we built LeadFormHub", desc: "We saw teams struggling with generic forms, fake leads, and scattered data. We built LeadFormHub to give Indian B2B teams one place to capture, verify, and act on leads — with branding and pricing that fit the Indian market." },
-  { title: "Who we serve", desc: "Agencies, B2B startups, sales teams, marketers, and Indian SMBs. Anyone who needs verified, sales-ready leads and prefers a focused tool over a large suite." },
+  { title: "Why we built LeadFormHub", desc: "We saw teams struggling with generic forms, fake leads, and scattered data. We built LeadFormHub to give B2B teams one place to capture, verify, and act on leads — with branding and pricing that fit how teams work." },
+  { title: "Who we serve", desc: "Agencies, B2B startups, sales teams, marketers, and SMBs. Anyone who needs verified, sales-ready leads and prefers a focused tool over a large suite." },
 ];
 
 const philosophyBullets = [
   { title: "Verification and real leads first", desc: "We prioritize lead quality. OTP verification and a dashboard built for action mean you spend time on real prospects. Fewer leads, better outcomes." },
   { title: "Simplicity and transparency", desc: "Simple setup, clear pricing, no hidden complexity. You should understand what you get and what you pay. We avoid lock-in and surprise bills." },
-  { title: "No lock-in, no surprise bills", desc: "Monthly pricing in INR. Export your data anytime. We don't trap you in subscriptions or make it hard to leave. Trust is earned by being straightforward." },
+  { title: "No lock-in, no surprise bills", desc: "Monthly pricing. Export your data anytime. We don't trap you in subscriptions or make it hard to leave. Trust is earned by being straightforward." },
 ];
 
-const indiaBullets = [
-  { title: "Built for Indian markets and workflows", desc: "Product and pricing are designed for Indian B2B. UPI, INR, and local expectations are default, not an afterthought." },
-  { title: "INR pricing and monthly plans", desc: "Pay in rupees. Monthly plans so you can budget with confidence. No USD conversion or recurring surprise charges for Indian teams." },
-  { title: "Support and roadmap centered on India", desc: "Support and product direction reflect what Indian teams need: verification, branding, integrations, and simplicity. We listen and build accordingly." },
+const pricingBullets = [
+  { title: "Transparent monthly pricing", desc: "Clear plans and pricing. Monthly billing so you can budget with confidence. No hidden fees or surprise charges." },
+  { title: "Flexible payment options", desc: "Multiple payment methods supported. Upgrade when you need more; your hub and data stay the same." },
+  { title: "Support and roadmap", desc: "Support and product direction reflect what teams need: verification, branding, integrations, and simplicity. We listen and build accordingly." },
 ];
 
 const icons = {
@@ -76,7 +76,7 @@ export default function AboutPage() {
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
                 Verified lead capture{" "}
-                <span className="hero-highlight">built for India</span>
+                <span className="hero-highlight">built for modern teams</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 We combine a branded hub, optional OTP verification, and a centralized lead dashboard so agencies, startups, sales teams, and marketers can capture better leads without juggling multiple tools.
@@ -100,7 +100,7 @@ export default function AboutPage() {
                 {icons.mission}
               </span>
               <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-                Our mission: better lead capture for Indian B2B teams
+                Our mission: better lead capture for B2B teams
               </h2>
             </div>
             <ul className="mt-8 space-y-6">
@@ -146,7 +146,7 @@ export default function AboutPage() {
           </Container>
         </section>
 
-        {/* India-first */}
+        {/* Pricing and flexibility */}
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
             <div className="animate-in flex items-center gap-4">
@@ -154,11 +154,11 @@ export default function AboutPage() {
                 {icons.india}
               </span>
               <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-                India-first approach
+                Transparent pricing and flexibility
               </h2>
             </div>
             <ul className="mt-8 space-y-6">
-              {indiaBullets.map((b) => (
+              {pricingBullets.map((b) => (
                 <li key={b.title} className="flex gap-4">
                   <span className="mt-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
                     <svg className="size-3.5 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
@@ -185,7 +185,7 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="mt-6 text-[var(--foreground-muted)]">
-              We&apos;re a small team focused on one product: verified lead capture for Indian B2B. We care about quality, clarity, and long-term trust over growth at any cost.
+              We&apos;re a small team focused on one product: verified lead capture for B2B. We care about quality, clarity, and long-term trust over growth at any cost.
             </p>
           </Container>
         </section>

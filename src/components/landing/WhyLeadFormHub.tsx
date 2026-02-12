@@ -16,8 +16,8 @@ const reasons = [
     description: "Your presence at leadformhub.com/yourbrand. Professional, credible, and yours.",
   },
   {
-    title: "India-first pricing",
-    description: "Flexible payment options: UPI, cards, or net banking. Monthly plans, transparent pricing.",
+    title: "Monthly pricing",
+    description: "Flexible payment options. Monthly plans, transparent pricing.",
   },
   {
     title: "Sales-ready dashboard",

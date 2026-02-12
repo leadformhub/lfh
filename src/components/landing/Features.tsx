@@ -68,7 +68,7 @@ export function Features() {
             Built For Lead Quality, Not Just Forms
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-            Verified leads, sales-ready contacts, and one dashboard. Purpose-built for Indian B2B teams who need to stop chasing fake numbers.
+            Verified leads, sales-ready contacts, and one dashboard. Purpose-built for B2B teams who need to stop chasing fake numbers.
           </p>
         </div>
         <ul className="mx-auto mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

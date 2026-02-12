@@ -52,10 +52,10 @@
     },
     {
       "@type": "Question",
-      "name": "Does LeadFormHub support Indian payment methods?",
+      "name": "What payment methods does LeadFormHub support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. LeadFormHub offers monthly pricing in INR and supports UPI, cards, and net banking. No international payment or currency conversion is required for Indian teams."
+        "text": "LeadFormHub offers monthly pricing and supports cards and other payment methods. Clear billing with no hidden fees."
       }
     },
     {
@@ -87,7 +87,7 @@
       "name": "How secure is my lead data?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Lead data is stored in secure, access-controlled environments. Data in transit and at rest is encrypted, and access is limited and logged. We design with Indian data and privacy expectations in mind."
+        "text": "Lead data is stored in secure, access-controlled environments. Data in transit and at rest is encrypted, and access is limited and logged."
       }
     },
     {
@@ -103,7 +103,7 @@
       "name": "Is pricing monthly or annual?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "LeadFormHub uses monthly pricing in INR. You pay each month for the plan you choose. Clear billing with no hidden fees. Upgrade or change plans as your needs change."
+        "text": "LeadFormHub uses monthly pricing. You pay each month for the plan you choose. Clear billing with no hidden fees. Upgrade or change plans as your needs change."
       }
     },
     {

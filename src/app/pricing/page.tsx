@@ -7,7 +7,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Lead Capture Software Pricing – Start Free | LeadFormHub",
   description:
-    "Lead capture software pricing made simple: transparent monthly plans for India. Start free, no hidden fees—upgrade for OTP verification, lead limits, and analytics.",
+    "Lead capture software pricing made simple: transparent monthly plans. Start free, no hidden fees—upgrade for OTP verification, lead limits, and analytics.",
   path: "/pricing",
 });
 
@@ -54,7 +54,7 @@ const trustBullets = [
   },
   {
     title: "Flexible pricing",
-    desc: "UPI, cards, and net banking supported. Pricing that matches how Indian teams think about cost.",
+    desc: "Multiple payment options supported. Transparent pricing that fits how teams budget.",
     icon: (
       <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -104,7 +104,7 @@ export default function PricingPage() {
                 <span className="hero-highlight">Transparent, no hidden fees.</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Our lead capture software pricing is transparent and simple for business: start free, pay monthly when you upgrade. UPI, card, and net banking for teams in India—no hidden fees, no lock-in.
+                Our lead capture software pricing is transparent and simple for business: start free, pay monthly when you upgrade. No hidden fees, no lock-in.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
@@ -135,7 +135,7 @@ export default function PricingPage() {
                 Simple pricing — no subscriptions, no lock-in
               </h2>
               <p className="mt-3 text-[var(--foreground-muted)]">
-                You see the plan, the price, and what&apos;s included. Pay monthly in INR.
+                You see the plan, the price, and what&apos;s included. Monthly pricing.
               </p>
             </div>
             <ul className="mx-auto mt-10 grid gap-6 sm:grid-cols-3 max-w-4xl">

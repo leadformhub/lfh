@@ -75,7 +75,7 @@ export default function TypeformVsLeadformhubPage() {
                     <tr className="border-b border-[var(--border-subtle)]">
                       <td className="py-3 pr-4 font-medium text-[var(--foreground)]">Pricing</td>
                       <td className="py-3 px-4">Subscription in USD, free tier available</td>
-                      <td className="py-3 pl-4">Free tier; paid plans in INR, monthly billing</td>
+                      <td className="py-3 pl-4">Free tier; paid plans, monthly billing</td>
                     </tr>
                     <tr className="border-b border-[var(--border-subtle)]">
                       <td className="py-3 pr-4 font-medium text-[var(--foreground)]">Lead verification</td>
@@ -142,7 +142,7 @@ export default function TypeformVsLeadformhubPage() {
                 Pricing & value for money
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Typeform uses subscription pricing in USD, with a free tier and paid plans for more responses and features. Form builder pricing for LeadFormHub is in INR: there&apos;s a free tier, and paid plans add OTP verification, higher lead limits, and more. If you budget in rupees or prefer monthly payments in local currency, LeadFormHub is built for that. For full details, see our <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">lead capture software pricing</Link>.
+                Typeform uses subscription pricing in USD, with a free tier and paid plans for more responses and features. LeadFormHub has a free tier and paid plans that add OTP verification, higher lead limits, and more. Transparent monthly pricing. For full details, see our <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">lead capture software pricing</Link>.
               </p>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full min-w-[400px] border-collapse text-sm">
@@ -162,17 +162,17 @@ export default function TypeformVsLeadformhubPage() {
                     <tr className="border-b border-[var(--border-subtle)]">
                       <td className="py-3 pr-4 font-medium text-[var(--foreground)]">Paid plans</td>
                       <td className="py-3 px-4">USD subscription, more responses and features</td>
-                      <td className="py-3 pl-4">INR, monthly; OTP verification, higher limits</td>
+                      <td className="py-3 pl-4">Monthly; OTP verification, higher limits</td>
                     </tr>
                     <tr className="border-b border-[var(--border-subtle)]">
                       <td className="py-3 pr-4 font-medium text-[var(--foreground)]">Currency</td>
                       <td className="py-3 px-4">USD</td>
-                      <td className="py-3 pl-4">INR</td>
+                      <td className="py-3 pl-4">Monthly pricing</td>
                     </tr>
                     <tr className="border-b border-[var(--border-subtle)]">
                       <td className="py-3 pr-4 font-medium text-[var(--foreground)]">Billing</td>
                       <td className="py-3 px-4">Recurring subscription</td>
-                      <td className="py-3 pl-4">Monthly payment option (UPI, card, net banking)</td>
+                      <td className="py-3 pl-4">Monthly payment options</td>
                     </tr>
                   </tbody>
                 </table>
@@ -192,7 +192,7 @@ export default function TypeformVsLeadformhubPage() {
                 <strong>Typeform</strong> fits best when the priority is form and survey experience: customer feedback, NPS, quizzes, or any flow where one-question-at-a-time and strong design matter. It&apos;s a strong choice for marketing and research teams who want polished, shareable forms and don&apos;t need built-in lead verification.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                <strong>LeadFormHub</strong> fits best when the priority is lead capture and quality: demo requests, contact forms, event or webinar signups, and B2B lead generation forms. Teams that want a single place to see all submissions, optional OTP verification, and pricing in INR will find it aligned with those goals.
+                <strong>LeadFormHub</strong> fits best when the priority is lead capture and quality: demo requests, contact forms, event or webinar signups, and B2B lead generation forms. Teams that want a single place to see all submissions, optional OTP verification, and transparent monthly pricing will find it aligned with those goals.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -202,7 +202,7 @@ export default function TypeformVsLeadformhubPage() {
                 <strong>Who should choose Typeform:</strong> Choose Typeform if you care most about conversational form and survey experience, one-question flows, and design. It&apos;s a good fit when you don&apos;t need built-in OTP or phone verification and when USD subscription pricing works for you.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                <strong>Who should choose LeadFormHub:</strong> Choose LeadFormHub if you care most about lead quality, verified contacts (OTP), a branded hub for your forms, and a single dashboard to act on leads. It&apos;s a good fit for teams running lead generation forms, especially those who prefer INR pricing and monthly billing. If that sounds like you, try LeadFormHub or read more on our Typeform alternative page.
+                <strong>Who should choose LeadFormHub:</strong> Choose LeadFormHub if you care most about lead quality, verified contacts (OTP), a branded hub for your forms, and a single dashboard to act on leads. It&apos;s a good fit for teams running lead generation forms, especially those who prefer transparent monthly pricing. If that sounds like you, try LeadFormHub or read more on our Typeform alternative page.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -224,7 +224,7 @@ export default function TypeformVsLeadformhubPage() {
                 How does form builder pricing compare between Typeform and LeadFormHub?
               </h3>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Typeform prices in USD with a free tier and paid subscriptions. LeadFormHub offers a free tier and paid plans in INR with monthly payment options (UPI, card, net banking). If you prefer to pay in rupees and avoid currency conversion, LeadFormHub is built for that. Check our pricing page for current plans.
+                Typeform prices in USD with a free tier and paid subscriptions. LeadFormHub offers a free tier and paid plans with monthly payment options. Check our pricing page for current plans.
               </p>
               <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
                 Which is better for B2B lead generation forms?

@@ -48,7 +48,7 @@ export function PricingPreview() {
             Monthly Pricing (No Auto Renewal)
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-            Start Free. When you upgrade, pay monthly in INR via UPI, card, or net banking. Simple, predictable pricing for teams.
+            Start Free. When you upgrade, monthly pricing. Simple, predictable pricing for teams.
           </p>
         </div>
         <div className="mx-auto mt-16 grid gap-8 lg:grid-cols-3">

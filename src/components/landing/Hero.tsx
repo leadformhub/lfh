@@ -45,7 +45,7 @@ export function Hero() {
               Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.
             </p>
             <p className="mt-4 text-base text-[var(--foreground-subtle)]">
-              No credit card required · Collect Verified Leads · Built for India
+              No credit card required · Collect Verified Leads · Built for modern businesses
             </p>
 
             {/* Clickable feature pills */}

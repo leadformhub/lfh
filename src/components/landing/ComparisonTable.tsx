@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 /**
  * Reusable comparison table for positioning LeadFormHub vs competitors.
  * Used on: Homepage, /blog/typeform-alternative, /blog/google-forms-alternative, /zoho-forms-alternative.
- * Rows: OTP verification, Branded hub, Lead dashboard, Pricing model, India-first payments, Setup speed.
+ * Rows: OTP verification, Branded hub, Lead dashboard, Pricing model, Flexible payments, Setup speed.
  */
 export type ComparisonRow = {
   feature: string;
@@ -20,7 +20,7 @@ export type ComparisonCompetitorCells = {
   brandedHub: string;
   leadDashboard: string;
   pricingModel: string;
-  indiaPayments: string;
+  paymentOptions: string;
   setupSpeed: string;
 };
 
@@ -94,15 +94,15 @@ export function getDefaultComparisonRows(competitorCells: {
   brandedHub: string | React.ReactNode;
   leadDashboard: string | React.ReactNode;
   pricingModel: string | React.ReactNode;
-  indiaPayments: string | React.ReactNode;
+  paymentOptions: string | React.ReactNode;
   setupSpeed: string | React.ReactNode;
 }): ComparisonRow[] {
   return [
     { feature: "OTP verification", leadFormHub: <Check />, competitor: competitorCells.otp },
     { feature: "Branded hub (yourbrand.leadformhub.com)", leadFormHub: <Check />, competitor: competitorCells.brandedHub },
     { feature: "Centralized lead dashboard", leadFormHub: <Check />, competitor: competitorCells.leadDashboard },
-    { feature: "Pricing model", leadFormHub: "Monthly (INR)", competitor: competitorCells.pricingModel },
-    { feature: "India-first payments (UPI, cards)", leadFormHub: <Check />, competitor: competitorCells.indiaPayments },
+    { feature: "Pricing model", leadFormHub: "Monthly", competitor: competitorCells.pricingModel },
+    { feature: "Flexible payment options", leadFormHub: <Check />, competitor: competitorCells.paymentOptions },
     { feature: "Setup speed", leadFormHub: "Minutes", competitor: competitorCells.setupSpeed },
   ];
 }

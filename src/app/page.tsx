@@ -49,7 +49,7 @@ const reviewSchema = {
     {
       "@type": "Review",
       author: { "@type": "Person", name: "Rahul Mehta" },
-      reviewBody: "Managing multiple client campaigns from one branded hub changed our workflow. Clean URLs, verified leads, and INR payments made this an easy choice.",
+      reviewBody: "Managing multiple client campaigns from one branded hub changed our workflow. Clean URLs, verified leads, and simple payments made this an easy choice.",
       reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
     },
     {

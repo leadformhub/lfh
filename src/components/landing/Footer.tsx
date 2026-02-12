@@ -167,7 +167,7 @@ export function Footer() {
               <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-10 w-auto object-contain" loading="eager" />
             </Link>
             <p className="mt-4 max-w-sm text-base leading-6 text-[var(--footer-text)]">
-              Lead capture form builder with OTP verification and analytics. Built for Indian businesses.
+              Lead capture form builder with OTP verification and analytics. Built for modern businesses.
             </p>
             <p className="mt-3 text-sm font-medium uppercase tracking-widest text-[var(--footer-link)]">
               Follow us
