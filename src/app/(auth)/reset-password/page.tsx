@@ -54,7 +54,7 @@ function ResetPasswordForm() {
     return (
       <article className="w-full" aria-label="Reset password">
         <div className="mx-auto mb-6 flex h-12 shrink-0 items-center justify-center sm:mb-8 sm:h-14">
-          <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized />
+          <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized loading="eager" />
         </div>
         <h1 className="mt-6 text-center text-[2.25rem] font-bold leading-tight tracking-tight sm:mt-8 sm:text-[2.75rem]" style={{ color: "#ffffff" }}>
           Invalid reset link
@@ -78,7 +78,7 @@ function ResetPasswordForm() {
     return (
       <article className="w-full" aria-label="Reset password">
         <div className="mx-auto mb-6 flex h-12 shrink-0 items-center justify-center sm:mb-8 sm:h-14">
-          <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized />
+          <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized loading="eager" />
         </div>
         <h1 className="mt-6 text-center text-[2.25rem] font-bold leading-tight tracking-tight sm:mt-8 sm:text-[2.75rem]" style={{ color: "#ffffff" }}>
           Password updated
@@ -101,7 +101,7 @@ function ResetPasswordForm() {
   return (
     <article className="w-full" aria-label="Set new password form">
       <div className="mx-auto mb-6 flex h-12 shrink-0 items-center justify-center sm:mb-8 sm:h-14">
-        <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized />
+        <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized loading="eager" />
       </div>
 
       <h1 className="mt-6 text-center text-[2.25rem] font-bold leading-tight tracking-tight sm:mt-8 sm:text-[2.75rem]" style={{ color: "#ffffff" }}>

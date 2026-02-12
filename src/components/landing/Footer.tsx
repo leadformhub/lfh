@@ -164,7 +164,7 @@ export function Footer() {
               className="inline-flex items-center transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--footer-heading)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--footer-bg)] rounded-md -ml-1"
               aria-label="LeadFormHub home"
             >
-              <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-10 w-auto object-contain" />
+              <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-10 w-auto object-contain" loading="eager" />
             </Link>
             <p className="mt-4 max-w-sm text-base leading-6 text-[var(--footer-text)]">
               Lead capture form builder with OTP verification and analytics. Built for Indian businesses.

@@ -107,7 +107,7 @@ function LoginForm() {
   return (
     <article className="w-full max-w-full overflow-x-hidden" aria-label="Login form">
       <div className="mx-auto mb-6 flex h-12 shrink-0 items-center justify-center sm:mb-8 sm:h-14">
-        <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized />
+        <Image src="/logo-w.png" alt="LeadFormHub" width={240} height={60} className="h-full w-auto object-contain object-center" unoptimized loading="eager" />
       </div>
       <h1 className="mt-6 text-center text-2xl font-bold leading-tight tracking-tight text-white sm:mt-8 sm:text-3xl md:text-[2.25rem] lg:text-[2.75rem]" style={{ color: "#ffffff" }}>
         Log in to LeadFormHub
