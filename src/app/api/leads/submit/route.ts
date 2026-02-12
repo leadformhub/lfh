@@ -173,6 +173,7 @@ export async function POST(req: NextRequest) {
         email,
         source: "Direct",
         formName: form.name,
+        username: form.user.username ?? undefined,
       }).catch((err) => console.error("[leads/submit] Lead notification email failed:", err));
     }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createUserWithEmailOnly, sendEmailVerification } from "@/services/auth.service";
+import { createUserWithEmailOnly, getBaseUrlForEmail, sendEmailVerification } from "@/services/auth.service";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
     }
     const { email, password } = parsed.data;
     const user = await createUserWithEmailOnly(email, password);
-    const baseUrl = req.nextUrl.origin;
-    await sendEmailVerification(user.id, baseUrl);
+    await sendEmailVerification(user.id, getBaseUrlForEmail());
 
     // Do not set session: user must verify email before they can log in or perform any action.
     // Welcome email is sent only after they verify (see verify-email route).

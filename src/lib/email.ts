@@ -5,6 +5,7 @@
  */
 
 import nodemailer from "nodemailer";
+import { getBaseUrlForEmail } from "@/lib/app-url";
 
 /** Shared email style: slate background, white card, gradient bar, consistent footer. */
 const EMAIL_STYLE = {
@@ -183,9 +184,7 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
 /** Enterprise-level welcome email: same layout as verification email. */
 function buildWelcomeEmail(name?: string): string {
   const greeting = name ? `Hi ${escapeHtml(name)},` : "Hi there,";
-  const appUrl = process.env.APP_URL?.trim();
-  if (!appUrl) throw new Error("APP_URL must be set for welcome email dashboard link (e.g. https://leadformhub.com)");
-  const dashboardUrl = `${appUrl.replace(/\/$/, "")}/login`;
+  const dashboardUrl = `${getBaseUrlForEmail()}/login`;
 
   return `
 <!DOCTYPE html>
@@ -368,9 +367,12 @@ export async function sendEmailChangeVerification(to: string, verifyUrl: string)
 /** Notify form owner (admin) when a new lead arrives. */
 export async function sendNewLeadNotification(
   adminEmail: string,
-  payload: { name: string; email: string; source: string; formName: string }
+  payload: { name: string; email: string; source: string; formName: string; username?: string }
 ): Promise<boolean> {
   const subject = `New lead: ${payload.formName}`;
+  const dashboardUrl = payload.username
+    ? `${getBaseUrlForEmail()}/${encodeURIComponent(payload.username)}/dashboard`
+    : `${getBaseUrlForEmail()}/login`;
   const html = buildBrandedEmail({
     headerSubtitle: "New lead received",
     body: `
@@ -386,7 +388,8 @@ export async function sendNewLeadNotification(
           </table>
         </td></tr>
       </table>
-      <p style="margin:20px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">View and manage all leads in your LeadFormHub dashboard.</p>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:20px auto 0;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${dashboardUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">View leads in dashboard</a></td></tr></table>
+      <p style="margin:12px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">View and manage all leads in your LeadFormHub dashboard.</p>
     `,
   });
   return sendEmail(adminEmail, subject, html);
@@ -572,6 +575,7 @@ function buildTicketConfirmationEmailHtml(options: {
   supportEmail: string;
 }): string {
   const { ticketNumber, subject, categoryLabel, supportEmail } = options;
+  const supportPageUrl = `${getBaseUrlForEmail()}/support`;
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -613,6 +617,7 @@ function buildTicketConfirmationEmailHtml(options: {
                 <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:#1e40af;">Where to see replies</p>
                 <p style="margin:0; font-size:14px; line-height:1.5; color:#1e3a8a;">When our team replies to your ticket, the reply will be sent to <strong>this email address</strong>. Check your inbox (and spam folder) for messages from LeadFormHub or our support team.</p>
               </div>
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:20px auto 0;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${supportPageUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Open support page</a></td></tr></table>
               ${supportEmail ? `<p style="margin:16px 0 0; font-size:13px; color:${EMAIL_STYLE.mutedColor};">You can also reply to this email to add more information; your reply will go to our support team.</p>` : ""}
             </td>
           </tr>

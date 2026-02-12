@@ -2,12 +2,15 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import type { UserPlan, UserStatus } from "@prisma/client";
 import { sendVerificationEmail, sendPasswordResetEmail, sendEmailChangeVerification, sendDeleteAccountConfirmation } from "@/lib/email";
+import { getBaseUrlForEmail } from "@/lib/app-url";
 import { nanoid } from "nanoid";
 
 const SALT_ROUNDS = 12;
 const VERIFY_EXPIRY_HOURS = 24;
 const RESET_EXPIRY_HOURS = 1;
 const EMAIL_CHANGE_EXPIRY_HOURS = 1;
+
+export { getBaseUrlForEmail };
 
 export interface CreateUserInput {
   name: string;
@@ -124,11 +127,7 @@ export async function resendEmailVerification(email: string): Promise<{ ok: bool
   }
 
   await prisma.verificationToken.deleteMany({ where: { userId: user.id } });
-  const baseUrl =
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-    "http://localhost:3000";
-  await sendEmailVerification(user.id, baseUrl);
+  await sendEmailVerification(user.id, getBaseUrlForEmail());
   return { ok: true };
 }
 
@@ -170,11 +169,7 @@ export async function createDeleteAccountToken(userId: string): Promise<string> 
   await prisma.accountDeletionRequest.create({
     data: { userId, token, expiresAt },
   });
-  const baseUrl =
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL || "leadformhub.com"}` : null) ||
-    "https://leadformhub.com";
-  await sendDeleteAccountConfirmation(user.email, `${baseUrl}/confirm-delete?token=${token}`);
+  await sendDeleteAccountConfirmation(user.email, `${getBaseUrlForEmail()}/confirm-delete?token=${token}`);
   return token;
 }
 
@@ -212,10 +207,7 @@ export async function createPasswordResetToken(email: string) {
       expiresAt: new Date(Date.now() + RESET_EXPIRY_HOURS * 60 * 60 * 1000),
     },
   });
-  const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL || "leadformhub.com"}`
-    : "https://leadformhub.com";
-  await sendPasswordResetEmail(user.email, `${baseUrl}/reset-password?token=${token}`);
+  await sendPasswordResetEmail(user.email, `${getBaseUrlForEmail()}/reset-password?token=${token}`);
   return token;
 }
 
@@ -244,11 +236,7 @@ export async function createEmailChangeRequest(userId: string, newEmail: string)
   await prisma.emailChangeRequest.create({
     data: { userId, newEmail: normalized, token, expiresAt },
   });
-  const baseUrl =
-    process.env.NEXTAUTH_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-    "http://localhost:3000";
-  const verifyUrl = `${baseUrl}/api/auth/verify-email-change?token=${token}`;
+  const verifyUrl = `${getBaseUrlForEmail()}/api/auth/verify-email-change?token=${token}`;
   await sendEmailChangeVerification(normalized, verifyUrl);
   return token;
 }
