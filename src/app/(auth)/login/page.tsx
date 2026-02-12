@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
+  `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,8 +18,36 @@ function LoginForm() {
   const [resendEmail, setResendEmail] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [recaptchaLoading, setRecaptchaLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const recaptchaSiteKey =
+    typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
+      ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
+      : null;
+  const recaptchaEnabled = Boolean(recaptchaSiteKey);
+
+  useEffect(() => {
+    if (!recaptchaSiteKey || typeof window === "undefined") return;
+    if (document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) {
+      setRecaptchaReady(true);
+      setRecaptchaLoading(false);
+      return;
+    }
+    setRecaptchaLoading(true);
+    const script = document.createElement("script");
+    script.src = RECAPTCHA_SCRIPT_URL(recaptchaSiteKey);
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setRecaptchaReady(true);
+      setRecaptchaLoading(false);
+    };
+    script.onerror = () => setRecaptchaLoading(false);
+    document.head.appendChild(script);
+  }, [recaptchaSiteKey]);
   const verified = searchParams.get("verified");
   const signup = searchParams.get("signup");
   const errorParam = searchParams.get("error");
@@ -50,12 +81,43 @@ function LoginForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (recaptchaEnabled && recaptchaSiteKey) {
+      if (!recaptchaReady) {
+        setError("reCAPTCHA is still loading. Please wait a moment and try again.");
+        return;
+      }
+      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
+      if (!g) {
+        setError("reCAPTCHA could not run. Please refresh and try again.");
+        return;
+      }
+    }
     setLoading(true);
     try {
+      let recaptchaToken: string | undefined;
+      if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
+        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
+        try {
+          recaptchaToken = await new Promise<string>((resolve, reject) => {
+            g!.ready(() => {
+              g!.execute(recaptchaSiteKey, { action: "login" }).then(resolve).catch(reject);
+            });
+          });
+        } catch {
+          setError("reCAPTCHA could not run. Please refresh and try again.");
+          setLoading(false);
+          return;
+        }
+        if (!recaptchaToken?.trim()) {
+          setError("reCAPTCHA verification failed. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, ...(recaptchaToken ? { recaptchaToken } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -309,6 +371,16 @@ function LoginForm() {
           >
             {loading ? "Signing in…" : "Log In"}
           </button>
+
+          {recaptchaEnabled && (
+            <p className="text-center text-xs text-white/50" role="status" aria-live="polite">
+              {recaptchaLoading && !recaptchaReady ? (
+                <>Loading reCAPTCHA…</>
+              ) : recaptchaReady ? (
+                <>Protected by reCAPTCHA</>
+              ) : null}
+            </p>
+          )}
         </form>
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import Link from "next/link";
@@ -15,11 +15,32 @@ const SUBJECT_CATEGORIES = [
 
 const OTHER_VALUE = "Other";
 
+/** reCAPTCHA v3 script URL for execute() */
+function getRecaptchaScriptUrl(siteKey: string): string {
+  return `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+}
+
 export default function SupportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", subjectOther: "", message: "" });
+
+  const recaptchaSiteKey = typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
+    ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
+    : null;
+  const recaptchaEnabled = Boolean(recaptchaSiteKey);
+
+  useEffect(() => {
+    if (!recaptchaSiteKey || typeof window === "undefined") return;
+    const scriptUrl = getRecaptchaScriptUrl(recaptchaSiteKey);
+    if (document.querySelector(`script[src^="https://www.google.com/recaptcha/api.js"]`)) return;
+    const script = document.createElement("script");
+    script.src = scriptUrl;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }, [recaptchaSiteKey]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,11 +50,41 @@ export default function SupportPage() {
       return;
     }
     setLoading(true);
+    setError("");
     try {
+      let recaptchaToken: string | undefined;
+      if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
+        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
+        if (!g?.execute) {
+          setError("reCAPTCHA is still loading. Please try again.");
+          setLoading(false);
+          return;
+        }
+        try {
+          recaptchaToken = await new Promise<string>((resolve, reject) => {
+            g.ready(() => {
+              g.execute(recaptchaSiteKey, { action: "submit" }).then(resolve).catch(reject);
+            });
+          });
+        } catch {
+          setError("reCAPTCHA could not run. Please refresh and try again.");
+          setLoading(false);
+          return;
+        }
+        if (!recaptchaToken?.trim()) {
+          setError("reCAPTCHA verification failed. Please try again.");
+          setLoading(false);
+          return;
+        }
+      }
       const res = await fetch("/api/support/public", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, subject: subjectToSend }),
+        body: JSON.stringify({
+          ...formData,
+          subject: subjectToSend,
+          ...(recaptchaToken ? { recaptchaToken } : {}),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {

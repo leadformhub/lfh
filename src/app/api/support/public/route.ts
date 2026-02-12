@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { isEmailConfigured, sendPublicSupportFormNotification } from "@/lib/email";
+import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 
 const bodySchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
   email: z.string().email("Invalid email"),
   subject: z.string().min(1, "Subject is required").max(200),
   message: z.string().min(1, "Message is required").max(10000),
+  recaptchaToken: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -18,6 +20,23 @@ export async function POST(req: NextRequest) {
         { error: parsed.error.message },
         { status: 400 }
       );
+    }
+
+    if (isRecaptchaConfigured()) {
+      const token = typeof parsed.data.recaptchaToken === "string" ? parsed.data.recaptchaToken.trim() : "";
+      if (!token) {
+        return NextResponse.json(
+          { error: "reCAPTCHA token missing. Please try again." },
+          { status: 400 }
+        );
+      }
+      const { success } = await verifyRecaptcha(token);
+      if (!success) {
+        return NextResponse.json(
+          { error: "reCAPTCHA verification failed (low score or invalid). Please try again." },
+          { status: 400 }
+        );
+      }
     }
 
     const supportEmail = process.env.SUPPORT_EMAIL?.trim();
@@ -36,7 +55,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const sent = await sendPublicSupportFormNotification(supportEmail, parsed.data);
+    const { recaptchaToken: _token, ...data } = parsed.data;
+    const sent = await sendPublicSupportFormNotification(supportEmail, data);
     if (!sent) {
       console.error("[api/support/public] sendPublicSupportFormNotification returned false. Check server logs for 'Email send error'.");
       return NextResponse.json(
