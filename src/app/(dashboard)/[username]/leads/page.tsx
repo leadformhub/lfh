@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
-import { LeadsTable } from "@/components/LeadsTable";
+import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
 
 type Props = { params: Promise<{ username: string }> };
@@ -50,7 +50,7 @@ export default async function LeadsPage({
   }
 
   // Fetch leads and form ONLY when a form is selected (one form → many leads).
-  let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string }[] = [];
+  let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string; stageId?: string | null; stageName?: string }[] = [];
   let total = 0;
   let perPage = 25;
   let initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null = null;
@@ -78,6 +78,8 @@ export default async function LeadsPage({
       formId: l.formId ?? "",
       data: l.dataJson,
       createdAt: l.createdAt.toISOString(),
+      stageId: l.stageId ?? null,
+      stageName: l.stage?.name ?? "New",
     }));
   }
 
@@ -98,17 +100,17 @@ export default async function LeadsPage({
           </div>
         }
       >
-      <LeadsTable
-        username={username}
-        initialLeads={leadsData}
-        initialTotal={total}
-        initialPage={pageNum}
-        perPage={perPage}
-        forms={formsForSelect}
-        initialFormId={formIdClean ?? ""}
-        initialForm={initialForm}
-        currentSearch={searchClean ?? ""}
-      />
+        <LeadsPageView
+          username={username}
+          initialLeads={leadsData}
+          initialTotal={total}
+          initialPage={pageNum}
+          perPage={perPage}
+          forms={formsForSelect}
+          initialFormId={formIdClean ?? ""}
+          initialForm={initialForm}
+          currentSearch={searchClean ?? ""}
+        />
       </Suspense>
     </div>
   );

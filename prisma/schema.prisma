@@ -39,6 +39,7 @@ model User {
 
   forms                Form[]
   leads                Lead[]
+  pipelines            Pipeline[]
   subscriptions        Subscription[]
   passwordResets           PasswordReset[]
   accountDeletionRequests  AccountDeletionRequest[]
@@ -128,6 +129,7 @@ model Form {
 
   user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   leads                  Lead[]
+  pipelines              Pipeline[]
   otpVerifications       OtpVerification[]
   emailOtpVerifications  EmailOtpVerification[]
   smsLogs                SmsLog[]
@@ -153,18 +155,53 @@ model Lead {
   id         String   @id @default(cuid())
   formId     String?  @map("form_id") // null when form was deleted; leads are kept
   userId     String?  @map("user_id")  // null when user deleted; leads kept but unmapped
+  stageId    String?  @map("stage_id") // optional; for Kanban board
   dataJson   String   @db.Text @map("data_json") // JSON of submitted field values (keyed by field id)
   ipAddress  String?  @map("ip_address")
   userAgent  String?  @map("user_agent")
   createdAt  DateTime @default(now()) @map("created_at")
 
-  form Form? @relation(fields: [formId], references: [id], onDelete: SetNull)
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  form   Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
+  user   User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  stage  PipelineStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
 
   @@index([formId])
   @@index([userId])
+  @@index([stageId])
   @@index([createdAt])
   @@index([userId, createdAt])
+}
+
+model Pipeline {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  formId    String?  @map("form_id") // optional; one pipeline per form or global
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  form   Form?           @relation(fields: [formId], references: [id], onDelete: Cascade)
+  stages PipelineStage[]
+
+  @@unique([userId, formId])
+  @@index([userId])
+  @@index([formId])
+  @@map("pipelines")
+}
+
+model PipelineStage {
+  id         String   @id @default(cuid())
+  pipelineId String   @map("pipeline_id")
+  name       String
+  order      Int      // sort order
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  leads   Lead[]
+
+  @@index([pipelineId])
+  @@map("pipeline_stages")
 }
 
 model Plan {

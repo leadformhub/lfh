@@ -45,6 +45,8 @@ export async function GET(req: NextRequest) {
     formId: l.formId ?? "",
     data: l.dataJson,
     createdAt: l.createdAt.toISOString(),
+    stageId: l.stageId ?? null,
+    stageName: l.stage?.name ?? "New",
   }));
 
   return NextResponse.json({

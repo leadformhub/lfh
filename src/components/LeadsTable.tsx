@@ -12,7 +12,11 @@ type LeadRow = {
   formId: string;
   data: string;
   createdAt: string;
+  stageId?: string | null;
+  stageName?: string;
 };
+
+type PipelineStage = { id: string; name: string };
 
 type ApiForm = {
   id: string;
@@ -143,8 +147,25 @@ export function LeadsTable({
   const [page, setPage] = useState(initialPage);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [stages, setStages] = useState<PipelineStage[]>([]);
+  const [updatingStageLeadId, setUpdatingStageLeadId] = useState<string | null>(null);
 
   const currentFormId = initialFormId;
+
+  // Fetch pipeline stages for the current form (for Status dropdown)
+  useEffect(() => {
+    if (!currentFormId) {
+      setStages([]);
+      return;
+    }
+    fetch(`/api/pipelines?formId=${encodeURIComponent(currentFormId)}`, { credentials: "same-origin" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((body: { pipelines?: { stages?: { id: string; name: string }[] }[] } | null) => {
+        const pipelineStages = body?.pipelines?.[0]?.stages ?? [];
+        setStages(pipelineStages);
+      })
+      .catch(() => setStages([]));
+  }, [currentFormId]);
 
   const schemaColumns = React.useMemo(() => getOrderedSchemaColumns(form), [form]);
   const schemaLoaded = form != null && form.schema_json != null;
@@ -211,7 +232,38 @@ export function LeadsTable({
 
   const totalPages = Math.ceil(total / perPage);
   const base = `/${username}/leads`;
-  const colCount = 1 + schemaColumns.length + 1 + 1; // Id + schema columns + Submitted + Actions
+  const colCount = 1 + schemaColumns.length + 1 + 1 + 1; // Id + schema columns + Status + Submitted + Actions
+
+  async function handleStatusChange(leadId: string, newStageId: string | null) {
+    setUpdatingStageLeadId(leadId);
+    try {
+      const res = await fetch(`/api/leads/${leadId}/stage`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ stageId: newStageId }),
+      });
+      if (res.ok) {
+        setLeads((prev) =>
+          prev.map((l) => {
+            if (l.id !== leadId) return l;
+            const stageName =
+              newStageId === null || newStageId === ""
+                ? "New"
+                : stages.find((s) => s.id === newStageId)?.name ?? "New";
+            return { ...l, stageId: newStageId || null, stageName };
+          })
+        );
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error ?? "Failed to update status.");
+      }
+    } catch {
+      alert("Failed to update status. Please try again.");
+    } finally {
+      setUpdatingStageLeadId(null);
+    }
+  }
 
   function formatDisplayValue(val: string): string {
     if (val === "-" || val === "—") return "-";
@@ -347,7 +399,7 @@ export function LeadsTable({
         </div>
       </div>
       <div className="min-w-0 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
-        <div className="-mx-px overflow-x-auto">
+        <div className="-mx-px min-w-0 overflow-hidden">
           {!currentFormId ? (
             <div className="px-4 py-8 text-center text-sm text-[var(--foreground-muted)]">
               Please select a form to view leads.
@@ -357,6 +409,9 @@ export function LeadsTable({
               Loading form and leads…
             </div>
           ) : (
+            <>
+            {/* Desktop: table with horizontal scroll when wide. Mobile: table hidden, card list shown below. */}
+            <div className="hidden min-w-0 overflow-x-auto sm:block">
             <table className="w-full min-w-[400px] text-sm">
               <thead className="border-b border-[var(--border-default)] bg-[var(--neutral-50)]">
                 <tr>
@@ -371,6 +426,9 @@ export function LeadsTable({
                       {col.label}
                     </th>
                   ))}
+                  <th className="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                    Status
+                  </th>
                   <th className="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
                     Submitted
                   </th>
@@ -404,6 +462,25 @@ export function LeadsTable({
                               </td>
                             );
                           })}
+                          <td className="whitespace-nowrap px-4 py-3">
+                            <select
+                              value={l.stageId ?? ""}
+                              onChange={(e) => handleStatusChange(l.id, e.target.value || null)}
+                              disabled={updatingStageLeadId === l.id}
+                              className="min-h-[32px] min-w-0 max-w-[140px] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-2 py-1 text-xs text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] disabled:opacity-50"
+                              aria-label="Change lead status"
+                            >
+                              <option value="">New</option>
+                              {stages.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name === "New" ? "To Contact" : s.name}
+                                </option>
+                              ))}
+                            </select>
+                            {updatingStageLeadId === l.id && (
+                              <span className="ml-1 text-xs text-[var(--foreground-muted)]">…</span>
+                            )}
+                          </td>
                           <td className="whitespace-nowrap px-4 py-3 text-xs text-[var(--foreground-muted)]" suppressHydrationWarning>
                             {new Date(l.createdAt).toLocaleString()}
                           </td>
@@ -456,11 +533,15 @@ export function LeadsTable({
                 )}
               </tbody>
             </table>
+            </div>
+            </>
           )}
         </div>
         {showTable && (
           <div className="divide-y divide-[var(--border-subtle)] border-t border-[var(--border-subtle)] sm:hidden">
-            {leads.map((l) => {
+            {leads.length === 0 ? (
+              <div className="px-4 py-8 text-center text-sm text-[var(--foreground-muted)]">No leads yet. Submissions from your public form will appear here.</div>
+            ) : leads.map((l) => {
               const data = parseData(l.data);
               const isExpanded = expandedId === l.id;
               return (
@@ -479,6 +560,23 @@ export function LeadsTable({
                         </div>
                       );
                     })}
+                    <div className="flex justify-between gap-2 text-sm">
+                      <span className="font-medium text-[var(--foreground-muted)]">Status</span>
+                      <select
+                        value={l.stageId ?? ""}
+                        onChange={(e) => handleStatusChange(l.id, e.target.value || null)}
+                        disabled={updatingStageLeadId === l.id}
+                        className="min-h-[36px] flex-1 max-w-[160px] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-2 py-1.5 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)] disabled:opacity-50"
+                        aria-label="Change lead status"
+                      >
+                        <option value="">New</option>
+                        {stages.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name === "New" ? "To Contact" : s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <div className="flex justify-between gap-2 text-sm">
                       <span className="font-medium text-[var(--foreground-muted)]">Submitted</span>
                       <span className="text-[var(--foreground)]" suppressHydrationWarning>{new Date(l.createdAt).toLocaleString()}</span>

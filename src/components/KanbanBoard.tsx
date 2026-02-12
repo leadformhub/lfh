@@ -1,0 +1,376 @@
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  DndContext,
+  type DragEndEvent,
+  useDraggable,
+  useDroppable,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+
+const UNASSIGNED_ID = "unassigned";
+
+type BoardLead = {
+  id: string;
+  formId: string | null;
+  stageId: string | null;
+  data: string;
+  createdAt: string;
+  formName: string | null;
+};
+
+type BoardData = {
+  pipeline: { id: string; name: string; formId: string | null };
+  unassignedLeads: BoardLead[];
+  leadsByStage: { stageId: string; stageName: string; order: number; leads: BoardLead[] }[];
+};
+
+type ApiForm = {
+  id: string;
+  name: string;
+  schema_json: { fields?: { id?: string; name?: string; label?: string; type?: string }[] };
+} | null;
+
+function resolveDataKey(field: { id?: string; name?: string; type?: string }): string {
+  return field.id ?? "";
+}
+
+function buildKeyToLabelMap(form: ApiForm): Map<string, string> {
+  const map = new Map<string, string>();
+  if (!form?.schema_json || typeof form.schema_json !== "object") return map;
+  const raw = form.schema_json as { fields?: { id?: string; name?: string; label?: string }[] };
+  const fields = Array.isArray(raw.fields) ? raw.fields : [];
+  for (const f of fields) {
+    const label = (f.label && String(f.label).trim()) || f.name || f.id || "";
+    if (!label) continue;
+    const dataKey = resolveDataKey(f);
+    if (dataKey) map.set(dataKey, label);
+    const id = f.id ?? "";
+    if (id && id !== dataKey) map.set(id, label);
+  }
+  return map;
+}
+
+function humanizeKey(key: string): string {
+  if (!key) return "Field";
+  const withoutPrefix = key.replace(/^field_/i, "").trim();
+  if (!withoutPrefix) return "Field";
+  if (/^\d+$/.test(withoutPrefix)) return "Field";
+  return withoutPrefix.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function DroppableColumn({
+  id,
+  title,
+  children,
+  count,
+  className,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+  count: number;
+  className?: string;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex w-full shrink-0 flex-col rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--neutral-50)] md:min-w-0 md:flex-1 md:max-w-[320px] ${className ?? ""} ${isOver ? "ring-2 ring-[var(--color-accent)]/50" : ""}`}
+    >
+      <div className="flex items-center justify-between gap-2 border-b border-[var(--border-default)] px-3 py-2.5 sm:px-4 sm:py-3">
+        <span className="truncate text-sm font-semibold text-[var(--foreground-heading)]">{title}</span>
+        <span className="shrink-0 rounded-full bg-[var(--neutral-200)] px-2 py-0.5 text-xs font-medium text-[var(--foreground-muted)]">
+          {count}
+        </span>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2 sm:gap-3 sm:p-3">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function DraggableCard({
+  lead,
+  keyToLabel,
+}: {
+  lead: BoardLead;
+  keyToLabel: Map<string, string>;
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: lead.id });
+  let parsed: Record<string, unknown> = {};
+  try {
+    parsed = typeof lead.data === "string" ? JSON.parse(lead.data) : { ...lead.data };
+  } catch {
+    parsed = {};
+  }
+  const entries = Object.entries(parsed).filter(([, v]) => v != null && String(v).trim() !== "");
+  const primary = entries[0];
+  const secondary = entries.slice(1, 3);
+  const label = (key: string) => keyToLabel.get(key) ?? humanizeKey(key);
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={`cursor-grab rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-2.5 shadow-[var(--shadow-xs)] transition-shadow active:cursor-grabbing sm:p-3 ${isDragging ? "opacity-60 shadow-[var(--shadow-md)]" : "hover:shadow-[var(--shadow-sm)]"}`}
+    >
+      {primary && (
+        <p className="truncate text-sm font-medium text-[var(--foreground)]">
+          {String(primary[1])}
+        </p>
+      )}
+      {secondary.length > 0 && (
+        <div className="mt-1.5 space-y-0.5">
+          {secondary.map(([k, v]) => (
+            <div key={k} className="flex gap-1.5 text-xs">
+              <span className="shrink-0 text-[var(--foreground-muted)]">{label(k)}:</span>
+              <span className="min-w-0 truncate text-[var(--foreground)]">{String(v)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const MemoizedDraggableCard = React.memo(DraggableCard);
+
+export function KanbanBoard({
+  formId,
+  forms,
+  username,
+  initialForm,
+}: {
+  formId: string;
+  forms: { id: string; name: string }[];
+  username: string;
+  initialForm: ApiForm;
+}) {
+  const [board, setBoard] = useState<BoardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFormId, setSelectedFormId] = useState(formId);
+
+  const keyToLabel = useMemo(() => buildKeyToLabelMap(initialForm), [initialForm]);
+
+  const fetchBoard = useCallback(async (fId: string) => {
+    setError(null);
+    if (!fId) {
+      setBoard(null);
+      return;
+    }
+    try {
+      const listRes = await fetch(`/api/pipelines?formId=${encodeURIComponent(fId)}`, {
+        credentials: "same-origin",
+      });
+      if (!listRes.ok) {
+        setError("Failed to load pipelines");
+        setBoard(null);
+        return;
+      }
+      const { pipelines } = (await listRes.json()) as { pipelines: { id: string; formId: string | null }[] };
+      let pipelineId = pipelines?.find((p: { formId: string | null }) => p.formId === fId)?.id;
+      if (!pipelineId) {
+        const createRes = await fetch("/api/pipelines", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ formId: fId }),
+        });
+        if (!createRes.ok) {
+          setError("Failed to create pipeline");
+          setBoard(null);
+          return;
+        }
+        const { pipeline: created } = (await createRes.json()) as { pipeline: { id: string } };
+        pipelineId = created?.id;
+      }
+      if (!pipelineId) {
+        setError("No pipeline");
+        setBoard(null);
+        return;
+      }
+      const boardRes = await fetch(`/api/pipelines/${pipelineId}/board`, { credentials: "same-origin" });
+      if (!boardRes.ok) {
+        setError("Failed to load board");
+        setBoard(null);
+        return;
+      }
+      const data = (await boardRes.json()) as BoardData;
+      setBoard(data);
+    } catch {
+      setError("Something went wrong");
+      setBoard(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    setSelectedFormId(formId);
+  }, [formId]);
+
+  useEffect(() => {
+    fetchBoard(selectedFormId);
+  }, [selectedFormId, fetchBoard]);
+
+  const moveLeadOptimistic = useCallback((leadId: string, toStageId: string | null) => {
+    setBoard((prev) => {
+      if (!prev) return prev;
+      let lead: BoardLead | null = null;
+      const newUnassigned = prev.unassignedLeads.filter((l) => {
+        if (l.id === leadId) {
+          lead = l;
+          return false;
+        }
+        return true;
+      });
+      if (!lead) {
+        for (const stage of prev.leadsByStage) {
+          const found = stage.leads.find((l) => l.id === leadId);
+          if (found) {
+            lead = found;
+            break;
+          }
+        }
+      }
+      if (!lead) return prev;
+      const newLeadsByStage = prev.leadsByStage.map((stage) => ({
+        ...stage,
+        leads: stage.leads.filter((l) => l.id !== leadId),
+      }));
+      const updatedLead: BoardLead = {
+        ...lead,
+        stageId: toStageId === null || toStageId === UNASSIGNED_ID ? null : toStageId,
+      };
+      if (toStageId === null || toStageId === UNASSIGNED_ID) {
+        return {
+          ...prev,
+          unassignedLeads: [...newUnassigned, updatedLead],
+          leadsByStage: newLeadsByStage,
+        };
+      }
+      return {
+        ...prev,
+        unassignedLeads: newUnassigned,
+        leadsByStage: newLeadsByStage.map((s) =>
+          s.stageId === toStageId ? { ...s, leads: [...s.leads, updatedLead] } : s
+        ),
+      };
+    });
+  }, []);
+
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || !board) return;
+      const leadId = active.id as string;
+      const toId = over.id as string;
+      const newStageId = toId === UNASSIGNED_ID ? null : toId;
+
+      const currentInStage = board.leadsByStage.find((s) => s.leads.some((l) => l.id === leadId));
+      const fromId = currentInStage ? currentInStage.stageId : UNASSIGNED_ID;
+      if (fromId === toId) return;
+
+      const prevBoard = JSON.parse(JSON.stringify(board)) as BoardData;
+      moveLeadOptimistic(leadId, newStageId);
+
+      try {
+        const res = await fetch(`/api/leads/${leadId}/stage`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ stageId: newStageId }),
+        });
+        if (!res.ok) {
+          setBoard(prevBoard);
+          const err = await res.json().catch(() => ({}));
+          setError((err as { error?: string })?.error ?? "Failed to update stage");
+        }
+      } catch {
+        setBoard(prevBoard);
+        setError("Failed to update stage");
+      }
+    },
+    [board, moveLeadOptimistic]
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
+  );
+
+  const formSelector = (
+    <select
+      value={selectedFormId}
+      onChange={(e) => setSelectedFormId(e.target.value)}
+      className="min-h-10 min-w-0 max-w-[280px] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--foreground)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
+      aria-label="Select form"
+    >
+      <option value="">Select a form...</option>
+      {forms.map((f) => (
+        <option key={f.id} value={f.id}>
+          {f.name}
+        </option>
+      ))}
+    </select>
+  );
+
+  const columnsContent = board ? (
+    <>
+      <DroppableColumn
+        id={UNASSIGNED_ID}
+        title="New"
+        count={board.unassignedLeads.length}
+      >
+        {board.unassignedLeads.map((lead) => (
+          <MemoizedDraggableCard key={lead.id} lead={lead} keyToLabel={keyToLabel} />
+        ))}
+      </DroppableColumn>
+      {board.leadsByStage.map((stage, idx) => (
+        <DroppableColumn
+          key={stage.stageId}
+          id={stage.stageId}
+          title={idx === 0 && stage.stageName === "New" ? "To Contact" : stage.stageName}
+          count={stage.leads.length}
+        >
+          {stage.leads.map((lead) => (
+            <MemoizedDraggableCard key={lead.id} lead={lead} keyToLabel={keyToLabel} />
+          ))}
+        </DroppableColumn>
+      ))}
+    </>
+  ) : null;
+
+  return (
+    <div className="min-w-0 space-y-4 sm:space-y-5">
+      {error && (
+        <div className="rounded-[var(--radius-lg)] border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/5 px-3 py-2.5 text-sm text-[var(--color-danger)] sm:px-4 sm:py-3">
+          {error}
+        </div>
+      )}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+        <label className="text-sm font-medium text-[var(--foreground-muted)]">Form</label>
+        {formSelector}
+      </div>
+      {!board ? (
+        <div className="flex min-h-[320px] items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] text-[var(--foreground-muted)]">
+          {selectedFormId ? "Loading board…" : "Select a form"}
+        </div>
+      ) : (
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <div className="min-w-0 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
+            {/* Mobile: vertical stack (scroll down for all stages). md+: horizontal columns. */}
+            <div className="flex min-h-0 flex-col gap-3 p-3 sm:gap-4 sm:p-4 md:min-h-[480px] md:flex-row md:flex-nowrap md:min-w-0">
+              {columnsContent}
+            </div>
+          </div>
+        </DndContext>
+      )}
+    </div>
+  );
+}

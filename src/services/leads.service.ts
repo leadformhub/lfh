@@ -58,7 +58,10 @@ export async function getLeadsByUserId(
     const paginatedIds = ids.slice(skip, skip + perPage);
     const leads = await prisma.lead.findMany({
       where: { id: { in: paginatedIds } },
-      include: { form: { select: { id: true, name: true } } },
+      include: {
+        form: { select: { id: true, name: true } },
+        stage: { select: { id: true, name: true } },
+      },
       orderBy: { createdAt: "desc" },
     });
     return { leads, total, page, perPage };
@@ -67,7 +70,10 @@ export async function getLeadsByUserId(
   const [leads, total] = await Promise.all([
     prisma.lead.findMany({
       where,
-      include: { form: { select: { id: true, name: true } } },
+      include: {
+        form: { select: { id: true, name: true } },
+        stage: { select: { id: true, name: true } },
+      },
       orderBy: { createdAt: "desc" },
       skip,
       take: perPage,

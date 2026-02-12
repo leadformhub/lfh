@@ -347,6 +347,36 @@ footer[role="contentinfo"] h4 {
   outline-offset: 2px;
 }
 
+/* Kanban board: minimal horizontal scrollbar (professional, not default OS bar) */
+.kanban-board-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-300) transparent;
+}
+.kanban-board-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.kanban-board-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--radius-full);
+}
+.kanban-board-scroll::-webkit-scrollbar-thumb {
+  background: var(--neutral-300);
+  border-radius: var(--radius-full);
+}
+.kanban-board-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-400);
+}
+
+/* Kanban mobile: hide scrollbar, keep touch scroll */
+.kanban-board-mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.kanban-board-mobile-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 /* Mobile: ensure all buttons meet 44px touch target */
 .btn-base {
   min-height: var(--touch-target-min);

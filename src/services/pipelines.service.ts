@@ -1,0 +1,236 @@
+import { prisma } from "@/lib/db";
+
+const FREE_PLAN_LEADS_CAP = 50;
+
+export async function getPipelinesByUserId(userId: string, formId?: string | null) {
+  const where: { userId: string; formId?: string | null } = { userId };
+  if (formId !== undefined && formId !== null) {
+    where.formId = formId;
+  }
+  return prisma.pipeline.findMany({
+    where,
+    include: {
+      stages: {
+        orderBy: { order: "asc" },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+}
+
+export async function getPipelineById(pipelineId: string, userId: string) {
+  return prisma.pipeline.findFirst({
+    where: { id: pipelineId, userId },
+    include: {
+      stages: { orderBy: { order: "asc" } },
+      form: { select: { id: true, name: true } },
+    },
+  });
+}
+
+export async function getPipelineByFormId(userId: string, formId: string | null) {
+  return prisma.pipeline.findFirst({
+    where: { userId, formId },
+    include: { stages: { orderBy: { order: "asc" } } },
+  });
+}
+
+export async function getStagesByPipelineId(pipelineId: string) {
+  return prisma.pipelineStage.findMany({
+    where: { pipelineId },
+    orderBy: { order: "asc" },
+  });
+}
+
+export async function createPipeline(
+  userId: string,
+  data: { formId?: string | null; name?: string }
+) {
+  const name = data.name?.trim() || "Default";
+  return prisma.pipeline.create({
+    data: {
+      userId,
+      formId: data.formId ?? null,
+      name,
+    },
+    include: { stages: true },
+  });
+}
+
+export async function createDefaultStagesForPipeline(pipelineId: string) {
+  // First column in UI is "New" (unassigned); so default stages avoid duplicate "New"
+  const defaults = [
+    { name: "To Contact", order: 0 },
+    { name: "Contacted", order: 1 },
+    { name: "Won", order: 2 },
+  ];
+  await prisma.pipelineStage.createMany({
+    data: defaults.map((d) => ({ pipelineId, name: d.name, order: d.order })),
+  });
+  return getStagesByPipelineId(pipelineId);
+}
+
+export async function createStage(pipelineId: string, data: { name: string; order: number }) {
+  return prisma.pipelineStage.create({
+    data: {
+      pipelineId,
+      name: data.name.trim() || "Stage",
+      order: data.order,
+    },
+  });
+}
+
+export async function updatePipelineName(pipelineId: string, userId: string, name: string) {
+  return prisma.pipeline.updateMany({
+    where: { id: pipelineId, userId },
+    data: { name: name.trim() || "Pipeline" },
+  });
+}
+
+export async function updateStage(
+  stageId: string,
+  data: { name?: string; order?: number }
+) {
+  const update: { name?: string; order?: number } = {};
+  if (data.name !== undefined) update.name = data.name.trim() || "Stage";
+  if (data.order !== undefined) update.order = data.order;
+  if (Object.keys(update).length === 0) return null;
+  return prisma.pipelineStage.update({
+    where: { id: stageId },
+    data: update,
+  });
+}
+
+export type LeadInStage = {
+  id: string;
+  formId: string | null;
+  stageId: string | null;
+  dataJson: string;
+  createdAt: Date;
+  form: { id: string; name: string } | null;
+};
+
+/**
+ * Returns pipeline with stages and leads grouped by stage.
+ * Leads with stageId = null are included in the first stage (or "unassigned").
+ * Respects free plan cap (50 leads).
+ */
+export async function getLeadsByPipelineStages(
+  userId: string,
+  pipelineId: string,
+  plan?: string
+): Promise<{
+  pipeline: { id: string; name: string; formId: string | null };
+  stages: { id: string; name: string; order: number; leads: LeadInStage[] }[];
+  unassignedLeads: LeadInStage[];
+}> {
+  const pipeline = await prisma.pipeline.findFirst({
+    where: { id: pipelineId, userId },
+    include: { stages: { orderBy: { order: "asc" } } },
+  });
+  if (!pipeline) {
+    return {
+      pipeline: { id: "", name: "", formId: null },
+      stages: [],
+      unassignedLeads: [],
+    };
+  }
+
+  const leadWhere: { userId: string; formId: string | null; stageId?: string | null } = {
+    userId,
+    formId: pipeline.formId,
+  };
+
+  const isFree = plan === "free";
+  let leadIds: string[] | null = null;
+  if (isFree) {
+    const top = await prisma.lead.findMany({
+      where: leadWhere,
+      orderBy: { createdAt: "desc" },
+      take: FREE_PLAN_LEADS_CAP,
+      select: { id: true },
+    });
+    leadIds = top.map((r) => r.id);
+    if (leadIds.length === 0) {
+      return {
+        pipeline: { id: pipeline.id, name: pipeline.name, formId: pipeline.formId },
+        stages: pipeline.stages.map((s) => ({ id: s.id, name: s.name, order: s.order, leads: [] })),
+        unassignedLeads: [],
+      };
+    }
+  }
+
+  const leads = await prisma.lead.findMany({
+    where: leadIds ? { id: { in: leadIds } } : leadWhere,
+    include: { form: { select: { id: true, name: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const unassignedLeads: LeadInStage[] = [];
+  const byStage = new Map<string, LeadInStage[]>();
+  for (const s of pipeline.stages) {
+    byStage.set(s.id, []);
+  }
+  for (const lead of leads) {
+    const row: LeadInStage = {
+      id: lead.id,
+      formId: lead.formId,
+      stageId: lead.stageId,
+      dataJson: lead.dataJson,
+      createdAt: lead.createdAt,
+      form: lead.form,
+    };
+    if (lead.stageId && byStage.has(lead.stageId)) {
+      byStage.get(lead.stageId)!.push(row);
+    } else {
+      unassignedLeads.push(row);
+    }
+  }
+
+  return {
+    pipeline: { id: pipeline.id, name: pipeline.name, formId: pipeline.formId },
+    stages: pipeline.stages.map((s) => ({
+      id: s.id,
+      name: s.name,
+      order: s.order,
+      leads: byStage.get(s.id) ?? [],
+    })),
+    unassignedLeads,
+  };
+}
+
+/**
+ * Update a lead's stage. Verifies lead belongs to user and stage belongs to user's pipeline.
+ * Pass stageId null to clear the lead's stage (move to "New" / unassigned).
+ */
+export async function updateLeadStage(
+  leadId: string,
+  userId: string,
+  stageId: string | null
+): Promise<{ ok: boolean; error?: string }> {
+  const lead = await prisma.lead.findFirst({
+    where: { id: leadId, userId },
+    select: { id: true },
+  });
+  if (!lead) return { ok: false, error: "Lead not found" };
+
+  if (stageId === null) {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { stageId: null },
+    });
+    return { ok: true };
+  }
+
+  const stage = await prisma.pipelineStage.findFirst({
+    where: { id: stageId },
+    include: { pipeline: { select: { userId: true } } },
+  });
+  if (!stage || stage.pipeline.userId !== userId) return { ok: false, error: "Stage not found" };
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { stageId },
+  });
+  return { ok: true };
+}
