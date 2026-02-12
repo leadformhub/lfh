@@ -166,26 +166,44 @@ export function KanbanBoard({
       setBoard(null);
       return;
     }
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const abortAfter = (ms: number) => {
+      const c = new AbortController();
+      timeoutId = setTimeout(() => c.abort(), ms);
+      return c;
+    };
+    const clear = () => {
+      if (timeoutId != null) clearTimeout(timeoutId);
+      timeoutId = null;
+    };
     try {
+      const listCtrl = abortAfter(20000);
       const listRes = await fetch(`/api/pipelines?formId=${encodeURIComponent(fId)}`, {
         credentials: "same-origin",
+        signal: listCtrl.signal,
       });
+      clear();
       if (!listRes.ok) {
-        setError("Failed to load pipelines");
+        const errBody = await listRes.json().catch(() => ({}));
+        setError((errBody as { error?: string })?.error ?? "Failed to load pipelines");
         setBoard(null);
         return;
       }
       const { pipelines } = (await listRes.json()) as { pipelines: { id: string; formId: string | null }[] };
       let pipelineId = pipelines?.find((p: { formId: string | null }) => p.formId === fId)?.id;
       if (!pipelineId) {
+        const createCtrl = abortAfter(15000);
         const createRes = await fetch("/api/pipelines", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
           body: JSON.stringify({ formId: fId }),
+          signal: createCtrl.signal,
         });
+        clear();
         if (!createRes.ok) {
-          setError("Failed to create pipeline");
+          const errBody = await createRes.json().catch(() => ({}));
+          setError((errBody as { error?: string })?.error ?? "Failed to create pipeline");
           setBoard(null);
           return;
         }
@@ -197,16 +215,27 @@ export function KanbanBoard({
         setBoard(null);
         return;
       }
-      const boardRes = await fetch(`/api/pipelines/${pipelineId}/board`, { credentials: "same-origin" });
+      const boardCtrl = abortAfter(20000);
+      const boardRes = await fetch(`/api/pipelines/${pipelineId}/board`, {
+        credentials: "same-origin",
+        signal: boardCtrl.signal,
+      });
+      clear();
       if (!boardRes.ok) {
-        setError("Failed to load board");
+        const errBody = await boardRes.json().catch(() => ({}));
+        setError((errBody as { error?: string })?.error ?? "Failed to load board");
         setBoard(null);
         return;
       }
       const data = (await boardRes.json()) as BoardData;
       setBoard(data);
-    } catch {
-      setError("Something went wrong");
+    } catch (e) {
+      clear();
+      if (e instanceof Error && e.name === "AbortError") {
+        setError("Request timed out. Please try again.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
       setBoard(null);
     }
   }, []);
@@ -350,8 +379,17 @@ export function KanbanBoard({
   return (
     <div className="min-w-0 space-y-4 sm:space-y-5">
       {error && (
-        <div className="rounded-[var(--radius-lg)] border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/5 px-3 py-2.5 text-sm text-[var(--color-danger)] sm:px-4 sm:py-3">
-          {error}
+        <div className="flex flex-wrap items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--color-danger)]/40 bg-[var(--color-danger)]/5 px-3 py-2.5 text-sm text-[var(--color-danger)] sm:px-4 sm:py-3">
+          <span className="flex-1">{error}</span>
+          {selectedFormId && (
+            <button
+              type="button"
+              onClick={() => fetchBoard(selectedFormId)}
+              className="shrink-0 font-medium underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2"
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
