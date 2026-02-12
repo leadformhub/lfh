@@ -71,7 +71,7 @@ function LockIcon({ className }: { className?: string }) {
 type PlanQuota = {
   plan: string;
   formsUsed: number;
-  formsLimit: number;
+  formsLimit: number | null; // null = unlimited
   leadsUsed: number;
   leadsLimit: number | null;
   otpUsed: number;
@@ -181,10 +181,10 @@ export function DashboardSidebar({
                   <span className="text-slate-400">Forms</span>
                   <span className="text-white">
                     {planQuota.formsUsed}
-                    {planQuota.formsLimit === Infinity ? " / ∞" : ` / ${planQuota.formsLimit}`}
+                    {planQuota.formsLimit == null ? " / ∞" : ` / ${planQuota.formsLimit}`}
                   </span>
                 </div>
-                {planQuota.formsLimit !== Infinity && (
+                {planQuota.formsLimit != null && (
                   <div className="mt-0.5 h-0.5 w-full overflow-hidden rounded-full bg-white/10">
                     <div
                       className={cn(

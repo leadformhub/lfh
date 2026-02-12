@@ -8,7 +8,7 @@ import { getPlanLimits, type PlanKey } from "@/lib/plans";
 export type DashboardPlanQuota = {
   plan: PlanKey;
   formsUsed: number;
-  formsLimit: number;
+  formsLimit: number | null; // null = unlimited (Infinity not JSON-serializable)
   leadsUsed: number;
   leadsLimit: number | null;
   otpUsed: number;
@@ -43,7 +43,7 @@ async function fetchDashboardPlanQuota(userId: string, planKey: PlanKey): Promis
   return {
     plan: planKey,
     formsUsed: formsCount,
-    formsLimit: limits.maxForms,
+    formsLimit: limits.maxForms === Infinity ? null : limits.maxForms,
     leadsUsed: leadsThisMonth,
     leadsLimit: limits.maxLeadsPerMonth,
     otpUsed: otpUsage.used,
