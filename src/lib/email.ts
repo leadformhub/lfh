@@ -7,20 +7,22 @@
 import nodemailer from "nodemailer";
 import { getBaseUrlForEmail } from "@/lib/app-url";
 
-/** Shared email style: slate background, white card, gradient bar, consistent footer. */
+/** Shared email style: neutral gray palette, white card, no gradient bar, consistent footer. */
 const EMAIL_STYLE = {
-  bg: "#f1f5f9",
-  cardBorder: "#e2e8f0",
-  gradientBar: "linear-gradient(90deg, #0f172a 0%, #1e40af 50%, #3b82f6 100%)",
+  bg: "#f4f4f5",
+  cardBorder: "rgba(0,0,0,0.06)",
+  cardBorderSolid: "#f0f0f2",
   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-  headerColor: "#0f172a",
-  subtitleColor: "#64748b",
-  bodyColor: "#334155",
-  mutedColor: "#64748b",
-  footerColor: "#94a3b8",
-  footerBorder: "#f1f5f9",
+  headerColor: "#18181b",
+  subtitleColor: "#71717a",
+  bodyColor: "#3f3f46",
+  mutedColor: "#71717a",
+  footerColor: "#a1a1aa",
+  footerBorder: "#f0f0f2",
+  footerBg: "#fafafa",
   footerTagline: "LeadFormHub · Build forms, capture leads.",
   buttonBg: "#2563eb",
+  cardShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
 } as const;
 
 function getFrom() {
@@ -51,7 +53,7 @@ export function isEmailConfigured(): boolean {
   return getTransport() !== null;
 }
 
-/** Shared branded layout: gradient bar, LeadFormHub header, body slot, footer. */
+/** Shared branded layout: clean header (no gradient bar), body slot, footer with background. */
 function buildBrandedEmail(options: {
   headerSubtitle: string;
   body: string;
@@ -66,27 +68,24 @@ function buildBrandedEmail(options: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)}</title>
 </head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:48px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <tr>
-            <td style="padding:32px 40px 24px;">
-              <p style="margin:0 0 4px; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+            <td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+              <p style="margin:0 0 6px; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
               <p style="margin:0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">${escapeHtml(headerSubtitle)}</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 32px;">
+            <td style="padding:28px 32px;">
               ${body}
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder};">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</p>
             </td>
           </tr>
@@ -98,7 +97,7 @@ function buildBrandedEmail(options: {
 </html>`;
 }
 
-/** Enterprise-level email verification template: security-focused, polished CTA, clear hierarchy. */
+/** Email verification template: clean header, flat CTA, notice box. */
 function buildVerificationEmail(verifyUrl: string): string {
   return `
 <!DOCTYPE html>
@@ -111,59 +110,46 @@ function buildVerificationEmail(verifyUrl: string): string {
 <body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:56px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px; background:#ffffff; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
-          <!-- Gradient header bar -->
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:6px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <!-- Brand + verification badge -->
-          <tr>
-            <td style="padding:40px 40px 28px; text-align:center;">
-              <p style="margin:0 0 16px; font-size:24px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.03em;">LeadFormHub</p>
-              <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
+            <td style="padding:32px 32px 24px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+              <p style="margin:0; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+              <p style="margin:8px 0 0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">Verify your email address</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:16px;">
                 <tr>
-                  <td style="padding:10px 20px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:1px solid #93c5fd; border-radius:9999px;">
-                    <p style="margin:0; font-size:12px; font-weight:600; color:#1d4ed8; letter-spacing:0.06em; text-transform:uppercase;">Email Verification</p>
+                  <td style="padding:8px 14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px;">
+                    <p style="margin:0; font-size:12px; font-weight:600; color:#1d4ed8; letter-spacing:0.05em; text-transform:uppercase;">Email verification</p>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-          <!-- Main content -->
           <tr>
-            <td style="padding:0 40px 8px;">
-              <p style="margin:0; font-size:18px; font-weight:600; color:${EMAIL_STYLE.headerColor}; line-height:1.4;">One more step to activate your account</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 40px 28px;">
-              <p style="margin:0 0 28px; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">Thanks for signing up. Click the button below to verify your email address and get full access to your LeadFormHub dashboard.</p>
-              <!-- Primary CTA -->
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 12px; font-size:17px; font-weight:600; color:${EMAIL_STYLE.headerColor}; line-height:1.4;">One more step to activate your account</p>
+              <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">Thanks for signing up. Click the button below to verify your email address and get full access to your LeadFormHub dashboard.</p>
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td align="center" style="padding:0 0 28px;">
-                    <a href="${verifyUrl}" target="_blank" style="display:inline-block; padding:16px 40px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius:10px; box-shadow:0 4px 14px rgba(37,99,235,0.4);">Verify my email</a>
+                  <td style="padding-bottom:24px;">
+                    <a href="${verifyUrl}" target="_blank" style="display:inline-block; padding:16px 32px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Verify my email</a>
                   </td>
                 </tr>
               </table>
-              <!-- Fallback link -->
-              <p style="margin:0 0 24px; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If the button doesn't work, copy and paste this link into your browser:</p>
-              <p style="margin:0 0 24px; font-size:12px; line-height:1.6; color:${EMAIL_STYLE.buttonBg}; word-break:break-all;">${escapeHtml(verifyUrl)}</p>
-              <!-- Security notice -->
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f8fafc; border:1px solid ${EMAIL_STYLE.cardBorder}; border-radius:12px;">
+              <p style="margin:0 0 8px; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If the button doesn't work, copy and paste this link into your browser:</p>
+              <p style="margin:0 0 20px; font-size:12px; line-height:1.6; color:${EMAIL_STYLE.buttonBg}; word-break:break-all;">${escapeHtml(verifyUrl)}</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.footerBg}; border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px;">
                 <tr>
-                  <td style="padding:18px 20px;">
-                    <p style="margin:0 0 8px; font-size:13px; font-weight:600; color:#475569;">This link expires in 24 hours</p>
-                    <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't create a LeadFormHub account, you can safely ignore this email. No action is required.</p>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:${EMAIL_STYLE.bodyColor};">This link expires in 24 hours</p>
+                    <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't create a LeadFormHub account, you can safely ignore this email.</p>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-          <!-- Footer -->
           <tr>
-            <td style="padding:28px 40px 36px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:#fafbfc;">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</p>
             </td>
           </tr>
@@ -181,7 +167,7 @@ export async function sendVerificationEmail(to: string, verifyUrl: string): Prom
   return sendEmail(to, subject, html);
 }
 
-/** Enterprise-level welcome email: same layout as verification email. */
+/** Welcome email: clean header with badge, flat CTA. */
 function buildWelcomeEmail(name?: string): string {
   const greeting = name ? `Hi ${escapeHtml(name)},` : "Hi there,";
   const dashboardUrl = `${getBaseUrlForEmail()}/login`;
@@ -197,41 +183,31 @@ function buildWelcomeEmail(name?: string): string {
 <body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:56px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px; background:#ffffff; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
-          <!-- Gradient header bar -->
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:6px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <!-- Brand + welcome badge -->
-          <tr>
-            <td style="padding:40px 40px 28px; text-align:center;">
-              <p style="margin:0 0 16px; font-size:24px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.03em;">LeadFormHub</p>
-              <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;">
+            <td style="padding:32px 32px 24px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+              <p style="margin:0; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+              <p style="margin:8px 0 0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">Welcome</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:16px;">
                 <tr>
-                  <td style="padding:10px 20px; background:linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border:1px solid #6ee7b7; border-radius:9999px;">
-                    <p style="margin:0; font-size:12px; font-weight:600; color:#047857; letter-spacing:0.06em; text-transform:uppercase;">Welcome</p>
+                  <td style="padding:8px 14px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px;">
+                    <p style="margin:0; font-size:12px; font-weight:600; color:#059669; letter-spacing:0.05em; text-transform:uppercase;">Welcome</p>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-          <!-- Main content -->
           <tr>
-            <td style="padding:0 40px 8px;">
-              <p style="margin:0; font-size:18px; font-weight:600; color:${EMAIL_STYLE.headerColor}; line-height:1.4;">You're all set</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 40px 28px;">
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 12px; font-size:17px; font-weight:600; color:${EMAIL_STYLE.headerColor}; line-height:1.4;">You're all set</p>
               <p style="margin:0 0 20px; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">${greeting}</p>
               <p style="margin:0 0 20px; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">Thank you for signing up. We built LeadFormHub because we wanted a simple, focused way to create forms and capture leads—without the bloat of generic form builders or the lock-in of big platforms.</p>
               <p style="margin:0 0 24px; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">Whether you need contact forms, lead magnets, or OTP-verified submissions, you get a clean dashboard, exportable leads, and a straightforward experience. No unnecessary features, just what you need to grow your business.</p>
-              <!-- Primary CTA -->
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td align="center" style="padding:0 0 24px;">
-                    <a href="${dashboardUrl}" target="_blank" style="display:inline-block; padding:16px 40px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius:10px; box-shadow:0 4px 14px rgba(37,99,235,0.4);">Go to dashboard</a>
+                  <td style="padding-bottom:24px;">
+                    <a href="${dashboardUrl}" target="_blank" style="display:inline-block; padding:16px 32px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Go to dashboard</a>
                   </td>
                 </tr>
               </table>
@@ -239,9 +215,8 @@ function buildWelcomeEmail(name?: string): string {
               <p style="margin:0; font-size:15px; line-height:1.65; color:${EMAIL_STYLE.bodyColor};">We're glad you're here.</p>
             </td>
           </tr>
-          <!-- Footer -->
           <tr>
-            <td style="padding:28px 40px 36px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:#fafbfc;">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</p>
             </td>
           </tr>
@@ -266,7 +241,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
     headerSubtitle: "Reset your password",
     body: `
       <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You requested a password reset. Click the button below to set a new password.</p>
-      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${resetUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Reset password</a></td></tr></table>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td><a href="${resetUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Reset password</a></td></tr></table>
       <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">This link expires in 1 hour.</p>
       <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't request this, you can safely ignore this email.</p>
     `,
@@ -280,7 +255,7 @@ export async function sendOtpEmail(to: string, otp: string): Promise<boolean> {
   return sendEmail(to, subject, html);
 }
 
-/** Enterprise-style OTP verification email: centered card, prominent code, clear hierarchy. */
+/** OTP verification email: clean card, prominent code block. */
 function buildOtpVerificationEmail(otp: string): string {
   const safeOtp = escapeHtml(otp);
   return `
@@ -291,40 +266,33 @@ function buildOtpVerificationEmail(otp: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your verification code</title>
 </head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:48px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px; background:#ffffff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:480px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <tr>
-            <td style="padding:32px 40px 24px;">
-              <p style="margin:0 0 4px; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+            <td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+              <p style="margin:0 0 6px; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
               <p style="margin:0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">Verification</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 8px;">
-              <p style="margin:0; font-size:16px; font-weight:600; color:${EMAIL_STYLE.headerColor};">Your verification code</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 40px 24px;">
-              <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:#475569;">Use this one-time code to complete your form submission. Enter it where prompted.</p>
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 12px; font-size:16px; font-weight:600; color:${EMAIL_STYLE.headerColor};">Your verification code</p>
+              <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">Use this one-time code to complete your form submission. Enter it where prompted.</p>
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td align="center" style="padding:24px 0; background:#f8fafc; border-radius:12px; border:1px solid ${EMAIL_STYLE.cardBorder};">
+                  <td align="center" style="padding:24px; background:${EMAIL_STYLE.footerBg}; border-radius:12px; border:1px solid ${EMAIL_STYLE.cardBorderSolid};">
                     <span style="font-size:32px; font-weight:700; letter-spacing:0.35em; color:${EMAIL_STYLE.headerColor}; font-variant-numeric:tabular-nums;">${safeOtp}</span>
                   </td>
                 </tr>
               </table>
-              <p style="margin:20px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">Valid for <strong style="color:#475569;">5 minutes</strong>. Do not share this code with anyone.</p>
+              <p style="margin:20px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">Valid for <strong style="color:${EMAIL_STYLE.bodyColor};">5 minutes</strong>. Do not share this code with anyone.</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder};">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.footerColor};">If you didn't request this code, you can safely ignore this email. ${EMAIL_STYLE.footerTagline}</p>
             </td>
           </tr>
@@ -342,7 +310,7 @@ export async function sendDeleteAccountConfirmation(to: string, confirmUrl: stri
     headerSubtitle: "Confirm account deletion",
     body: `
       <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You requested to delete your LeadFormHub account. Click the button below to permanently delete your account. This cannot be undone.</p>
-      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td style="border-radius:8px; background:#dc2626;"><a href="${confirmUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Delete my account</a></td></tr></table>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td><a href="${confirmUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:#dc2626; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Delete my account</a></td></tr></table>
       <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">This link expires in 1 hour.</p>
       <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't request this, you can safely ignore this email. Your account is safe.</p>
     `,
@@ -356,7 +324,7 @@ export async function sendEmailChangeVerification(to: string, verifyUrl: string)
     headerSubtitle: "Confirm your new email",
     body: `
       <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You requested to change your LeadFormHub account email address. Click the button below to confirm this change.</p>
-      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${verifyUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Confirm new email</a></td></tr></table>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td><a href="${verifyUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Confirm new email</a></td></tr></table>
       <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">This link expires in 1 hour.</p>
       <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't request this change, you can safely ignore this email.</p>
     `,
@@ -376,20 +344,20 @@ export async function sendNewLeadNotification(
   const html = buildBrandedEmail({
     headerSubtitle: "New lead received",
     body: `
-      <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You have a new submission from your form "${escapeHtml(payload.formName)}".</p>
-      <table cellpadding="0" cellspacing="0" role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${EMAIL_STYLE.cardBorder}; border-radius:8px; overflow:hidden;">
-        <tr><td style="padding:12px 16px; background:#f8fafc; font-size:12px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Lead details</td></tr>
+      <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">You have a new submission from your form <strong style="color:${EMAIL_STYLE.headerColor};">"${escapeHtml(payload.formName)}"</strong>.</p>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="width:100%; background:${EMAIL_STYLE.footerBg}; border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:12px; margin-bottom:24px; overflow:hidden;">
+        <tr><td style="padding:16px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; letter-spacing:0.06em; text-transform:uppercase;">Lead details</td></tr>
         <tr><td style="padding:0;">
           <table cellpadding="0" cellspacing="0" role="presentation" style="width:100%; border-collapse:collapse;">
-            <tr><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:13px; color:${EMAIL_STYLE.mutedColor}; width:100px;">Name</td><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.name)}</td></tr>
-            <tr><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Email</td><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; color:${EMAIL_STYLE.headerColor};"><a href="mailto:${escapeHtml(payload.email)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none;">${escapeHtml(payload.email)}</a></td></tr>
-            <tr><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Source</td><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.source)}</td></tr>
-            <tr><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Form</td><td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.formName)}</td></tr>
+            <tr><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor}; width:100px;">Name</td><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.name)}</td></tr>
+            <tr><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Email</td><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px;"><a href="mailto:${escapeHtml(payload.email)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none; font-weight:500;">${escapeHtml(payload.email)}</a></td></tr>
+            <tr><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Source</td><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.source)}</td></tr>
+            <tr><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">Form</td><td style="padding:14px 20px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(payload.formName)}</td></tr>
           </table>
         </td></tr>
       </table>
-      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:20px auto 0;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${dashboardUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">View leads in dashboard</a></td></tr></table>
-      <p style="margin:12px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">View and manage all leads in your LeadFormHub dashboard.</p>
+      <table cellpadding="0" cellspacing="0" role="presentation"><tr><td><a href="${dashboardUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:14px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">View leads in dashboard</a></td></tr></table>
+      <p style="margin:14px 0 0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">View and manage all leads in your LeadFormHub dashboard.</p>
     `,
   });
   return sendEmail(adminEmail, subject, html);
@@ -479,17 +447,16 @@ function buildSupportReplyEmailHtml(replyBody: string): string {
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
-    <tr><td align="center" style="padding:48px 24px;">
-      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#fff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
-        <tr><td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td></tr>
-        <tr><td style="padding:24px 40px 16px;">
-          <p style="margin:0 0 4px; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+        <tr><td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+          <p style="margin:0 0 6px; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
           <p style="margin:0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">Support</p>
         </td></tr>
-        <tr><td style="padding:0 40px 32px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(replyBody)}</td></tr>
-        <tr><td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; font-size:12px; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</td></tr>
+        <tr><td style="padding:28px 32px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(replyBody)}</td></tr>
+        <tr><td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg}; font-size:12px; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</td></tr>
       </table>
     </td></tr>
   </table>
@@ -525,18 +492,17 @@ function buildUserReplyNotificationToSupportHtml(payload: {
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
-    <tr><td align="center" style="padding:48px 24px;">
-      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#fff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
-        <tr><td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td></tr>
-        <tr><td style="padding:24px 40px 16px;">
-          <p style="margin:0 0 4px; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+        <tr><td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+          <p style="margin:0 0 6px; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
           <p style="margin:0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">New reply on ticket ${escapeHtml(ticketNumber)}</p>
         </td></tr>
-        <tr><td style="padding:0 40px 8px; font-size:13px; color:${EMAIL_STYLE.mutedColor};">From: ${escapeHtml(userName)} &lt;<a href="mailto:${escapeHtml(userEmail)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none;">${escapeHtml(userEmail)}</a>&gt;</td></tr>
-        <tr><td style="padding:0 40px 32px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(replyBody)}</td></tr>
-        <tr><td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; font-size:12px; color:${EMAIL_STYLE.footerColor};">The user added this reply from the dashboard. Reply to this email to respond. ${EMAIL_STYLE.footerTagline}</td></tr>
+        <tr><td style="padding:0 32px 8px; font-size:13px; color:${EMAIL_STYLE.mutedColor};">From: ${escapeHtml(userName)} &lt;<a href="mailto:${escapeHtml(userEmail)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none;">${escapeHtml(userEmail)}</a>&gt;</td></tr>
+        <tr><td style="padding:0 32px 28px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(replyBody)}</td></tr>
+        <tr><td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg}; font-size:12px; color:${EMAIL_STYLE.footerColor};">The user added this reply from the dashboard. Reply to this email to respond. ${EMAIL_STYLE.footerTagline}</td></tr>
       </table>
     </td></tr>
   </table>
@@ -584,24 +550,21 @@ function buildTicketConfirmationEmailHtml(options: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Request received ${escapeHtml(ticketNumber)}</title>
 </head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:48px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <tr>
-            <td style="padding:32px 40px 24px;">
-              <p style="margin:0 0 4px; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+            <td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
+              <p style="margin:0 0 6px; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
               <p style="margin:0; font-size:13px; color:${EMAIL_STYLE.subtitleColor};">Support request received</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 32px;">
+            <td style="padding:28px 32px;">
               <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">We've received your request and our team will get back to you soon.</p>
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f8fafc; border:1px solid ${EMAIL_STYLE.cardBorder}; border-radius:10px; margin-bottom:20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.footerBg}; border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px; margin-bottom:20px;">
                 <tr>
                   <td style="padding:16px 20px; text-align:center;">
                     <p style="margin:0 0 4px; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; letter-spacing:0.08em; text-transform:uppercase;">Your ticket number</p>
@@ -609,20 +572,24 @@ function buildTicketConfirmationEmailHtml(options: {
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:#475569;">Subject</p>
+              <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:${EMAIL_STYLE.bodyColor};">Subject</p>
               <p style="margin:0 0 16px; font-size:15px; color:${EMAIL_STYLE.headerColor};">${escapeHtml(subject)}</p>
-              <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:#475569;">Category</p>
+              <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:${EMAIL_STYLE.bodyColor};">Category</p>
               <p style="margin:0 0 20px; font-size:14px; color:${EMAIL_STYLE.bodyColor};">${escapeHtml(categoryLabel)}</p>
-              <div style="padding:16px 18px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px;">
-                <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:#1e40af;">Where to see replies</p>
-                <p style="margin:0; font-size:14px; line-height:1.5; color:#1e3a8a;">When our team replies to your ticket, the reply will be sent to <strong>this email address</strong>. Check your inbox (and spam folder) for messages from LeadFormHub or our support team.</p>
-              </div>
-              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:20px auto 0;"><tr><td style="border-radius:8px; background:${EMAIL_STYLE.buttonBg};"><a href="${supportPageUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">Open support page</a></td></tr></table>
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px;">
+                <tr>
+                  <td style="padding:16px 18px;">
+                    <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:#1d4ed8;">Where to see replies</p>
+                    <p style="margin:0; font-size:14px; line-height:1.5; color:#1e3a8a;">When our team replies to your ticket, the reply will be sent to <strong>this email address</strong>. Check your inbox (and spam folder) for messages from LeadFormHub or our support team.</p>
+                  </td>
+                </tr>
+              </table>
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:20px auto 0;"><tr><td><a href="${supportPageUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Open support page</a></td></tr></table>
               ${supportEmail ? `<p style="margin:16px 0 0; font-size:13px; color:${EMAIL_STYLE.mutedColor};">You can also reply to this email to add more information; your reply will go to our support team.</p>` : ""}
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder};">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:12px; line-height:1.5; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</p>
             </td>
           </tr>
@@ -654,23 +621,20 @@ function buildSupportRequestEmailHtml(options: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support ticket ${escapeHtml(ticketNumber)}</title>
 </head>
-<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily};">
+<body style="margin:0; padding:0; background:${EMAIL_STYLE.bg}; font-family:${EMAIL_STYLE.fontFamily}; -webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.bg};">
     <tr>
-      <td align="center" style="padding:48px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px; background:#ffffff; border-radius:16px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06); overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
+      <td align="center" style="padding:40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px; background:#ffffff; border-radius:16px; box-shadow:${EMAIL_STYLE.cardShadow}; overflow:hidden; border:1px solid ${EMAIL_STYLE.cardBorder};">
           <tr>
-            <td style="height:4px; background:${EMAIL_STYLE.gradientBar};"></td>
-          </tr>
-          <tr>
-            <td style="padding:32px 40px 24px;">
+            <td style="padding:28px 32px 20px; border-bottom:1px solid ${EMAIL_STYLE.cardBorderSolid};">
               <p style="margin:0 0 6px; font-size:13px; font-weight:600; color:${EMAIL_STYLE.subtitleColor}; letter-spacing:0.05em; text-transform:uppercase;">New support request</p>
-              <p style="margin:0; font-size:22px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
+              <p style="margin:0; font-size:20px; font-weight:700; color:${EMAIL_STYLE.headerColor}; letter-spacing:-0.02em;">LeadFormHub</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 24px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); border-radius:12px; overflow:hidden;">
+            <td style="padding:28px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${EMAIL_STYLE.headerColor}; border-radius:12px; overflow:hidden;">
                 <tr>
                   <td style="padding:20px 24px; text-align:center;">
                     <p style="margin:0 0 4px; font-size:11px; font-weight:600; color:rgba(255,255,255,0.7); letter-spacing:0.1em; text-transform:uppercase;">Ticket number</p>
@@ -683,25 +647,25 @@ function buildSupportRequestEmailHtml(options: {
               <p style="margin:20px 0 8px; font-size:12px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Subject</p>
               <p style="margin:0 0 20px; font-size:17px; font-weight:600; color:${EMAIL_STYLE.headerColor}; line-height:1.4;">${escapeHtml(subject)}</p>
               <p style="margin:0 0 8px; font-size:12px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Message</p>
-              <div style="padding:18px 20px; background:#f8fafc; border:1px solid ${EMAIL_STYLE.cardBorder}; border-radius:10px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(message)}</div>
+              <div style="padding:18px 20px; background:${EMAIL_STYLE.footerBg}; border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor}; white-space:pre-wrap;">${escapeHtml(message)}</div>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 24px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid ${EMAIL_STYLE.cardBorder}; border-radius:10px; overflow:hidden;">
-                <tr><td style="padding:12px 16px; background:#f8fafc; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">From</td></tr>
+            <td style="padding:0 32px 24px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px; overflow:hidden;">
+                <tr><td style="padding:12px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">From</td></tr>
                 <tr><td style="padding:0;">
                   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
-                    <tr><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:12px; color:${EMAIL_STYLE.mutedColor}; width:100px;">Name</td><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(userName)}</td></tr>
-                    <tr><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:12px; color:${EMAIL_STYLE.mutedColor};">Email</td><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px;"><a href="mailto:${escapeHtml(userEmail)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none; font-weight:500;">${escapeHtml(userEmail)}</a></td></tr>
-                    <tr><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:12px; color:${EMAIL_STYLE.mutedColor};">Username</td><td style="padding:10px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorder}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(username)}</td></tr>
+                    <tr><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:12px; color:${EMAIL_STYLE.mutedColor}; width:100px;">Name</td><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(userName)}</td></tr>
+                    <tr><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:12px; color:${EMAIL_STYLE.mutedColor};">Email</td><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px;"><a href="mailto:${escapeHtml(userEmail)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none; font-weight:500;">${escapeHtml(userEmail)}</a></td></tr>
+                    <tr><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:12px; color:${EMAIL_STYLE.mutedColor};">Username</td><td style="padding:14px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:14px; font-weight:500; color:${EMAIL_STYLE.headerColor};">${escapeHtml(username)}</td></tr>
                   </table>
                 </td></tr>
               </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px 32px; border-top:1px solid ${EMAIL_STYLE.footerBorder};">
+            <td style="padding:20px 32px 24px; border-top:1px solid ${EMAIL_STYLE.footerBorder}; background:${EMAIL_STYLE.footerBg};">
               <p style="margin:0; font-size:11px; color:${EMAIL_STYLE.footerColor};">Request ID: ${escapeHtml(requestId)} · Use ${escapeHtml(ticketNumber)} when replying to the user.</p>
               <p style="margin:8px 0 0; font-size:12px; color:${EMAIL_STYLE.footerColor};">${EMAIL_STYLE.footerTagline}</p>
             </td>
