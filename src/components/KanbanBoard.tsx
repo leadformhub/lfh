@@ -105,7 +105,7 @@ function DraggableCard({
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: lead.id });
   let parsed: Record<string, unknown> = {};
   try {
-    parsed = typeof lead.data === "string" ? JSON.parse(lead.data) : { ...lead.data };
+    parsed = typeof lead.data === "string" ? JSON.parse(lead.data) : {};
   } catch {
     parsed = {};
   }
