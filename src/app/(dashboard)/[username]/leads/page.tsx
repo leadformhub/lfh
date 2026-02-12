@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
-import { getPipelineByFormId } from "@/services/pipelines.service";
+import { getPipelineByFormId, getLeadsByPipelineStages, serializeBoardForApi } from "@/services/pipelines.service";
 import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
 
@@ -31,13 +31,13 @@ export default async function LeadsPage({
   searchParams,
 }: {
   params: Promise<{ username: string }>;
-  searchParams: Promise<{ page?: string; formId?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; formId?: string; search?: string; view?: string }>;
 }) {
   const session = await getSession();
   const { username } = await params;
   if (!session) redirect("/login");
   if (session.username.toLowerCase() !== username.toLowerCase()) redirect(`/${session.username}/leads`);
-  const { page, formId, search } = await searchParams;
+  const { page, formId, search, view } = await searchParams;
   const pageNum = Math.max(1, parseInt(String(page || "1"), 10) || 1);
   const searchClean = typeof search === "string" && search.trim() ? search.trim() : undefined;
   const formsWithSchema = await getFormsWithSchemaByUserId(session.userId);
@@ -56,6 +56,12 @@ export default async function LeadsPage({
   let perPage = 25;
   let initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null = null;
   let initialStages: { id: string; name: string }[] = [];
+  let initialBoard: {
+    pipeline: { id: string; name: string; formId: string | null };
+    stages: { id: string; name: string; order: number }[];
+    unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
+    leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+  } | null = null;
 
   if (formIdClean) {
     const [formRow, pipeline] = await Promise.all([
@@ -72,12 +78,19 @@ export default async function LeadsPage({
         schema_json: formRow.schema ?? { fields: [] },
       };
     }
-    const { leads, total: t, perPage: pp } = await getLeadsByUserId(session.userId, {
-      page: pageNum,
-      perPage: 25,
-      formId: formIdClean,
-      search: searchClean,
-    });
+    const plan = (session.plan ?? "free") as string;
+    const [leadsResult, boardForView] = await Promise.all([
+      getLeadsByUserId(session.userId, {
+        page: pageNum,
+        perPage: 25,
+        formId: formIdClean,
+        search: searchClean,
+      }),
+      view === "board" && pipeline
+        ? getLeadsByPipelineStages(session.userId, pipeline.id, plan).then(serializeBoardForApi)
+        : Promise.resolve(null),
+    ]);
+    const { leads, total: t, perPage: pp } = leadsResult;
     total = t;
     perPage = pp;
     leadsData = leads.map((l) => ({
@@ -89,6 +102,7 @@ export default async function LeadsPage({
       stageId: l.stageId ?? null,
       stageName: l.stage?.name ?? "New",
     }));
+    if (boardForView) initialBoard = boardForView;
   }
 
   return (
@@ -119,6 +133,7 @@ export default async function LeadsPage({
           initialForm={initialForm}
           initialStages={initialStages}
           currentSearch={searchClean ?? ""}
+          initialBoard={initialBoard}
         />
       </Suspense>
     </div>

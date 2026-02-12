@@ -148,13 +148,18 @@ export function KanbanBoard({
   forms,
   username,
   initialForm,
+  initialBoard: initialBoardProp = null,
 }: {
   formId: string;
   forms: { id: string; name: string }[];
   username: string;
   initialForm: ApiForm;
+  initialBoard?: BoardData | null;
 }) {
-  const [board, setBoard] = useState<BoardData | null>(null);
+  const initialBoard = initialBoardProp && initialBoardProp.pipeline.id ? initialBoardProp : null;
+  const [board, setBoard] = useState<BoardData | null>(() =>
+    initialBoard && formId ? initialBoard : null
+  );
   const [error, setError] = useState<string | null>(null);
   const [selectedFormId, setSelectedFormId] = useState(formId);
 
@@ -203,8 +208,13 @@ export function KanbanBoard({
   }, [formId]);
 
   useEffect(() => {
+    if (!selectedFormId) return;
+    if (initialBoard && selectedFormId === formId) {
+      setBoard(initialBoard);
+      return;
+    }
     fetchBoard(selectedFormId);
-  }, [selectedFormId, fetchBoard]);
+  }, [selectedFormId, fetchBoard, formId, initialBoard]);
 
   const moveLeadOptimistic = useCallback((leadId: string, toStageId: string | null) => {
     setBoard((prev) => {

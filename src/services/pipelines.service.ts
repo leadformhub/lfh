@@ -13,6 +13,44 @@ export function trimLeadDataForBoard(dataJson: string, maxKeys = 5): string {
   }
 }
 
+/** Serialize getLeadsByPipelineStages result to the public board API shape (trimmed lead data). */
+export function serializeBoardForApi(board: {
+  pipeline: { id: string; name: string; formId: string | null };
+  stages: { id: string; name: string; order: number; leads: LeadInStage[] }[];
+  unassignedLeads: LeadInStage[];
+}): {
+  pipeline: { id: string; name: string; formId: string | null };
+  stages: { id: string; name: string; order: number }[];
+  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
+  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+} {
+  return {
+    pipeline: board.pipeline,
+    stages: board.stages,
+    unassignedLeads: board.unassignedLeads.map((l) => ({
+      id: l.id,
+      formId: l.formId,
+      stageId: l.stageId,
+      data: trimLeadDataForBoard(l.dataJson),
+      createdAt: l.createdAt.toISOString(),
+      formName: l.form?.name ?? null,
+    })),
+    leadsByStage: board.stages.map((s) => ({
+      stageId: s.id,
+      stageName: s.name,
+      order: s.order,
+      leads: s.leads.map((l) => ({
+        id: l.id,
+        formId: l.formId,
+        stageId: l.stageId,
+        data: trimLeadDataForBoard(l.dataJson),
+        createdAt: l.createdAt.toISOString(),
+        formName: l.form?.name ?? null,
+      })),
+    })),
+  };
+}
+
 export async function getPipelinesByUserId(userId: string, formId?: string | null) {
   const where: { userId: string; formId?: string | null } = { userId };
   if (formId !== undefined && formId !== null) {
@@ -112,6 +150,9 @@ export async function updateStage(
   });
 }
 
+/** Max leads returned on board for paid plans (keeps response time bounded in production). */
+const BOARD_LEADS_CAP = 1000;
+
 export type LeadInStage = {
   id: string;
   formId: string | null;
@@ -121,10 +162,20 @@ export type LeadInStage = {
   form: { id: string; name: string } | null;
 };
 
+const leadSelect = {
+  id: true,
+  formId: true,
+  stageId: true,
+  dataJson: true,
+  createdAt: true,
+  form: { select: { name: true } as const },
+} as const;
+
 /**
  * Returns pipeline with stages and leads grouped by stage.
  * Leads with stageId = null are included in the first stage (or "unassigned").
- * Respects free plan cap (50 leads).
+ * Respects free plan cap (50 leads). Paid plans capped at BOARD_LEADS_CAP for performance.
+ * Uses a single leads query and minimal select to reduce DB time and payload.
  */
 export async function getLeadsByPipelineStages(
   userId: string,
@@ -147,34 +198,19 @@ export async function getLeadsByPipelineStages(
     };
   }
 
-  const leadWhere: { userId: string; formId: string | null; stageId?: string | null } = {
+  const leadWhere: { userId: string; formId: string | null } = {
     userId,
     formId: pipeline.formId,
   };
 
-  const isFree = plan === "free";
-  let leadIds: string[] | null = null;
-  if (isFree) {
-    const top = await prisma.lead.findMany({
-      where: leadWhere,
-      orderBy: { createdAt: "desc" },
-      take: FREE_PLAN_LEADS_CAP,
-      select: { id: true },
-    });
-    leadIds = top.map((r) => r.id);
-    if (leadIds.length === 0) {
-      return {
-        pipeline: { id: pipeline.id, name: pipeline.name, formId: pipeline.formId },
-        stages: pipeline.stages.map((s) => ({ id: s.id, name: s.name, order: s.order, leads: [] })),
-        unassignedLeads: [],
-      };
-    }
-  }
+  const take =
+    plan === "free" ? FREE_PLAN_LEADS_CAP : BOARD_LEADS_CAP;
 
   const leads = await prisma.lead.findMany({
-    where: leadIds ? { id: { in: leadIds } } : leadWhere,
-    include: { form: { select: { id: true, name: true } } },
+    where: leadWhere,
+    select: leadSelect,
     orderBy: { createdAt: "desc" },
+    take,
   });
 
   const unassignedLeads: LeadInStage[] = [];
@@ -189,7 +225,7 @@ export async function getLeadsByPipelineStages(
       stageId: lead.stageId,
       dataJson: lead.dataJson,
       createdAt: lead.createdAt,
-      form: lead.form,
+      form: lead.form ? { id: "", name: lead.form.name } : null,
     };
     if (lead.stageId && byStage.has(lead.stageId)) {
       byStage.get(lead.stageId)!.push(row);

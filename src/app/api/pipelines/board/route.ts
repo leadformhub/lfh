@@ -5,7 +5,7 @@ import {
   createPipeline,
   createDefaultStagesForPipeline,
   getLeadsByPipelineStages,
-  trimLeadDataForBoard,
+  serializeBoardForApi,
 } from "@/services/pipelines.service";
 
 /**
@@ -26,38 +26,10 @@ export async function GET(req: NextRequest) {
   if (!pipeline) {
     const created = await createPipeline(session.userId, { formId, name: "Default" });
     await createDefaultStagesForPipeline(created.id);
-    pipeline = await getPipelineByFormId(session.userId, formId);
-  }
-  if (!pipeline) {
-    return NextResponse.json({ error: "Failed to get or create pipeline" }, { status: 500 });
+    pipeline = created;
   }
 
   const plan = (session.plan ?? "free") as string;
   const board = await getLeadsByPipelineStages(session.userId, pipeline.id, plan);
-
-  return NextResponse.json({
-    pipeline: board.pipeline,
-    stages: board.stages,
-    unassignedLeads: board.unassignedLeads.map((l) => ({
-      id: l.id,
-      formId: l.formId,
-      stageId: l.stageId,
-      data: trimLeadDataForBoard(l.dataJson),
-      createdAt: l.createdAt.toISOString(),
-      formName: l.form?.name ?? null,
-    })),
-    leadsByStage: board.stages.map((s) => ({
-      stageId: s.id,
-      stageName: s.name,
-      order: s.order,
-      leads: s.leads.map((l) => ({
-        id: l.id,
-        formId: l.formId,
-        stageId: l.stageId,
-        data: trimLeadDataForBoard(l.dataJson),
-        createdAt: l.createdAt.toISOString(),
-        formName: l.form?.name ?? null,
-      })),
-    })),
-  });
+  return NextResponse.json(serializeBoardForApi(board));
 }

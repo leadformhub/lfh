@@ -20,6 +20,13 @@ type ApiForm = {
   schema_json: { fields: unknown[] };
 } | null;
 
+type BoardData = {
+  pipeline: { id: string; name: string; formId: string | null };
+  stages: { id: string; name: string; order: number }[];
+  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
+  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+};
+
 export function LeadsPageView({
   username,
   initialLeads,
@@ -31,6 +38,7 @@ export function LeadsPageView({
   initialForm,
   initialStages,
   currentSearch,
+  initialBoard = null,
 }: {
   username: string;
   initialLeads: LeadRow[];
@@ -42,6 +50,7 @@ export function LeadsPageView({
   initialForm: ApiForm;
   initialStages: { id: string; name: string }[];
   currentSearch: string;
+  initialBoard?: BoardData | null;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -98,6 +107,7 @@ export function LeadsPageView({
           forms={forms}
           username={username}
           initialForm={initialForm}
+          initialBoard={initialBoard}
         />
       )}
     </div>
