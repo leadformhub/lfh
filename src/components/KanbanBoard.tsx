@@ -29,10 +29,11 @@ type BoardData = {
   leadsByStage: { stageId: string; stageName: string; order: number; leads: BoardLead[] }[];
 };
 
+/** Accepts same shape as leads page initialForm (schema_json.fields may be unknown[]). */
 type ApiForm = {
   id: string;
   name: string;
-  schema_json: { fields?: { id?: string; name?: string; label?: string; type?: string }[] };
+  schema_json?: { fields?: unknown[] };
 } | null;
 
 function resolveDataKey(field: { id?: string; name?: string; type?: string }): string {
