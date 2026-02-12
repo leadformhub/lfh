@@ -170,6 +170,8 @@ model Lead {
   @@index([stageId])
   @@index([createdAt])
   @@index([userId, createdAt])
+  @@index([userId, formId])
+  @@index([userId, formId, createdAt])
 }
 
 model Pipeline {

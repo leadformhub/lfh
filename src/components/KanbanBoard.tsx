@@ -167,67 +167,25 @@ export function KanbanBoard({
       return;
     }
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    const abortAfter = (ms: number) => {
-      const c = new AbortController();
-      timeoutId = setTimeout(() => c.abort(), ms);
-      return c;
-    };
+    const controller = new AbortController();
+    timeoutId = setTimeout(() => controller.abort(), 25000);
     const clear = () => {
       if (timeoutId != null) clearTimeout(timeoutId);
       timeoutId = null;
     };
     try {
-      const listCtrl = abortAfter(20000);
-      const listRes = await fetch(`/api/pipelines?formId=${encodeURIComponent(fId)}`, {
+      const res = await fetch(`/api/pipelines/board?formId=${encodeURIComponent(fId)}`, {
         credentials: "same-origin",
-        signal: listCtrl.signal,
+        signal: controller.signal,
       });
       clear();
-      if (!listRes.ok) {
-        const errBody = await listRes.json().catch(() => ({}));
-        setError((errBody as { error?: string })?.error ?? "Failed to load pipelines");
-        setBoard(null);
-        return;
-      }
-      const { pipelines } = (await listRes.json()) as { pipelines: { id: string; formId: string | null }[] };
-      let pipelineId = pipelines?.find((p: { formId: string | null }) => p.formId === fId)?.id;
-      if (!pipelineId) {
-        const createCtrl = abortAfter(15000);
-        const createRes = await fetch("/api/pipelines", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ formId: fId }),
-          signal: createCtrl.signal,
-        });
-        clear();
-        if (!createRes.ok) {
-          const errBody = await createRes.json().catch(() => ({}));
-          setError((errBody as { error?: string })?.error ?? "Failed to create pipeline");
-          setBoard(null);
-          return;
-        }
-        const { pipeline: created } = (await createRes.json()) as { pipeline: { id: string } };
-        pipelineId = created?.id;
-      }
-      if (!pipelineId) {
-        setError("No pipeline");
-        setBoard(null);
-        return;
-      }
-      const boardCtrl = abortAfter(20000);
-      const boardRes = await fetch(`/api/pipelines/${pipelineId}/board`, {
-        credentials: "same-origin",
-        signal: boardCtrl.signal,
-      });
-      clear();
-      if (!boardRes.ok) {
-        const errBody = await boardRes.json().catch(() => ({}));
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
         setError((errBody as { error?: string })?.error ?? "Failed to load board");
         setBoard(null);
         return;
       }
-      const data = (await boardRes.json()) as BoardData;
+      const data = (await res.json()) as BoardData;
       setBoard(data);
     } catch (e) {
       clear();

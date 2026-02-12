@@ -2,6 +2,17 @@ import { prisma } from "@/lib/db";
 
 const FREE_PLAN_LEADS_CAP = 50;
 
+/** Trim lead dataJson to first N keys for board list payload (card shows primary + 2 secondary). */
+export function trimLeadDataForBoard(dataJson: string, maxKeys = 5): string {
+  try {
+    const obj = JSON.parse(dataJson) as Record<string, unknown>;
+    const entries = Object.entries(obj).slice(0, maxKeys);
+    return JSON.stringify(Object.fromEntries(entries));
+  } catch {
+    return dataJson;
+  }
+}
+
 export async function getPipelinesByUserId(userId: string, formId?: string | null) {
   const where: { userId: string; formId?: string | null } = { userId };
   if (formId !== undefined && formId !== null) {

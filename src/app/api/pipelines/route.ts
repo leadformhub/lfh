@@ -25,10 +25,8 @@ export async function POST(req: NextRequest) {
     formId: body.formId ?? null,
     name: body.name,
   });
-  await createDefaultStagesForPipeline(pipeline.id);
-  const withStages = await getPipelinesByUserId(session.userId, pipeline.formId);
-  const created = withStages.find((p) => p.id === pipeline.id);
+  const stages = await createDefaultStagesForPipeline(pipeline.id);
   return NextResponse.json({
-    pipeline: created ?? { ...pipeline, stages: await createDefaultStagesForPipeline(pipeline.id) },
+    pipeline: { ...pipeline, stages },
   });
 }

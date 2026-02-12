@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
-import { getLeadsByPipelineStages } from "@/services/pipelines.service";
+import { getLeadsByPipelineStages, trimLeadDataForBoard } from "@/services/pipelines.service";
 
 export async function GET(
   _req: NextRequest,
@@ -21,7 +21,7 @@ export async function GET(
       id: l.id,
       formId: l.formId,
       stageId: l.stageId,
-      data: l.dataJson,
+      data: trimLeadDataForBoard(l.dataJson),
       createdAt: l.createdAt.toISOString(),
       formName: l.form?.name ?? null,
     })),
@@ -33,7 +33,7 @@ export async function GET(
         id: l.id,
         formId: l.formId,
         stageId: l.stageId,
-        data: l.dataJson,
+        data: trimLeadDataForBoard(l.dataJson),
         createdAt: l.createdAt.toISOString(),
         formName: l.form?.name ?? null,
       })),
