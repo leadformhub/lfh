@@ -195,6 +195,22 @@ export function KanbanBoard({
     setViewLead(lead);
   }, []);
 
+  const handleFollowUpUpdated = useCallback((leadId: string, followUpBy: string | null) => {
+    setBoard((prev) => {
+      if (!prev) return prev;
+      const updateLead = (l: BoardLead) => (l.id === leadId ? { ...l, followUpBy } : l);
+      return {
+        ...prev,
+        unassignedLeads: prev.unassignedLeads.map(updateLead),
+        leadsByStage: prev.leadsByStage.map((stage) => ({
+          ...stage,
+          leads: stage.leads.map(updateLead),
+        })),
+      };
+    });
+    setViewLead((prev) => (prev?.id === leadId ? { ...prev, followUpBy } : prev));
+  }, []);
+
   const keyToLabel = useMemo(() => buildKeyToLabelMap(initialForm), [initialForm]);
 
   const fetchBoard = useCallback(async (fId: string) => {
@@ -431,6 +447,7 @@ export function KanbanBoard({
         onClose={() => setViewLead(null)}
         lead={viewLead ? { ...viewLead, formId: viewLead.formId ?? "", formName: viewLead.formName } : null}
         form={initialForm}
+        onFollowUpUpdated={handleFollowUpUpdated}
       />
     </div>
   );

@@ -592,6 +592,9 @@ export function LeadsTable({
         onClose={() => setViewLeadId(null)}
         lead={viewLead}
         form={form}
+        onFollowUpUpdated={(leadId, followUpBy) =>
+          setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, followUpBy } : l)))
+        }
       />
     </div>
   );

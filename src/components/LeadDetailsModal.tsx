@@ -118,11 +118,13 @@ export function LeadDetailsModal({
   onClose,
   lead,
   form,
+  onFollowUpUpdated,
 }: {
   open: boolean;
   onClose: () => void;
   lead: LeadForModal | null;
   form: ApiForm;
+  onFollowUpUpdated?: (leadId: string, followUpBy: string | null) => void;
 }) {
   const [activeTab, setActiveTab] = useState<"details" | "timeline">("details");
   const [activities, setActivities] = useState<ActivityItem[]>([]);
@@ -222,6 +224,7 @@ export function LeadDetailsModal({
                           const next = (body as { followUpBy?: string | null }).followUpBy ?? new Date(followUpDateInput).toISOString();
                           setFollowUpBy(next);
                           setFollowUpDateInput("");
+                          onFollowUpUpdated?.(lead.id, next);
                         } else {
                           const data = await res.json().catch(() => ({}));
                           alert(data.error ?? "Failed to set follow-up date.");
@@ -252,6 +255,7 @@ export function LeadDetailsModal({
                         if (res.ok) {
                           setFollowUpBy(null);
                           setFollowUpDateInput("");
+                          onFollowUpUpdated?.(lead.id, null);
                         } else {
                           const data = await res.json().catch(() => ({}));
                           alert(data.error ?? "Failed to clear follow-up date.");
