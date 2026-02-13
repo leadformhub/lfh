@@ -27,6 +27,7 @@ export const PLAN_FEATURES: PlanFeatureRow[] = [
   { category: "Forms & leads", label: "Required / optional fields", free: true, pro: true, business: true },
   { category: "Forms & leads", label: "Redirect after submit", free: true, pro: true, business: true },
   { category: "Forms & leads", label: "Email alert on new lead", free: false, pro: true, business: true },
+  { category: "Forms & leads", label: "Email automation (triggers & rules)", free: false, pro: true, business: true },
   { category: "Forms & leads", label: "Form builder (drag, fields, settings)", free: true, pro: true, business: true },
   // Verification
   { category: "Verification", label: "OTP verification (SMS)", free: false, pro: "100/month", business: "1,000/month" },
@@ -105,6 +106,11 @@ export function canUseBoard(plan: PlanKey): boolean {
 
 /** Source dashboard (Leads by source/campaign on Analytics, export source report) is Pro/Business only. */
 export function canUseSourceDashboard(plan: PlanKey): boolean {
+  return plan === "pro" || plan === "business";
+}
+
+/** Email automation (trigger-based rules) is Pro/Business only. */
+export function canUseAutomation(plan: PlanKey): boolean {
   return plan === "pro" || plan === "business";
 }
 

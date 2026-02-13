@@ -289,7 +289,7 @@ export default async function AnalyticsPage({
                           <div className="min-w-0 flex-1">
                             <span className="text-sm font-medium text-[var(--foreground-muted)]">#{i + 1}</span>
                             <Link
-                              href={`/${username}/forms/${f.id}/design`}
+                              href={`/${username}/forms/${f.id}`}
                               className="mt-1 block font-medium text-[var(--foreground-heading)] truncate hover:underline"
                             >
                               {f.name}
@@ -322,7 +322,7 @@ export default async function AnalyticsPage({
                               <td className="py-3 text-base text-[var(--foreground-muted)]">{i + 1}</td>
                               <td className="py-3">
                                 <Link
-                                  href={`/${username}/forms/${f.id}/design`}
+                                  href={`/${username}/forms/${f.id}`}
                                   className="font-medium text-[var(--foreground-heading)] hover:underline"
                                 >
                                   {f.name}

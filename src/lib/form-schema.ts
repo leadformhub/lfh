@@ -14,6 +14,19 @@ export type FormFieldSchema = {
   options?: string[]; // for select, checkbox, radio (stored as array in JSON)
 };
 
+/** Single automation rule: when trigger fires, run action (email to lead or admin). */
+export type AutomationRule = {
+  id: string;
+  name?: string;
+  enabled: boolean;
+  trigger: "lead_submitted" | "lead_stage_changed";
+  /** For lead_stage_changed: only run when moved to this stage name (e.g. "Won"). Omit = any stage. */
+  triggerStageName?: string;
+  action: "email_lead" | "email_admin";
+  subject: string;
+  body: string;
+};
+
 export type FormSchema = {
   fields: FormFieldSchema[];
   settings?: {
@@ -29,6 +42,8 @@ export type FormSchema = {
     autoReplyEnabled?: boolean;
     autoReplySubject?: string;
     autoReplyBody?: string;
+    /** Email automation rules (trigger → send email via SMTP). */
+    automationRules?: AutomationRule[];
   };
 };
 

@@ -6,6 +6,7 @@ import { getFormsByUserId } from "@/services/forms.service";
 import { getViewCountsForFormIds } from "@/services/analytics.service";
 import { FormsList } from "@/components/FormsList";
 import { canCreateForm, getPlanLimits, type PlanKey } from "@/lib/plans";
+import { canUseAutomation } from "@/lib/plan-features";
 
 const CreateFormButton = dynamic(
   () => import("@/components/CreateFormButton").then((m) => ({ default: m.CreateFormButton })),
@@ -81,6 +82,9 @@ export default async function FormsPage({
       </div>
       <FormsList
         username={username}
+        canUseAutomation={canUseAutomation(plan)}
+        currentPlan={session.plan ?? "free"}
+        razorpayKeyId={razorpayKeyId ?? null}
         forms={forms.map((f) => {
           let status = "PUBLIC";
           try {

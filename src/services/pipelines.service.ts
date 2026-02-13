@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { createLeadActivity } from "@/services/lead-activity.service";
+import { runFormAutomation } from "@/services/automation.service";
 
 const FREE_PLAN_LEADS_CAP = 50;
 
@@ -283,6 +284,9 @@ export async function updateLeadStage(
     }).catch((err) =>
       console.error("[pipelines] Failed to log stage change activity:", err)
     );
+    runAutomationForStageChange(leadId, "New").catch((err) =>
+      console.error("[pipelines] Automation failed:", err)
+    );
     return { ok: true };
   }
 
@@ -296,13 +300,37 @@ export async function updateLeadStage(
     where: { id: leadId },
     data: { stageId },
   });
+  const newStageName = stage.name === "New" ? "To Contact" : stage.name;
   await createLeadActivity(leadId, "stage_changed", {
     stageId,
-    stageName: stage.name === "New" ? "To Contact" : stage.name,
+    stageName: newStageName,
     fromStageId,
     fromStageName,
   }).catch((err) =>
     console.error("[pipelines] Failed to log stage change activity:", err)
   );
+  runAutomationForStageChange(leadId, newStageName).catch((err) =>
+    console.error("[pipelines] Automation failed:", err)
+  );
   return { ok: true };
+}
+
+async function runAutomationForStageChange(leadId: string, stageName: string): Promise<void> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { form: { include: { user: { select: { email: true } } } } },
+  });
+  if (!lead?.formId || !lead.form) return;
+  let leadData: Record<string, unknown> = {};
+  try {
+    leadData = (JSON.parse(lead.dataJson) as Record<string, unknown>) ?? {};
+  } catch {
+    // ignore
+  }
+  await runFormAutomation(lead.formId, "lead_stage_changed", {
+    leadData,
+    formName: lead.form.name,
+    adminEmail: lead.form.user?.email ?? null,
+    stageName,
+  });
 }

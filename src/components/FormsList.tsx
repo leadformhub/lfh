@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { UpgradeModal } from "@/components/UpgradeModal";
 
 type FormRow = {
   id: string;
@@ -21,16 +22,23 @@ export function FormsList({
   total,
   page,
   perPage,
+  canUseAutomation = true,
+  currentPlan = "free",
+  razorpayKeyId = null,
 }: {
   username: string;
   forms: FormRow[];
   total: number;
   page: number;
   perPage: number;
+  canUseAutomation?: boolean;
+  currentPlan?: string;
+  razorpayKeyId?: string | null;
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [showAutomationUpgrade, setShowAutomationUpgrade] = useState(false);
   const totalPages = Math.ceil(total / perPage);
   const base = `/${username}/forms`;
 
@@ -116,7 +124,7 @@ export function FormsList({
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
-                href={`${base}/${f.id}/design`}
+                href={`${base}/${f.id}`}
                 className="btn-base min-h-11 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--neutral-50)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
               >
                 Edit
@@ -129,11 +137,31 @@ export function FormsList({
                 View
               </Link>
               <Link
-                href={`${base}/${f.id}/embed`}
+                href={`${base}/${f.id}?tab=embed`}
                 className="btn-base min-h-11 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--neutral-50)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
               >
                 Embed
               </Link>
+              {canUseAutomation ? (
+                <Link
+                  href={`${base}/${f.id}?tab=automation`}
+                  className="btn-base min-h-11 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] px-4 py-2 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--neutral-50)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                >
+                  Automation
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAutomationUpgrade(true)}
+                  className="btn-base min-h-11 flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-amber-200 bg-amber-50/50 px-4 py-2 text-sm font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200 transition-colors hover:bg-amber-100 dark:hover:bg-amber-950/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                  title="Upgrade to Pro to use email automation"
+                >
+                  <svg className="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Automation
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => handleDelete(f.id)}
@@ -196,9 +224,24 @@ export function FormsList({
                   <td className="px-4 py-3 text-[var(--foreground-muted)]">{f.createdAtFormatted}</td>
                   <td className="px-4 py-3 text-right">
                     <span className="inline-flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
-                      <Link href={`${base}/${f.id}/design`} className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">Edit</Link>
+                      <Link href={`${base}/${f.id}`} className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">Edit</Link>
                       <Link href={`/f/${f.id}`} target="_blank" className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">View</Link>
-                      <Link href={`${base}/${f.id}/embed`} className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">Embed</Link>
+                      <Link href={`${base}/${f.id}?tab=embed`} className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">Embed</Link>
+                      {canUseAutomation ? (
+                        <Link href={`${base}/${f.id}?tab=automation`} className="font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]">Automation</Link>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowAutomationUpgrade(true)}
+                          className="inline-flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400 transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]"
+                          title="Upgrade to Pro to use email automation"
+                        >
+                          <svg className="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                          Automation
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleDelete(f.id)}
@@ -241,6 +284,15 @@ export function FormsList({
           </div>
         </div>
       )}
+
+      <UpgradeModal
+        open={showAutomationUpgrade}
+        onClose={() => setShowAutomationUpgrade(false)}
+        currentPlan={currentPlan}
+        razorpayKeyId={razorpayKeyId}
+        title="Upgrade to use email automation"
+        description="Email automation (trigger-based rules, send emails when a lead is submitted or moved to a stage) is available on Pro and Business plans."
+      />
     </div>
   );
 }

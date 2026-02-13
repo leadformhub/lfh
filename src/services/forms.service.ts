@@ -114,9 +114,10 @@ export async function updateFormSchema(
   const form = await prisma.form.findFirst({ where: { id: formId, userId } });
   if (!form) return null;
   if (form.lockedAt) throw new Error("This form is locked. Upgrade to unlock.");
+  const schemaJson = stringifyFormSchema(schema);
   return prisma.form.update({
     where: { id: formId },
-    data: { schemaJson: stringifyFormSchema(schema) },
+    data: { schemaJson },
   });
 }
 

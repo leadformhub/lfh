@@ -5,6 +5,7 @@ import { createLeadActivity } from "@/services/lead-activity.service";
 import { isPhoneVerifiedForSubmission, isEmailVerifiedForSubmission } from "@/services/otp.service";
 import { recordEvent } from "@/services/analytics.service";
 import { sendNewLeadNotification } from "@/lib/email";
+import { runFormAutomation } from "@/services/automation.service";
 import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 import { prisma } from "@/lib/db";
 import { parseFormSchema } from "@/lib/form-schema";
@@ -237,6 +238,12 @@ export async function POST(req: NextRequest) {
         username: form.user.username ?? undefined,
       }).catch((err) => console.error("[leads/submit] Lead notification email failed:", err));
     }
+
+    runFormAutomation(formId, "lead_submitted", {
+      leadData: structuredData as Record<string, unknown>,
+      formName: form.name,
+      adminEmail: form.user?.email ?? null,
+    }).catch((err) => console.error("[leads/submit] Automation failed:", err));
 
     if (form.user?.username) {
       revalidatePath(`/${form.user.username}`);

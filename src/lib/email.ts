@@ -53,6 +53,43 @@ export function isEmailConfigured(): boolean {
   return getTransport() !== null;
 }
 
+/**
+ * Replace {{key}} in text with values from data. Keys are case-sensitive.
+ * Used for automation email templates (e.g. {{name}}, {{email}}, {{formName}}, {{stageName}}).
+ */
+function substituteTemplate(text: string, data: Record<string, string>): string {
+  return text.replace(/\{\{(\w+)\}\}/g, (_, key) => data[key] ?? "");
+}
+
+/**
+ * Send an automation email (e.g. to lead or admin) with template substitution.
+ * Uses SMTP from env. Placeholders: {{name}}, {{email}}, {{formName}}, {{stageName}}, plus any keys from data.
+ */
+export async function sendAutomationEmail(
+  to: string,
+  subject: string,
+  body: string,
+  data: Record<string, string>
+): Promise<boolean> {
+  const subj = substituteTemplate(subject, data);
+  const escapedData: Record<string, string> = {};
+  for (const [k, v] of Object.entries(data)) {
+    escapedData[k] = escapeHtml(String(v ?? ""));
+  }
+  const bodyHtml = substituteTemplate(body, escapedData)
+    .split(/\r?\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="margin:0 0 12px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">${p}</p>`)
+    .join("");
+  const html = buildBrandedEmail({
+    headerSubtitle: "Automation",
+    body: bodyHtml || "<p style=\"margin:0; font-size:15px; color:#71717a;\">No content.</p>",
+    title: subj,
+  });
+  return sendEmail(to, subj, html);
+}
+
 /** Shared branded layout: clean header (no gradient bar), body slot, footer with background. */
 function buildBrandedEmail(options: {
   headerSubtitle: string;

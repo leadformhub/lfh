@@ -134,6 +134,26 @@ model Form {
   emailOtpVerifications  EmailOtpVerification[]
   smsLogs                SmsLog[]
   analyticsEvents        AnalyticsEvent[]
+  automationRules        AutomationRule[]
+}
+
+model AutomationRule {
+  id               String   @id @default(cuid())
+  formId           String   @map("form_id")
+  name             String?  @db.VarChar(255)
+  enabled          Boolean  @default(true)
+  trigger          String   @db.VarChar(64) // lead_submitted | lead_stage_changed
+  triggerStageName String?  @map("trigger_stage_name") @db.VarChar(128)
+  action           String   @db.VarChar(64) // email_lead | email_admin
+  subject          String   @db.Text
+  body             String   @db.Text
+  order            Int      @default(0) // display order
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@map("automation_rules")
 }
 
 model EmailOtpVerification {

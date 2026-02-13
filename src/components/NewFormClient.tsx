@@ -62,7 +62,7 @@ export function NewFormClient({
       }
       const formId = data.form?.id ?? data.id;
       if (formId) {
-        router.replace(`/${username}/forms/${formId}/design`);
+        router.replace(`/${username}/forms/${formId}`);
         router.refresh();
       } else {
         window.location.href = `/${username}/forms`;

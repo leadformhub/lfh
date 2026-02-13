@@ -130,7 +130,7 @@ export default async function DashboardPage({
                 <p className="text-sm font-medium text-neutral-500">Top performing form</p>
                 {topPerformingForm ? (
                   <Link
-                    href={`/${username}/forms/${topPerformingForm.id}/design`}
+                    href={`/${username}/forms/${topPerformingForm.id}`}
                     className="mt-2 block font-heading text-base font-semibold tracking-tight text-neutral-900 transition-colors hover:text-blue-600 sm:text-lg"
                   >
                     <span className="line-clamp-2">{topPerformingForm.name}</span>
@@ -276,7 +276,7 @@ export default async function DashboardPage({
                       {topForms.map((form) => (
                         <li key={form.id} className="flex flex-col gap-1 py-4 first:pt-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                           <Link
-                            href={`/${username}/forms/${form.id}/design`}
+                            href={`/${username}/forms/${form.id}`}
                             className="min-w-0 flex-1 font-medium text-neutral-900 hover:underline"
                           >
                             <span className="truncate">{form.name}</span>
