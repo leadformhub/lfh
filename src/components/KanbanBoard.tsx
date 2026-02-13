@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { LeadDetailsModal } from "@/components/LeadDetailsModal";
 import {
   DndContext,
   type DragEndEvent,
@@ -98,10 +99,14 @@ function DroppableColumn({
 
 function DraggableCard({
   lead,
+  stageName,
   keyToLabel,
+  onViewLead,
 }: {
   lead: BoardLead;
+  stageName: string;
   keyToLabel: Map<string, string>;
+  onViewLead: (lead: BoardLead & { stageName: string }) => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: lead.id });
   let parsed: Record<string, unknown> = {};
@@ -115,6 +120,12 @@ function DraggableCard({
   const secondary = entries.slice(1, 3);
   const label = (key: string) => keyToLabel.get(key) ?? humanizeKey(key);
 
+  const handleViewClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onViewLead({ ...lead, stageName });
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -122,26 +133,41 @@ function DraggableCard({
       {...attributes}
       className={`cursor-grab rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-2.5 shadow-[var(--shadow-xs)] transition-shadow active:cursor-grabbing sm:p-3 ${isDragging ? "opacity-60 shadow-[var(--shadow-md)]" : "hover:shadow-[var(--shadow-sm)]"}`}
     >
-      {primary && (
-        <p className="truncate text-sm font-medium text-[var(--foreground)]">
-          {String(primary[1])}
-        </p>
-      )}
-      {secondary.length > 0 && (
-        <div className="mt-1.5 space-y-0.5">
-          {secondary.map(([k, v]) => (
-            <div key={k} className="flex gap-1.5 text-xs">
-              <span className="shrink-0 text-[var(--foreground-muted)]">{label(k)}:</span>
-              <span className="min-w-0 truncate text-[var(--foreground)]">{String(v)}</span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          {primary && (
+            <p className="truncate text-sm font-medium text-[var(--foreground)]">
+              {String(primary[1])}
+            </p>
+          )}
+          {secondary.length > 0 && (
+            <div className="mt-1.5 space-y-0.5">
+              {secondary.map(([k, v]) => (
+                <div key={k} className="flex gap-1.5 text-xs">
+                  <span className="shrink-0 text-[var(--foreground-muted)]">{label(k)}:</span>
+                  <span className="min-w-0 truncate text-[var(--foreground)]">{String(v)}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
+        <button
+          type="button"
+          onClick={handleViewClick}
+          className="shrink-0 rounded p-1.5 text-[var(--color-accent)] transition-colors hover:bg-[var(--color-accent-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-1"
+          aria-label="View lead details"
+        >
+          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
 
-const MemoizedDraggableCard = React.memo(DraggableCard);
+const MemoizedDraggableCard = React.memo(DraggableCard) as typeof DraggableCard;
 
 export function KanbanBoard({
   formId,
@@ -162,6 +188,11 @@ export function KanbanBoard({
   );
   const [error, setError] = useState<string | null>(null);
   const [selectedFormId, setSelectedFormId] = useState(formId);
+  const [viewLead, setViewLead] = useState<(BoardLead & { stageName: string }) | null>(null);
+
+  const handleViewLead = useCallback((lead: BoardLead & { stageName: string }) => {
+    setViewLead(lead);
+  }, []);
 
   const keyToLabel = useMemo(() => buildKeyToLabelMap(initialForm), [initialForm]);
 
@@ -330,7 +361,13 @@ export function KanbanBoard({
         count={board.unassignedLeads.length}
       >
         {board.unassignedLeads.map((lead) => (
-          <MemoizedDraggableCard key={lead.id} lead={lead} keyToLabel={keyToLabel} />
+          <MemoizedDraggableCard
+            key={lead.id}
+            lead={lead}
+            stageName="New"
+            keyToLabel={keyToLabel}
+            onViewLead={handleViewLead}
+          />
         ))}
       </DroppableColumn>
       {board.leadsByStage.map((stage, idx) => (
@@ -341,7 +378,13 @@ export function KanbanBoard({
           count={stage.leads.length}
         >
           {stage.leads.map((lead) => (
-            <MemoizedDraggableCard key={lead.id} lead={lead} keyToLabel={keyToLabel} />
+            <MemoizedDraggableCard
+              key={lead.id}
+              lead={lead}
+              stageName={idx === 0 && stage.stageName === "New" ? "To Contact" : stage.stageName}
+              keyToLabel={keyToLabel}
+              onViewLead={handleViewLead}
+            />
           ))}
         </DroppableColumn>
       ))}
@@ -382,6 +425,12 @@ export function KanbanBoard({
           </div>
         </DndContext>
       )}
+      <LeadDetailsModal
+        open={Boolean(viewLead)}
+        onClose={() => setViewLead(null)}
+        lead={viewLead ? { ...viewLead, formId: viewLead.formId ?? "", formName: viewLead.formName } : null}
+        form={initialForm}
+      />
     </div>
   );
 }

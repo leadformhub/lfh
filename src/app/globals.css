@@ -726,6 +726,31 @@ p + p {
   animation: fade-in-up var(--transition-slow) ease-out forwards;
 }
 
+/* Soft popup / tooltip-like entrance (lighter, quicker) */
+@keyframes soft-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-soft-pop {
+  animation: soft-pop-in 0.18s ease-out forwards;
+}
+
+@keyframes soft-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-soft-overlay {
+  animation: soft-overlay-in 0.15s ease-out forwards;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { createLeadActivity } from "@/services/lead-activity.service";
 
 const FREE_PLAN_LEADS_CAP = 50;
 
@@ -257,15 +258,26 @@ export async function updateLeadStage(
 ): Promise<{ ok: boolean; error?: string }> {
   const lead = await prisma.lead.findFirst({
     where: { id: leadId, userId },
-    select: { id: true },
+    select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
   });
   if (!lead) return { ok: false, error: "Lead not found" };
+
+  const fromStageId = lead.stageId ?? null;
+  const fromStageName = lead.stage?.name ?? "New";
 
   if (stageId === null) {
     await prisma.lead.update({
       where: { id: leadId },
       data: { stageId: null },
     });
+    await createLeadActivity(leadId, "stage_changed", {
+      stageId: null,
+      stageName: "New",
+      fromStageId,
+      fromStageName,
+    }).catch((err) =>
+      console.error("[pipelines] Failed to log stage change activity:", err)
+    );
     return { ok: true };
   }
 
@@ -279,5 +291,13 @@ export async function updateLeadStage(
     where: { id: leadId },
     data: { stageId },
   });
+  await createLeadActivity(leadId, "stage_changed", {
+    stageId,
+    stageName: stage.name === "New" ? "To Contact" : stage.name,
+    fromStageId,
+    fromStageName,
+  }).catch((err) =>
+    console.error("[pipelines] Failed to log stage change activity:", err)
+  );
   return { ok: true };
 }

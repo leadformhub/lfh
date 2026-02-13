@@ -161,9 +161,10 @@ model Lead {
   userAgent  String?  @map("user_agent")
   createdAt  DateTime @default(now()) @map("created_at")
 
-  form   Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
-  user   User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
-  stage  PipelineStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  form       Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
+  user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  stage      PipelineStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  activities LeadActivity[]
 
   @@index([formId])
   @@index([userId])
@@ -172,6 +173,20 @@ model Lead {
   @@index([userId, createdAt])
   @@index([userId, formId])
   @@index([userId, formId, createdAt])
+}
+
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String   @map("lead_id")
+  type      String   // created | stage_changed | deleted
+  metadata  String?  @db.Text // JSON: { stageId?, stageName?, fromStageId?, fromStageName?, ... }
+  createdAt DateTime @default(now()) @map("created_at")
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([leadId, createdAt])
+  @@map("lead_activities")
 }
 
 model Pipeline {

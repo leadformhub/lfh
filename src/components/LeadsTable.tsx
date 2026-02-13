@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { LeadDetailsModal } from "@/components/LeadDetailsModal";
 
 /** One column per form field: id, name (storage key), label (header). Order = form design order. */
 type SchemaColumn = { id: string; name: string; label: string };
@@ -78,32 +79,6 @@ function getOrderedSchemaColumns(form: ApiForm): SchemaColumn[] {
     .filter((f) => f.id);
 }
 
-/** Build a map from data key (resolved from schema) to display label for "All submitted fields" detail view. */
-function buildKeyToLabelMap(form: ApiForm): Map<string, string> {
-  const map = new Map<string, string>();
-  if (!form?.schema_json || typeof form.schema_json !== "object") return map;
-  const raw = form.schema_json as { fields?: { id?: string; name?: string; label?: string; type?: string }[] };
-  const fields = Array.isArray(raw.fields) ? raw.fields : [];
-  for (const f of fields) {
-    const label = (f.label && String(f.label).trim()) || f.name || f.id || "";
-    if (!label) continue;
-    const dataKey = resolveDataKey(f);
-    if (dataKey) map.set(dataKey, label);
-    const id = f.id ?? "";
-    if (id && id !== dataKey) map.set(id, label);
-  }
-  return map;
-}
-
-/** Humanize a raw key for display when no schema label is available (e.g. "field_123" → "Field 123"). */
-function humanizeKey(key: string): string {
-  if (!key) return "Field";
-  const withoutPrefix = key.replace(/^field_/i, "").trim();
-  if (!withoutPrefix) return "Field";
-  if (/^\d+$/.test(withoutPrefix)) return "Field";
-  return withoutPrefix.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 /** Cell value from lead data for one schema column: data[field.name] or data[field.id], or "-" if missing. */
 function getCellValue(data: Record<string, unknown>, field: SchemaColumn): string {
   const v = data[field.name] ?? data[field.id];
@@ -138,7 +113,7 @@ export function LeadsTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(currentSearch);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [viewLeadId, setViewLeadId] = useState<string | null>(null);
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
 
   const [form, setForm] = useState<ApiForm>(
@@ -261,25 +236,7 @@ export function LeadsTable({
     return val;
   }
 
-  const keyToLabelMap = React.useMemo(() => buildKeyToLabelMap(form), [form]);
-
-  function AllFieldsList({ data }: { data: Record<string, unknown> }) {
-    const entries = Object.entries(data).filter(([, v]) => v != null && String(v).trim() !== "");
-    if (entries.length === 0) return <p className="text-base text-[var(--foreground-muted)]">No data</p>;
-    return (
-      <ul className="space-y-2 text-sm">
-        {entries.map(([key, val]) => {
-          const displayLabel = keyToLabelMap.get(key) ?? humanizeKey(key);
-          return (
-            <li key={key} className="flex gap-3 border-b border-[var(--border-subtle)] pb-2 last:border-0 last:pb-0">
-              <span className="min-w-[120px] shrink-0 font-medium text-[var(--foreground-muted)]">{displayLabel}</span>
-              <span className="min-w-0 break-words text-[var(--foreground)]">{formatDisplayValue(String(val))}</span>
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
+  const viewLead = viewLeadId ? (leads.find((l) => l.id === viewLeadId) ?? null) : null;
 
   async function handleDeleteLead(leadId: string) {
     if (!confirm("Delete this lead? This cannot be undone.")) return;
@@ -290,7 +247,7 @@ export function LeadsTable({
         credentials: "same-origin",
       });
       if (res.ok) {
-        setExpandedId((id) => (id === leadId ? null : id));
+        setViewLeadId((id) => (id === leadId ? null : id));
         router.refresh();
         refetch();
       } else {
@@ -434,10 +391,8 @@ export function LeadsTable({
                 ) : (
                   leads.map((l) => {
                     const data = parseData(l.data);
-                    const isExpanded = expandedId === l.id;
                     return (
-                      <React.Fragment key={l.id}>
-                        <tr className="border-b border-[var(--border-subtle)] transition-colors hover:bg-[var(--neutral-50)]/50">
+                      <tr key={l.id} className="border-b border-[var(--border-subtle)] transition-colors hover:bg-[var(--neutral-50)]/50">
                           <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-[var(--foreground-muted)]" title={l.id}>
                             {l.id.slice(0, 8)}
                           </td>
@@ -476,10 +431,10 @@ export function LeadsTable({
                           <td className="whitespace-nowrap px-4 py-3">
                             <button
                               type="button"
-                              onClick={() => setExpandedId(expandedId === l.id ? null : l.id)}
+                              onClick={() => setViewLeadId(l.id)}
                               className="text-sm font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]"
                             >
-                              {isExpanded ? "Hide" : "View"}
+                              View
                             </button>
                             <button
                               type="button"
@@ -494,29 +449,6 @@ export function LeadsTable({
                             </button>
                           </td>
                         </tr>
-                        {isExpanded && (
-                          <tr key={`${l.id}-detail`} className="bg-[var(--neutral-50)]/80">
-                            <td colSpan={colCount} className="px-4 py-4 text-sm">
-                              <div className="flex flex-wrap items-start gap-4">
-                                <div className="min-w-0 flex-1">
-                                  <p className="mb-2 text-base font-medium text-[var(--foreground)]">All submitted fields</p>
-                                  <AllFieldsList data={data} />
-                                </div>
-                                <div className="w-full border-t border-[var(--border-subtle)] pt-3 mt-1">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDeleteLead(l.id)}
-                                    disabled={deletingLeadId === l.id}
-                                    className="text-sm font-medium text-[var(--color-danger)] transition-colors hover:underline disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-danger)]"
-                                  >
-                                    {deletingLeadId === l.id ? "Deleting…" : "Delete Lead"}
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
                     );
                   })
                 )}
@@ -532,7 +464,6 @@ export function LeadsTable({
               <div className="px-4 py-8 text-center text-sm text-[var(--foreground-muted)]">No leads yet. Submissions from your public form will appear here.</div>
             ) : leads.map((l) => {
               const data = parseData(l.data);
-              const isExpanded = expandedId === l.id;
               return (
                 <div key={l.id} className="p-4">
                   <div className="space-y-2">
@@ -574,10 +505,10 @@ export function LeadsTable({
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => setExpandedId(isExpanded ? null : l.id)}
+                      onClick={() => setViewLeadId(l.id)}
                       className="text-sm font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]"
                     >
-                      {isExpanded ? "Hide Details" : "View All Fields"}
+                      View
                     </button>
                     <button
                       type="button"
@@ -588,11 +519,6 @@ export function LeadsTable({
                       {deletingLeadId === l.id ? "Deleting…" : "Delete"}
                     </button>
                   </div>
-                  {isExpanded && (
-                    <div className="mt-3 pt-3 border-t border-neutral-200">
-                      <AllFieldsList data={data} />
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -624,6 +550,12 @@ export function LeadsTable({
           </div>
         )}
       </div>
+      <LeadDetailsModal
+        open={Boolean(viewLeadId)}
+        onClose={() => setViewLeadId(null)}
+        lead={viewLead}
+        form={form}
+      />
     </div>
   );
 }

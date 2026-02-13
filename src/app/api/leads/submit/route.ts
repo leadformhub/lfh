@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createLead } from "@/services/leads.service";
+import { createLeadActivity } from "@/services/lead-activity.service";
 import { isPhoneVerifiedForSubmission, isEmailVerifiedForSubmission } from "@/services/otp.service";
 import { recordEvent } from "@/services/analytics.service";
 import { sendNewLeadNotification } from "@/lib/email";
@@ -183,6 +184,9 @@ export async function POST(req: NextRequest) {
 
     const structuredData = buildStructuredData(formData, schema);
     const lead = await createLead(formId, form.userId, structuredData, { ipAddress, userAgent });
+    await createLeadActivity(lead.id, "created").catch((err) =>
+      console.error("[leads/submit] Failed to log lead activity:", err)
+    );
     await recordEvent(formId, "submission");
 
     const emailAlertEnabled = schema.settings?.emailAlertEnabled ?? true;
