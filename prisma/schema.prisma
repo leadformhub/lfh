@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -172,6 +172,7 @@ model Lead {
   @@index([userId, createdAt])
   @@index([userId, formId])
   @@index([userId, formId, createdAt])
+  @@map("lead")
 }
 
 model Pipeline {
