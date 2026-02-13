@@ -74,6 +74,11 @@ const sharingItems = [
     answer:
       "No. Using the link is as simple as copying and pasting. For embedding, you (or your web developer) paste the provided code into your website. We give you the exact code; no programming knowledge is required to copy and paste it.",
   },
+  {
+    question: "Does LeadFormHub track where my leads come from (e.g. Facebook, Google)?",
+    answer:
+      "Yes. If you add UTM parameters to your form link (e.g. ?utm_source=facebook&utm_medium=paid&utm_campaign=summer), we store them with each lead. You can see the source in each lead's details. On Pro and Business plans, the Analytics page shows a 'Lead source analytics' section with leads and conversion by source and campaign.",
+  },
 ];
 
 const leadsItems = [

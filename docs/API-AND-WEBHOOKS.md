@@ -77,6 +77,9 @@ Submit a new lead for a **public** form. The form must have status `PUBLIC`.
 | `formId` | string | Yes | Form ID (from form builder or forms list API) |
 | `data` | object | Yes | Field values keyed by field `id` from the form schema |
 | `recaptchaToken` | string | Conditional | Required if the form has reCAPTCHA enabled |
+| `utm` | object | No | UTM params: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` (strings). Stored per lead for source analytics. |
+| `referrerUrl` | string | No | HTTP referrer URL. Stored per lead. |
+| `landingPageUrl` | string | No | Full URL of the page where the user submitted. Stored per lead. |
 
 **Example:**
 
@@ -110,6 +113,7 @@ Field keys in `data` must match the form schema field IDs. For semantic keys (e.
 **Notes:**
 
 - If the form has **email OTP** or **phone OTP** enabled, the submitter must complete verification before this endpoint accepts the submission.
+- Optional `utm`, `referrerUrl`, and `landingPageUrl` are used for lead source tracking. They appear in lead details and (on Pro/Business) in Analytics under "Lead source analytics".
 - Optional headers: `User-Agent`, `X-Forwarded-For` / `X-Real-IP` (for IP logging).
 
 ---

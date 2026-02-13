@@ -14,6 +14,13 @@ type LeadForModal = {
   stageId?: string | null;
   stageName?: string;
   followUpBy?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  utmTerm?: string | null;
+  utmContent?: string | null;
+  referrerUrl?: string | null;
+  landingPageUrl?: string | null;
 };
 
 type ApiForm = {
@@ -273,6 +280,78 @@ export function LeadDetailsModal({
                 </div>
               </div>
             </div>
+            {(() => {
+              const src = lead.utmSource ?? "";
+              const med = lead.utmMedium ?? "";
+              const camp = lead.utmCampaign ?? "";
+              const term = lead.utmTerm ?? "";
+              const content = lead.utmContent ?? "";
+              const ref = lead.referrerUrl ?? "";
+              const land = lead.landingPageUrl ?? "";
+              const hasSource = [src, med, camp, term, content, ref, land].some((s) => s && String(s).trim() !== "");
+              if (!hasSource) return null;
+              const safeUrl = (s: string) => {
+                const t = String(s).trim();
+                return t && (t.startsWith("http://") || t.startsWith("https://")) ? t : null;
+              };
+              return (
+                <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--neutral-50)]/50 p-4">
+                  <p className="text-base font-semibold text-[var(--foreground-heading)]">Lead source</p>
+                  <div className="flex flex-col gap-2 text-sm">
+                    {src && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Source</span>
+                        <span className="text-[var(--foreground)]">{src}</span>
+                      </div>
+                    )}
+                    {med && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Medium</span>
+                        <span className="text-[var(--foreground)]">{med}</span>
+                      </div>
+                    )}
+                    {camp && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Campaign</span>
+                        <span className="text-[var(--foreground)]">{camp}</span>
+                      </div>
+                    )}
+                    {term && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Term</span>
+                        <span className="text-[var(--foreground)]">{term}</span>
+                      </div>
+                    )}
+                    {content && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Content</span>
+                        <span className="text-[var(--foreground)]">{content}</span>
+                      </div>
+                    )}
+                    {ref && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Referrer</span>
+                        {safeUrl(ref) ? (
+                          <a href={safeUrl(ref)!} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] hover:underline break-all">{ref}</a>
+                        ) : (
+                          <span className="text-[var(--foreground)] break-all">{ref}</span>
+                        )}
+                      </div>
+                    )}
+                    {land && (
+                      <div className="flex flex-wrap gap-x-2">
+                        <span className="font-medium text-[var(--foreground-muted)] shrink-0">Landing page</span>
+                        {safeUrl(land) ? (
+                          <a href={safeUrl(land)!} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] hover:underline break-all">{land}</a>
+                        ) : (
+                          <span className="text-[var(--foreground)] break-all">{land}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
             <div>
               <p className="mb-3 text-base font-semibold text-[var(--foreground-heading)]">All submitted fields</p>
               <ul className="space-y-3">

@@ -50,6 +50,13 @@ export async function GET(req: NextRequest) {
     stageId: l.stageId ?? null,
     stageName: l.stage?.name ?? "New",
     followUpBy: l.followUpBy?.toISOString() ?? null,
+    utmSource: l.utmSource ?? null,
+    utmMedium: l.utmMedium ?? null,
+    utmCampaign: l.utmCampaign ?? null,
+    utmTerm: l.utmTerm ?? null,
+    utmContent: l.utmContent ?? null,
+    referrerUrl: l.referrerUrl ?? null,
+    landingPageUrl: l.landingPageUrl ?? null,
   }));
 
   return NextResponse.json({

@@ -280,3 +280,76 @@ export async function getRecentLeads(userId: string, limit = 5) {
     };
   });
 }
+
+/** Referrers from our own app (localhost or site host) are treated as no referrer, so source = Direct. */
+function isOwnSiteReferrer(referrerUrl: string | null): boolean {
+  if (!referrerUrl?.trim()) return false;
+  try {
+    const ref = new URL(referrerUrl);
+    const host = ref.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1") return true;
+    const siteUrl = process.env.NEXTAUTH_URL || process.env.SITE_URL || "";
+    if (siteUrl) {
+      const siteHost = new URL(siteUrl).hostname.toLowerCase();
+      if (host === siteHost) return true;
+    }
+    if (host.endsWith("leadformhub.com")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeSource(utmSource: string | null, referrerUrl: string | null): string {
+  const src = utmSource?.trim();
+  if (src) return src;
+  const ref = referrerUrl?.trim();
+  if (!ref) return "Direct";
+  if (isOwnSiteReferrer(referrerUrl)) return "Direct";
+  return "Organic";
+}
+
+/** Leads grouped by normalized source (utm_source, or Direct/Organic). Won = stage name "Won" (case-insensitive). */
+export async function getLeadsBySource(userId: string): Promise<{ source: string; leads: number; won: number }[]> {
+  const leads = await prisma.lead.findMany({
+    where: { userId },
+    select: { utmSource: true, referrerUrl: true, stage: { select: { name: true } } },
+  });
+  const bySource = new Map<string, { leads: number; won: number }>();
+  for (const l of leads) {
+    const source = normalizeSource(l.utmSource, l.referrerUrl);
+    const cur = bySource.get(source) ?? { leads: 0, won: 0 };
+    cur.leads += 1;
+    if (l.stage?.name?.toLowerCase() === "won") cur.won += 1;
+    bySource.set(source, cur);
+  }
+  return Array.from(bySource.entries())
+    .map(([source, counts]) => ({ source, leads: counts.leads, won: counts.won }))
+    .sort((a, b) => b.leads - a.leads);
+}
+
+/** Leads grouped by utm_campaign. Won = stage name "Won" (case-insensitive). */
+export async function getLeadsByCampaign(userId: string): Promise<{ campaign: string; source?: string; leads: number; won: number }[]> {
+  const leads = await prisma.lead.findMany({
+    where: { userId },
+    select: { utmCampaign: true, utmSource: true, referrerUrl: true, stage: { select: { name: true } } },
+  });
+  const byCampaign = new Map<string, { leads: number; won: number; sourceSample: string | null }>();
+  for (const l of leads) {
+    const campaign = l.utmCampaign?.trim() || "(none)";
+    const cur = byCampaign.get(campaign) ?? { leads: 0, won: 0, sourceSample: null };
+    cur.leads += 1;
+    if (l.stage?.name?.toLowerCase() === "won") cur.won += 1;
+    if (!cur.sourceSample && (l.utmSource?.trim() || l.referrerUrl?.trim()))
+      cur.sourceSample = normalizeSource(l.utmSource, l.referrerUrl);
+    byCampaign.set(campaign, cur);
+  }
+  return Array.from(byCampaign.entries())
+    .map(([campaign, counts]) => ({
+      campaign,
+      source: counts.sourceSample ?? undefined,
+      leads: counts.leads,
+      won: counts.won,
+    }))
+    .sort((a, b) => b.leads - a.leads);
+}

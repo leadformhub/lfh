@@ -52,6 +52,9 @@ export default function ApiDocsPage() {
                   </code>{" "}
                   — send <code className="rounded bg-[var(--border-subtle)] px-1.5 py-0.5 text-sm">formId</code> and{" "}
                   <code className="rounded bg-[var(--border-subtle)] px-1.5 py-0.5 text-sm">data</code> (field values).
+                  Optional: <code className="rounded bg-[var(--border-subtle)] px-1.5 py-0.5 text-sm">utm</code> (object with utm_source, utm_medium, utm_campaign, utm_term, utm_content),{" "}
+                  <code className="rounded bg-[var(--border-subtle)] px-1.5 py-0.5 text-sm">referrerUrl</code>,{" "}
+                  <code className="rounded bg-[var(--border-subtle)] px-1.5 py-0.5 text-sm">landingPageUrl</code> for lead source tracking.
                 </li>
                 <li>
                   <strong className="text-[var(--foreground)]">Forms:</strong> List, create, get, update, update schema,

@@ -9,6 +9,19 @@ function getRecaptchaScriptUrl(siteKey: string): string {
   return `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
 }
 
+/** Read UTM params from current URL (client-side). Returns object with only present keys. */
+function getUtmParams(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  const utm: Record<string, string> = {};
+  const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+  for (const key of keys) {
+    const v = params.get(key)?.trim();
+    if (v) utm[key] = v;
+  }
+  return utm;
+}
+
 export function PublicForm({
   formId,
   fields,
@@ -254,10 +267,21 @@ export function PublicForm({
           return;
         }
       }
+      const payload: Record<string, unknown> = {
+        formId,
+        data: values,
+        recaptchaToken,
+      };
+      if (typeof window !== "undefined") {
+        const utm = getUtmParams();
+        if (Object.keys(utm).length > 0) payload.utm = utm;
+        if (document.referrer) payload.referrerUrl = document.referrer;
+        payload.landingPageUrl = window.location.href;
+      }
       const res = await fetch("/api/leads/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formId, data: values, recaptchaToken }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {

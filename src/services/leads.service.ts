@@ -6,11 +6,24 @@ import { prisma } from "@/lib/db";
  * No DB column mapping for form fields.
  */
 
+export type CreateLeadSourceOptions = {
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  utmTerm?: string | null;
+  utmContent?: string | null;
+  referrerUrl?: string | null;
+  landingPageUrl?: string | null;
+};
+
 export async function createLead(
   formId: string,
   userId: string,
   data: Record<string, unknown>,
-  options?: { ipAddress?: string | null; userAgent?: string | null }
+  options?: {
+    ipAddress?: string | null;
+    userAgent?: string | null;
+  } & Partial<CreateLeadSourceOptions>
 ) {
   return prisma.lead.create({
     data: {
@@ -19,6 +32,13 @@ export async function createLead(
       dataJson: JSON.stringify(data),
       ipAddress: options?.ipAddress ?? null,
       userAgent: options?.userAgent ?? null,
+      utmSource: options?.utmSource ?? null,
+      utmMedium: options?.utmMedium ?? null,
+      utmCampaign: options?.utmCampaign ?? null,
+      utmTerm: options?.utmTerm ?? null,
+      utmContent: options?.utmContent ?? null,
+      referrerUrl: options?.referrerUrl ?? null,
+      landingPageUrl: options?.landingPageUrl ?? null,
     },
   });
 }

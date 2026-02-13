@@ -11,6 +11,8 @@ import {
   getViewsOverTime,
   getAllFormsWithStats,
   getTotalViews,
+  getLeadsBySource,
+  getLeadsByCampaign,
 } from "@/services/analytics.service";
 import { SITE_URL } from "@/lib/seo";
 
@@ -85,6 +87,8 @@ export default async function AnalyticsPage({
     viewsOverTime,
     allFormsWithStats,
     totalViews,
+    leadsBySource,
+    leadsByCampaign,
   ] = await Promise.all([
     getDashboardStats(session.userId),
     getTopForms(session.userId, 10),
@@ -92,6 +96,8 @@ export default async function AnalyticsPage({
     getViewsOverTime(session.userId, 30),
     getAllFormsWithStats(session.userId),
     getTotalViews(session.userId),
+    getLeadsBySource(session.userId),
+    getLeadsByCampaign(session.userId),
   ]);
 
   const avgConversion =
@@ -334,6 +340,84 @@ export default async function AnalyticsPage({
                     </div>
                   </>
                 )}
+              </div>
+            </div>
+
+            {/* Lead source analytics */}
+            <div className="overflow-hidden rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)]">
+              <div className="border-b border-[var(--border-default)] px-4 py-4 sm:px-6 sm:py-5">
+                <h2 className="font-heading text-base font-semibold text-[var(--foreground-heading)] sm:text-lg">
+                  Lead source analytics
+                </h2>
+                <p className="mt-0.5 text-base text-[var(--foreground-muted)]">
+                  Leads and conversion by source and campaign (Won = pipeline stage &quot;Won&quot;)
+                </p>
+              </div>
+              <div className="p-4 sm:p-6 space-y-8">
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--foreground-muted)] mb-3">Leads by source</h3>
+                  {leadsBySource.length === 0 ? (
+                    <p className="py-4 text-center text-base text-[var(--foreground-muted)]">No source data yet. Use UTM params on your form links to see breakdowns.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[400px] text-base">
+                        <thead>
+                          <tr className="border-b border-[var(--border-default)]">
+                            <th className="py-3 text-left font-medium text-[var(--foreground-muted)]">Source</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Leads</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Won</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Conversion %</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {leadsBySource.map((row) => (
+                            <tr key={row.source} className="border-b border-[var(--neutral-100)] last:border-0 hover:bg-[var(--neutral-50)]/50">
+                              <td className="py-3 font-medium text-[var(--foreground)]">{row.source}</td>
+                              <td className="py-3 text-right text-[var(--foreground)]">{row.leads.toLocaleString()}</td>
+                              <td className="py-3 text-right text-[var(--foreground)]">{row.won.toLocaleString()}</td>
+                              <td className="py-3 text-right font-medium text-[var(--foreground)]">
+                                {row.leads > 0 ? ((row.won / row.leads) * 100).toFixed(1) : 0}%
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--foreground-muted)] mb-3">Leads by campaign</h3>
+                  {leadsByCampaign.length === 0 ? (
+                    <p className="py-4 text-center text-base text-[var(--foreground-muted)]">No campaign data yet. Use utm_campaign on your form links.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[400px] text-base">
+                        <thead>
+                          <tr className="border-b border-[var(--border-default)]">
+                            <th className="py-3 text-left font-medium text-[var(--foreground-muted)]">Campaign</th>
+                            <th className="py-3 text-left font-medium text-[var(--foreground-muted)]">Source</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Leads</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Won</th>
+                            <th className="py-3 text-right font-medium text-[var(--foreground-muted)]">Conversion %</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {leadsByCampaign.map((row) => (
+                            <tr key={row.campaign} className="border-b border-[var(--neutral-100)] last:border-0 hover:bg-[var(--neutral-50)]/50">
+                              <td className="py-3 font-medium text-[var(--foreground)]">{row.campaign}</td>
+                              <td className="py-3 text-[var(--foreground)]">{row.source ?? "—"}</td>
+                              <td className="py-3 text-right text-[var(--foreground)]">{row.leads.toLocaleString()}</td>
+                              <td className="py-3 text-right text-[var(--foreground)]">{row.won.toLocaleString()}</td>
+                              <td className="py-3 text-right font-medium text-[var(--foreground)]">
+                                {row.leads > 0 ? ((row.won / row.leads) * 100).toFixed(1) : 0}%
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </>

@@ -5,6 +5,9 @@ import { prisma } from "@/lib/db";
 import { getLeadsForExport, parseLeadData } from "@/services/leads.service";
 import { getFormById, getFormsWithSchemaByUserId } from "@/services/forms.service";
 import { createAuditLog } from "@/services/audit.service";
+import { canUseSourceDashboard } from "@/lib/plan-features";
+import { getLeadsBySource } from "@/services/analytics.service";
+import type { PlanKey } from "@/lib/plans";
 function getWatermarkText(userName: string): string {
   const date = new Date().toLocaleDateString(undefined, {
     year: "numeric",
@@ -23,6 +26,33 @@ export async function GET(req: NextRequest) {
   const formId = searchParams.get("formId") || undefined;
   const format = (searchParams.get("format") || "csv").toLowerCase();
   const isExcel = format === "xlsx" || format === "excel";
+  const report = searchParams.get("report") || undefined;
+
+  if (report === "source") {
+    const plan = (session.plan ?? "free") as PlanKey;
+    if (!canUseSourceDashboard(plan)) {
+      return NextResponse.json({ error: "Source report is available on Pro and Business plans." }, { status: 403 });
+    }
+    const sourceRows = await getLeadsBySource(session.userId);
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const headers = ["Source", "Leads", "Won", "Conversion %"];
+    const csv =
+      headers.join(",") +
+      "\n" +
+      sourceRows
+        .map((row) => {
+          const pct = row.leads > 0 ? ((row.won / row.leads) * 100).toFixed(1) : "0";
+          return [row.source, row.leads, row.won, pct].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",");
+        })
+        .join("\n");
+    await createAuditLog(session.userId, "lead_export", { format: "csv", report: "source", count: sourceRows.length });
+    return new NextResponse(csv, {
+      headers: {
+        "Content-Type": "text/csv",
+        "Content-Disposition": `attachment; filename="leads-by-source-${dateStr}.csv"`,
+      },
+    });
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
@@ -56,8 +86,9 @@ export async function GET(req: NextRequest) {
       .map(([storageKey, label]) => ({ storageKey, label }));
   }
 
+  const sourceHeaders = ["Source", "Medium", "Campaign", "Term", "Content", "Referrer URL", "Landing page URL"];
   const fieldHeaders = orderedFields.map((f) => f.label);
-  const headers: string[] = ["Lead ID", "Form", ...fieldHeaders, "Created At"];
+  const headers: string[] = ["Lead ID", "Form", ...fieldHeaders, ...sourceHeaders, "Created At"];
 
   const rows: Record<string, string>[] = leads.map((l) => {
     const data = parseLeadData(l.dataJson) as Record<string, string>;
@@ -69,6 +100,13 @@ export async function GET(req: NextRequest) {
       const val = data[field.storageKey];
       row[field.label] = val != null ? String(val).trim() : "";
     }
+    row["Source"] = l.utmSource ?? "";
+    row["Medium"] = l.utmMedium ?? "";
+    row["Campaign"] = l.utmCampaign ?? "";
+    row["Term"] = l.utmTerm ?? "";
+    row["Content"] = l.utmContent ?? "";
+    row["Referrer URL"] = l.referrerUrl ?? "";
+    row["Landing page URL"] = l.landingPageUrl ?? "";
     row["Created At"] = l.createdAt.toISOString();
     return row;
   });

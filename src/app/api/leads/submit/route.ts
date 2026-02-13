@@ -84,6 +84,17 @@ function validateSubmission(
   return null;
 }
 
+const UTM_MAX_LEN = 512;
+const URL_MAX_LEN = 2048;
+
+/** Trim and cap length; return null for empty. Used for optional UTM/URL fields. */
+function sanitizeOptionalString(value: unknown, maxLen: number): string | null {
+  if (value == null) return null;
+  const s = String(value).trim();
+  if (s === "") return null;
+  return s.length > maxLen ? s.slice(0, maxLen) : s;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -91,6 +102,9 @@ export async function POST(req: NextRequest) {
       formId,
       data: rawData,
       recaptchaToken,
+      utm: rawUtm,
+      referrerUrl: rawReferrerUrl,
+      landingPageUrl: rawLandingPageUrl,
     } = body;
     if (!formId || typeof formId !== "string") {
       return NextResponse.json({ error: "Invalid request: formId required" }, { status: 400 });
@@ -182,8 +196,30 @@ export async function POST(req: NextRequest) {
     const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip") ?? null;
     const userAgent = req.headers.get("user-agent") ?? null;
 
+    const utm =
+      rawUtm != null && typeof rawUtm === "object" && !Array.isArray(rawUtm)
+        ? rawUtm as Record<string, unknown>
+        : {};
+    const utmSource = sanitizeOptionalString(utm.utm_source, UTM_MAX_LEN);
+    const utmMedium = sanitizeOptionalString(utm.utm_medium, UTM_MAX_LEN);
+    const utmCampaign = sanitizeOptionalString(utm.utm_campaign, UTM_MAX_LEN);
+    const utmTerm = sanitizeOptionalString(utm.utm_term, UTM_MAX_LEN);
+    const utmContent = sanitizeOptionalString(utm.utm_content, UTM_MAX_LEN);
+    const referrerUrl = sanitizeOptionalString(rawReferrerUrl, URL_MAX_LEN);
+    const landingPageUrl = sanitizeOptionalString(rawLandingPageUrl, URL_MAX_LEN);
+
     const structuredData = buildStructuredData(formData, schema);
-    const lead = await createLead(formId, form.userId, structuredData, { ipAddress, userAgent });
+    const lead = await createLead(formId, form.userId, structuredData, {
+      ipAddress,
+      userAgent,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmTerm,
+      utmContent,
+      referrerUrl,
+      landingPageUrl,
+    });
     await createLeadActivity(lead.id, "created").catch((err) =>
       console.error("[leads/submit] Failed to log lead activity:", err)
     );

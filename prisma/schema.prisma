@@ -157,10 +157,17 @@ model Lead {
   userId     String?   @map("user_id")  // null when user deleted; leads kept but unmapped
   stageId    String?   @map("stage_id") // optional; for Kanban board
   dataJson   String    @db.Text @map("data_json") // JSON of submitted field values (keyed by field id)
-  ipAddress  String?   @map("ip_address")
-  userAgent  String?   @map("user_agent")
-  followUpBy DateTime? @map("follow_up_by") // optional follow-up reminder date
-  createdAt  DateTime  @default(now()) @map("created_at")
+  ipAddress      String?   @map("ip_address")
+  userAgent      String?   @map("user_agent")
+  followUpBy     DateTime? @map("follow_up_by") // optional follow-up reminder date
+  utmSource      String?   @map("utm_source")
+  utmMedium      String?   @map("utm_medium")
+  utmCampaign    String?   @map("utm_campaign")
+  utmTerm        String?   @map("utm_term")
+  utmContent     String?   @map("utm_content")
+  referrerUrl    String?   @map("referrer_url")
+  landingPageUrl String?   @map("landing_page_url")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   form       Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
   user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
