@@ -154,10 +154,10 @@ export async function getSubmissionsOverTime(userId: string, days = 30) {
 
   type Row = { date: Date; submissions: bigint };
   const rows = await prisma.$queryRaw<Row[]>`
-    SELECT (created_at)::date as date, COUNT(*) as submissions
-    FROM lead
+    SELECT DATE(created_at) as date, COUNT(*) as submissions
+    FROM Lead
     WHERE user_id = ${userId} AND created_at >= ${since}
-    GROUP BY (created_at)::date
+    GROUP BY DATE(created_at)
     ORDER BY date
   `;
 
