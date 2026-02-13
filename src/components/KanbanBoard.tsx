@@ -22,6 +22,7 @@ type BoardLead = {
   data: string;
   createdAt: string;
   formName: string | null;
+  followUpBy?: string | null;
 };
 
 type BoardData = {

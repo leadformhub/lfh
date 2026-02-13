@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 
-export type LeadActivityType = "created" | "stage_changed" | "deleted";
+export type LeadActivityType = "created" | "stage_changed" | "deleted" | "note";
 
 export type StageChangedMetadata = {
   stageId?: string | null;

@@ -22,8 +22,8 @@ export function serializeBoardForApi(board: {
 }): {
   pipeline: { id: string; name: string; formId: string | null };
   stages: { id: string; name: string; order: number }[];
-  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
-  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy: string | null }[];
+  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy: string | null }[] }[];
 } {
   return {
     pipeline: board.pipeline,
@@ -35,6 +35,7 @@ export function serializeBoardForApi(board: {
       data: trimLeadDataForBoard(l.dataJson),
       createdAt: l.createdAt.toISOString(),
       formName: l.form?.name ?? null,
+      followUpBy: l.followUpBy?.toISOString() ?? null,
     })),
     leadsByStage: board.stages.map((s) => ({
       stageId: s.id,
@@ -47,6 +48,7 @@ export function serializeBoardForApi(board: {
         data: trimLeadDataForBoard(l.dataJson),
         createdAt: l.createdAt.toISOString(),
         formName: l.form?.name ?? null,
+        followUpBy: l.followUpBy?.toISOString() ?? null,
       })),
     })),
   };
@@ -160,6 +162,7 @@ export type LeadInStage = {
   stageId: string | null;
   dataJson: string;
   createdAt: Date;
+  followUpBy: Date | null;
   form: { id: string; name: string } | null;
 };
 
@@ -169,6 +172,7 @@ const leadSelect = {
   stageId: true,
   dataJson: true,
   createdAt: true,
+  followUpBy: true,
   form: { select: { name: true } as const },
 } as const;
 
@@ -226,6 +230,7 @@ export async function getLeadsByPipelineStages(
       stageId: lead.stageId,
       dataJson: lead.dataJson,
       createdAt: lead.createdAt,
+      followUpBy: lead.followUpBy ?? null,
       form: lead.form ? { id: "", name: lead.form.name } : null,
     };
     if (lead.stageId && byStage.has(lead.stageId)) {

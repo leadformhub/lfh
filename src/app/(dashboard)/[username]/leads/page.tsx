@@ -46,9 +46,11 @@ export default async function LeadsPage({
   const { username } = await params;
   if (!session) redirect("/login");
   if (session.username.toLowerCase() !== username.toLowerCase()) redirect(`/${session.username}/leads`);
-  const { page, formId, search, view } = await searchParams;
+  const sp = await searchParams;
+  const { page, formId, search, view } = sp;
   const pageNum = Math.max(1, parseInt(String(page || "1"), 10) || 1);
   const searchClean = typeof search === "string" && search.trim() ? search.trim() : undefined;
+  const followUpDue = (sp as { followUpDue?: string }).followUpDue === "1";
   const formsWithSchema = await getFormsWithSchemaByUserId(session.userId);
   const formsForSelect = formsWithSchema.map((f) => ({ id: f.id, name: f.name }));
   const formIdRaw = typeof formId === "string" && formId.trim() && formId !== "undefined" && formId !== "null" ? formId.trim() : undefined;
@@ -63,7 +65,7 @@ export default async function LeadsPage({
   }
 
   // Fetch leads and form ONLY when a form is selected (one form → many leads).
-  let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string; stageId?: string | null; stageName?: string }[] = [];
+  let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string; stageId?: string | null; stageName?: string; followUpBy?: string | null }[] = [];
   let total = 0;
   let perPage = 25;
   let initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null = null;
@@ -71,8 +73,8 @@ export default async function LeadsPage({
   let initialBoard: {
     pipeline: { id: string; name: string; formId: string | null };
     stages: { id: string; name: string; order: number }[];
-    unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
-    leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+    unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy?: string | null }[];
+    leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy?: string | null }[] }[];
   } | null = null;
 
   if (formIdClean) {
@@ -108,6 +110,7 @@ export default async function LeadsPage({
         formId: formIdClean,
         search: searchClean,
         plan,
+        followUpDue: followUpDue || undefined,
       }),
       allowBoard && pipeline
         ? getLeadsByPipelineStages(session.userId, pipeline.id, plan).then(serializeBoardForApi)
@@ -124,6 +127,7 @@ export default async function LeadsPage({
       createdAt: l.createdAt.toISOString(),
       stageId: l.stageId ?? null,
       stageName: l.stage?.name ?? "New",
+      followUpBy: l.followUpBy?.toISOString() ?? null,
     }));
     if (boardForView) initialBoard = boardForView;
   }

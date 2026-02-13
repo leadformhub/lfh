@@ -15,6 +15,7 @@ type LeadRow = {
   createdAt: string;
   stageId?: string | null;
   stageName?: string;
+  followUpBy?: string | null;
 };
 
 type PipelineStage = { id: string; name: string };
@@ -112,6 +113,7 @@ export function LeadsTable({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const currentFollowUpDue = searchParams.get("followUpDue") === "1";
   const [search, setSearch] = useState(currentSearch);
   const [viewLeadId, setViewLeadId] = useState<string | null>(null);
   const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
@@ -171,6 +173,7 @@ export function LeadsTable({
     params.set("page", String(initialPage));
     params.set("formId", currentFormId);
     if (search) params.set("search", search);
+    if (currentFollowUpDue) params.set("followUpDue", "1");
     fetch(`/api/leads?${params.toString()}`, { credentials: "same-origin" })
       .then((r) => {
         if (!r.ok) {
@@ -188,7 +191,7 @@ export function LeadsTable({
       })
       .catch(() => setLoadError("Could not load leads. Try refreshing."))
       .finally(() => setLoading(false));
-  }, [currentFormId, initialPage, search]);
+  }, [currentFormId, initialPage, search, currentFollowUpDue]);
 
   useEffect(() => {
     refetch();
@@ -196,7 +199,7 @@ export function LeadsTable({
 
   const totalPages = Math.ceil(total / perPage);
   const base = `/${username}/leads`;
-  const colCount = 1 + schemaColumns.length + 1 + 1 + 1; // Id + schema columns + Status + Submitted + Actions
+  const colCount = 1 + schemaColumns.length + 1 + 1 + 1 + 1; // Id + schema columns + Status + Submitted + Follow up + Actions
 
   async function handleStatusChange(leadId: string, newStageId: string | null) {
     setUpdatingStageLeadId(leadId);
@@ -267,6 +270,8 @@ export function LeadsTable({
     if (search) p.set("search", search);
     else p.delete("search");
     if (currentFormId) p.set("formId", currentFormId);
+    if (currentFollowUpDue) p.set("followUpDue", "1");
+    else p.delete("followUpDue");
     router.push(`${base}?${p.toString()}`);
   }
 
@@ -275,6 +280,18 @@ export function LeadsTable({
     p.set("page", "1");
     if (formId) p.set("formId", formId);
     else p.delete("formId");
+    if (currentFollowUpDue) p.set("followUpDue", "1");
+    else p.delete("followUpDue");
+    router.push(`${base}?${p.toString()}`);
+  }
+
+  function toggleFollowUpDue() {
+    const p = new URLSearchParams(searchParams.toString());
+    p.set("page", "1");
+    if (currentFormId) p.set("formId", currentFormId);
+    if (search) p.set("search", search);
+    if (!currentFollowUpDue) p.set("followUpDue", "1");
+    else p.delete("followUpDue");
     router.push(`${base}?${p.toString()}`);
   }
 
@@ -293,7 +310,7 @@ export function LeadsTable({
 
   return (
     <div className="min-w-0 space-y-5">
-      <div className="flex min-w-0 flex-nowrap items-center gap-1.5 sm:gap-2 md:gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3">
         <input
           type="search"
           placeholder="Search..."
@@ -323,6 +340,16 @@ export function LeadsTable({
             </option>
           ))}
         </select>
+        <label className="flex min-h-10 min-w-0 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 sm:min-h-11">
+          <input
+            type="checkbox"
+            checked={currentFollowUpDue}
+            onChange={toggleFollowUpDue}
+            className="size-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]"
+            aria-label="Due for follow-up"
+          />
+          <span className="whitespace-nowrap text-sm text-[var(--foreground)]">Due for follow-up</span>
+        </label>
         <div className="flex shrink-0 gap-1.5 sm:gap-2">
           <a
             href={currentFormId ? `/api/leads/export?formId=${currentFormId}` : undefined}
@@ -378,6 +405,9 @@ export function LeadsTable({
                   <th className="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
                     Submitted
                   </th>
+                  <th className="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[var(--foreground-muted)]">
+                    Follow up
+                  </th>
                   <th className="w-24 whitespace-nowrap px-4 py-3 text-left text-xs font-medium text-[var(--foreground-muted)]" aria-label="Row actions" />
                 </tr>
               </thead>
@@ -427,6 +457,9 @@ export function LeadsTable({
                           </td>
                           <td className="whitespace-nowrap px-4 py-3 text-xs text-[var(--foreground-muted)]" suppressHydrationWarning>
                             {new Date(l.createdAt).toLocaleString()}
+                          </td>
+                          <td className="min-w-[120px] whitespace-nowrap px-4 py-3 text-xs text-[var(--foreground-muted)]" suppressHydrationWarning>
+                            {l.followUpBy ? new Date(l.followUpBy).toLocaleDateString() : "—"}
                           </td>
                           <td className="whitespace-nowrap px-4 py-3">
                             <button
@@ -501,6 +534,10 @@ export function LeadsTable({
                       <span className="font-medium text-[var(--foreground-muted)]">Submitted</span>
                       <span className="text-[var(--foreground)]" suppressHydrationWarning>{new Date(l.createdAt).toLocaleString()}</span>
                     </div>
+                    <div className="flex justify-between gap-2 text-sm">
+                      <span className="font-medium text-[var(--foreground-muted)]">Follow up</span>
+                      <span className="text-[var(--foreground)]" suppressHydrationWarning>{l.followUpBy ? new Date(l.followUpBy).toLocaleDateString() : "—"}</span>
+                    </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <button
@@ -532,7 +569,7 @@ export function LeadsTable({
             <div className="flex justify-center gap-4">
               {page > 1 && (
                 <a
-                  href={`${base}?page=${page - 1}${currentFormId ? `&formId=${currentFormId}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
+                  href={`${base}?page=${page - 1}${currentFormId ? `&formId=${currentFormId}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}${currentFollowUpDue ? "&followUpDue=1" : ""}`}
                   className="min-h-11 inline-flex items-center font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                 >
                   Previous
@@ -540,7 +577,7 @@ export function LeadsTable({
               )}
               {page < totalPages && (
                 <a
-                  href={`${base}?page=${page + 1}${currentFormId ? `&formId=${currentFormId}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
+                  href={`${base}?page=${page + 1}${currentFormId ? `&formId=${currentFormId}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}${currentFollowUpDue ? "&followUpDue=1" : ""}`}
                   className="min-h-11 inline-flex items-center font-medium text-[var(--color-accent)] transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                 >
                   Next

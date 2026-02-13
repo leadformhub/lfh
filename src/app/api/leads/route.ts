@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const formId =
     formIdParam && formIdParam !== "undefined" && formIdParam !== "null" ? formIdParam : undefined;
   const search = searchParams.get("search")?.trim() || undefined;
+  const followUpDue = searchParams.get("followUpDue") === "1";
 
   // Leads and form are returned ONLY when a specific form is selected (one form → many leads).
   const hasFormId = Boolean(formId);
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
         formId: formId!,
         search: search || undefined,
         plan,
+        followUpDue: followUpDue || undefined,
       })
     : { leads: [], total: 0, perPage: 25 };
 
@@ -47,6 +49,7 @@ export async function GET(req: NextRequest) {
     createdAt: l.createdAt.toISOString(),
     stageId: l.stageId ?? null,
     stageName: l.stage?.name ?? "New",
+    followUpBy: l.followUpBy?.toISOString() ?? null,
   }));
 
   return NextResponse.json({

@@ -39,6 +39,7 @@ export async function GET(
     ipAddress: lead.ipAddress,
     userAgent: lead.userAgent,
     createdAt: lead.createdAt.toISOString(),
+    followUpBy: lead.followUpBy?.toISOString() ?? null,
   });
 }
 

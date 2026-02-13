@@ -27,13 +27,25 @@ const FREE_PLAN_LEADS_CAP = 50;
 
 export async function getLeadsByUserId(
   userId: string,
-  options: { page?: number; perPage?: number; formId?: string; search?: string; plan?: string } = {}
+  options: {
+    page?: number;
+    perPage?: number;
+    formId?: string;
+    search?: string;
+    plan?: string;
+    followUpDue?: boolean;
+  } = {}
 ) {
   const page = Math.max(1, options.page ?? 1);
   const perPage = Math.min(100, Math.max(1, options.perPage ?? 25));
   const skip = (page - 1) * perPage;
 
-  const where: { userId: string; formId?: string; dataJson?: { contains: string } } = { userId };
+  const where: {
+    userId: string;
+    formId?: string;
+    dataJson?: { contains: string };
+    followUpBy?: { not: null };
+  } = { userId };
   const formId = options.formId?.trim();
   if (formId && formId !== "undefined" && formId !== "null") {
     where.formId = formId;
@@ -41,6 +53,10 @@ export async function getLeadsByUserId(
   const search = options.search?.trim();
   if (search) {
     where.dataJson = { contains: search };
+  }
+  // "Due for follow-up" = show leads that have any follow-up date set (so you can see your follow-up list)
+  if (options.followUpDue) {
+    where.followUpBy = { not: null };
   }
 
   const isFree = options.plan === "free";
@@ -101,6 +117,22 @@ export async function getLeadById(leadId: string, userId: string, plan?: string)
     if (!allowed.has(lead.id)) return null;
   }
   return lead;
+}
+
+export async function updateLeadFollowUpBy(
+  leadId: string,
+  userId: string,
+  followUpBy: Date | null
+) {
+  const updated = await prisma.lead.updateMany({
+    where: { id: leadId, userId },
+    data: { followUpBy },
+  });
+  if (updated.count === 0) return null;
+  return prisma.lead.findFirst({
+    where: { id: leadId, userId },
+    include: { form: { select: { id: true, name: true } }, stage: { select: { id: true, name: true } } },
+  });
 }
 
 export async function deleteLead(leadId: string, userId: string) {

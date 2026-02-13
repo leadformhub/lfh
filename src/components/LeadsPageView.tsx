@@ -24,8 +24,8 @@ type ApiForm = {
 type BoardData = {
   pipeline: { id: string; name: string; formId: string | null };
   stages: { id: string; name: string; order: number }[];
-  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[];
-  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null }[] }[];
+  unassignedLeads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy?: string | null }[];
+  leadsByStage: { stageId: string; stageName: string; order: number; leads: { id: string; formId: string | null; stageId: string | null; data: string; createdAt: string; formName: string | null; followUpBy?: string | null }[] }[];
 };
 
 export function LeadsPageView({
