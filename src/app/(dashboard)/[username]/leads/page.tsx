@@ -75,10 +75,15 @@ export default async function LeadsPage({
       getPipelineByFormId(session.userId, formIdClean),
     ]);
     let pipeline = pipelineExisting;
-    if (!pipeline) {
-      const created = await createPipeline(session.userId, { formId: formIdClean, name: "Default" });
-      await createDefaultStagesForPipeline(created.id);
-      pipeline = await getPipelineByFormId(session.userId, formIdClean);
+    // Only create pipeline when the form exists and belongs to the user (avoids FK / unique errors)
+    if (!pipeline && formRow) {
+      try {
+        const created = await createPipeline(session.userId, { formId: formIdClean, name: "Default" });
+        await createDefaultStagesForPipeline(created.id);
+        pipeline = await getPipelineByFormId(session.userId, formIdClean);
+      } catch {
+        pipeline = null;
+      }
     }
     if (pipeline?.stages?.length) {
       initialStages = pipeline.stages.map((s) => ({ id: s.id, name: s.name }));

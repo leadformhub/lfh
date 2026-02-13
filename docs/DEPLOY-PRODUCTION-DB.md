@@ -76,6 +76,35 @@ Seed is idempotent (upserts), so safe to run again.
 - Each deploy runs `prisma generate && prisma db push` in `npm run build`, so schema changes are applied automatically.
 - No need to run seed again unless you change `prisma/seed.ts`.
 
+## Faster Vercel builds (optional)
+
+If deploys are slow because `prisma db push` and plan-quota updates run on every build, set in Vercel:
+
+```text
+SKIP_DB_PUSH=1
+```
+
+Then the build skips database push and plan-quota updates; it only runs `prisma generate` and `next build`. Use this for routine deploys when the schema hasn’t changed. When you change the Prisma schema, either:
+
+- Remove `SKIP_DB_PUSH` (or set it to `0`) and deploy once, or  
+- Run `npx prisma db push` locally with `DATABASE_URL` pointing at production, then deploy with `SKIP_DB_PUSH=1`.
+
+## PostgreSQL (Supabase / Neon) – avoid "max clients reached"
+
+If you use **PostgreSQL** with a connection pooler (e.g. Supabase pooler, Neon) and deploy to **serverless** (Vercel, etc.), you may see:
+
+```text
+FATAL: MaxClientsInSessionMode: max clients reached - in Session mode max clients are limited to pool_size
+```
+
+**Fix:** Add `connection_limit=1` to your **DATABASE_URL** so each serverless instance uses at most one connection. Example:
+
+```text
+DATABASE_URL="postgresql://...@...pooler....:6543/postgres?pgbouncer=true&connection_limit=1"
+```
+
+Keep **DIRECT_URL** unchanged (no `connection_limit`); use it for migrations. See `.env.example` for the full format.
+
 ## Summary
 
 | Step | Action |
