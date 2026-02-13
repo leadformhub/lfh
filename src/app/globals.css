@@ -680,6 +680,18 @@ p + p {
   100% { background-position: -200% 0; }
 }
 
+/* Processing bar (page transition / in progress) — rectangle matching LeadFormHub theme */
+.processing-bar {
+  background-color: var(--neutral-200);
+}
+.processing-bar-shine {
+  animation: processing-shine 1.4s ease-in-out infinite;
+}
+@keyframes processing-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
 /* Selection */
 ::selection {
   background: rgba(37, 99, 235, 0.15);
