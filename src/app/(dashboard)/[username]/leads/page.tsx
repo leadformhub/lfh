@@ -4,7 +4,13 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
-import { getPipelineByFormId, getLeadsByPipelineStages, serializeBoardForApi } from "@/services/pipelines.service";
+import {
+  getPipelineByFormId,
+  createPipeline,
+  createDefaultStagesForPipeline,
+  getLeadsByPipelineStages,
+  serializeBoardForApi,
+} from "@/services/pipelines.service";
 import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
 
@@ -64,10 +70,16 @@ export default async function LeadsPage({
   } | null = null;
 
   if (formIdClean) {
-    const [formRow, pipeline] = await Promise.all([
+    const [formRow, pipelineExisting] = await Promise.all([
       getFormById(formIdClean, session.userId),
       getPipelineByFormId(session.userId, formIdClean),
     ]);
+    let pipeline = pipelineExisting;
+    if (!pipeline) {
+      const created = await createPipeline(session.userId, { formId: formIdClean, name: "Default" });
+      await createDefaultStagesForPipeline(created.id);
+      pipeline = await getPipelineByFormId(session.userId, formIdClean);
+    }
     if (pipeline?.stages?.length) {
       initialStages = pipeline.stages.map((s) => ({ id: s.id, name: s.name }));
     }
@@ -85,8 +97,9 @@ export default async function LeadsPage({
         perPage: 25,
         formId: formIdClean,
         search: searchClean,
+        plan,
       }),
-      view === "board" && pipeline
+      pipeline
         ? getLeadsByPipelineStages(session.userId, pipeline.id, plan).then(serializeBoardForApi)
         : Promise.resolve(null),
     ]);

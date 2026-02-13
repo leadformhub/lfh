@@ -83,19 +83,16 @@ export default async function PublicFormPage({
             {brandingBlock}
           </div>
         ) : (
-          <>
-            <PublicForm
-              formId={form.id}
-              fields={fields}
-              mobileOtpEnabled={settings.mobileOtpEnabled ?? false}
-              emailOtpEnabled={settings.emailOtpEnabled ?? false}
-              redirectUrl={settings.redirectUrl ?? null}
-              submissionsEnabled={(settings.status ?? "PUBLIC") === "PUBLIC"}
-              showBranding={showBranding}
-              recaptchaSiteKey={recaptchaSiteKey}
-            />
-            {brandingBlock}
-          </>
+          <PublicForm
+            formId={form.id}
+            fields={fields}
+            mobileOtpEnabled={settings.mobileOtpEnabled ?? false}
+            emailOtpEnabled={settings.emailOtpEnabled ?? false}
+            redirectUrl={settings.redirectUrl ?? null}
+            submissionsEnabled={(settings.status ?? "PUBLIC") === "PUBLIC"}
+            showBranding={showBranding}
+            recaptchaSiteKey={recaptchaSiteKey}
+          />
         )}
       </div>
     </div>

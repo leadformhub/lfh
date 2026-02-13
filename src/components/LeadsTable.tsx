@@ -179,25 +179,6 @@ export function LeadsTable({
   const schemaLoaded = form != null && form.schema_json != null;
   const showTable = schemaLoaded;
 
-  // DEBUG: Log schema, sample lead data, and resolved keys before rendering
-  useEffect(() => {
-    if (form?.schema_json) {
-      console.log("[LeadsTable] parsed schema_json:", form.schema_json);
-    }
-    if (leads.length > 0) {
-      const firstLead = leads[0];
-      const parsed = parseData(firstLead.data);
-      console.log("[LeadsTable] leads.data_json (first lead, raw):", firstLead.data);
-      console.log("[LeadsTable] leads.data_json (first lead, parsed):", parsed);
-    }
-    if (schemaColumns.length > 0) {
-      console.log(
-        "[LeadsTable] resolved key per field:",
-        schemaColumns.map((c) => ({ id: c.id, label: c.label, dataKey: c.name }))
-      );
-    }
-  }, [form?.schema_json, leads, schemaColumns]);
-
   const refetch = useCallback(() => {
     if (!currentFormId) {
       setForm(null);

@@ -186,7 +186,11 @@ export function KanbanBoard({
       clear();
       if (!res.ok) {
         const errBody = await res.json().catch(() => ({}));
-        setError((errBody as { error?: string })?.error ?? "Failed to load board");
+        const message =
+          res.status === 401
+            ? "Please log in again."
+            : (errBody as { error?: string })?.error ?? "Failed to load board";
+        setError(message);
         setBoard(null);
         return;
       }
@@ -366,7 +370,7 @@ export function KanbanBoard({
       </div>
       {!board ? (
         <div className="flex min-h-[320px] items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] text-[var(--foreground-muted)]">
-          {selectedFormId ? "Loading board…" : "Select a form"}
+          {error && selectedFormId ? "Couldn't load board." : selectedFormId ? "Loading board…" : "Select a form"}
         </div>
       ) : (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
