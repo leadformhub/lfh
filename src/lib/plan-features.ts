@@ -41,6 +41,7 @@ export const PLAN_FEATURES: PlanFeatureRow[] = [
   { category: "Dashboard & export", label: "Top forms by submissions", free: false, pro: true, business: true },
   { category: "Dashboard & export", label: "Recent activity feed", free: false, pro: true, business: true },
   { category: "Dashboard & export", label: "Column visibility (show/hide fields in table)", free: true, pro: true, business: true },
+  { category: "Dashboard & export", label: "Kanban board (pipeline view)", free: false, pro: true, business: true },
   // Sharing & embed
   { category: "Sharing & embed", label: "Branded form URL (leadformhub.com/yourbrand)", free: true, pro: true, business: true },
   { category: "Sharing & embed", label: "Form embed (iframe code)", free: true, pro: true, business: true },
@@ -91,6 +92,11 @@ export function canUseAnalytics(plan: PlanKey): boolean {
 
 /** Email alert on new lead / notify by email is Pro/Business only. */
 export function canUseEmailAlertOnLead(plan: PlanKey): boolean {
+  return plan === "pro" || plan === "business";
+}
+
+/** Kanban board (pipeline view) is Pro/Business only. */
+export function canUseBoard(plan: PlanKey): boolean {
   return plan === "pro" || plan === "business";
 }
 

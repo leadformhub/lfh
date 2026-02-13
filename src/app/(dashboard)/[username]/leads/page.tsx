@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
+import { canUseBoard } from "@/lib/plan-features";
+import type { PlanKey } from "@/lib/plans";
 import {
   getPipelineByFormId,
   createPipeline,
@@ -11,6 +13,7 @@ import {
   getLeadsByPipelineStages,
   serializeBoardForApi,
 } from "@/services/pipelines.service";
+import { getRazorpayKeyId } from "@/lib/razorpay";
 import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
 
@@ -50,6 +53,9 @@ export default async function LeadsPage({
   const formsForSelect = formsWithSchema.map((f) => ({ id: f.id, name: f.name }));
   const formIdRaw = typeof formId === "string" && formId.trim() && formId !== "undefined" && formId !== "null" ? formId.trim() : undefined;
   let formIdClean = formIdRaw ?? "";
+  const plan = (session.plan ?? "free") as PlanKey;
+  const allowBoard = canUseBoard(plan);
+  const razorpayKeyId = getRazorpayKeyId();
   // Default to latest form when none selected (forms are ordered by createdAt desc)
   if (!formIdClean && formsForSelect.length > 0) {
     const latestFormId = formsForSelect[0].id;
@@ -95,7 +101,6 @@ export default async function LeadsPage({
         schema_json: formRow.schema ?? { fields: [] },
       };
     }
-    const plan = (session.plan ?? "free") as string;
     const [leadsResult, boardForView] = await Promise.all([
       getLeadsByUserId(session.userId, {
         page: pageNum,
@@ -104,7 +109,7 @@ export default async function LeadsPage({
         search: searchClean,
         plan,
       }),
-      pipeline
+      allowBoard && pipeline
         ? getLeadsByPipelineStages(session.userId, pipeline.id, plan).then(serializeBoardForApi)
         : Promise.resolve(null),
     ]);
@@ -152,6 +157,9 @@ export default async function LeadsPage({
           initialStages={initialStages}
           currentSearch={searchClean ?? ""}
           initialBoard={initialBoard}
+          canUseBoard={allowBoard}
+          currentPlan={session.plan ?? "free"}
+          razorpayKeyId={razorpayKeyId ?? null}
         />
       </Suspense>
     </div>

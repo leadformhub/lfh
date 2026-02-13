@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
+import { canUseBoard } from "@/lib/plan-features";
+import type { PlanKey } from "@/lib/plans";
 import { getLeadsByPipelineStages, trimLeadDataForBoard } from "@/services/pipelines.service";
 
 export async function GET(
@@ -9,9 +11,15 @@ export async function GET(
   const result = await getVerifiedSessionOrResponse();
   if ("response" in result) return result.response;
   const session = result.session;
+  const plan = (session.plan ?? "free") as PlanKey;
+  if (!canUseBoard(plan)) {
+    return NextResponse.json(
+      { error: "Kanban board is available on Pro and higher plans." },
+      { status: 403 }
+    );
+  }
   const { pipelineId } = await params;
   if (!pipelineId) return NextResponse.json({ error: "Pipeline ID required" }, { status: 400 });
-  const plan = (session.plan ?? "free") as string;
   const board = await getLeadsByPipelineStages(session.userId, pipelineId, plan);
   if (!board.pipeline.id) return NextResponse.json({ error: "Pipeline not found" }, { status: 404 });
   return NextResponse.json({
