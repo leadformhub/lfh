@@ -26,7 +26,7 @@ export async function DashboardStatsSection({
     getTopPerformingForm(accountOwnerId, assignedToUserId),
   ]);
 
-  const { leadsToday, leadsThisMonth, totalSubmissions, formsUsed } = planQuota;
+  const { leadsToday, leadsUsed: leadsThisMonth, totalSubmissions, formsUsed } = planQuota;
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
 
   return (
