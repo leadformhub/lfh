@@ -35,7 +35,8 @@ async function fetchQuotaCounts(accountOwnerId: string, startOfMonth: Date, star
       (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId} AND created_at >= ${startOfToday}) AS leadsToday,
       (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId}) AS totalSubmissions
   `;
-  return rows[0] ?? { formsCount: 0n, leadsThisMonth: 0n, leadsToday: 0n, totalSubmissions: 0n };
+  if (rows[0]) return rows[0];
+  return { formsCount: 0, leadsThisMonth: 0, leadsToday: 0, totalSubmissions: 0 } as QuotaCountsRow;
 }
 
 /** Fetches plan quota for the account (owner). Limits are shared across all team members. Uses single query for counts + parallel OTP. */
