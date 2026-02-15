@@ -1,38 +1,31 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getVerifiedSessionCached } from "@/lib/auth";
 import { canUseAnalytics } from "@/lib/plan-features";
 import { getRole } from "@/lib/team";
 import type { PlanKey } from "@/lib/plans";
 import { AnalyticsLockedView } from "./AnalyticsLockedView";
-import {
-  getDashboardStats,
-  getTopForms,
-  getSubmissionsOverTime,
-  getViewsOverTime,
-  getAllFormsWithStats,
-  getTotalViews,
-  getLeadsBySource,
-  getLeadsByCampaign,
-} from "@/services/analytics.service";
+import { getAnalyticsPageDataCached } from "@/services/analytics.service";
 import { SITE_URL } from "@/lib/seo";
+import AnalyticsLoading from "./loading";
 
 const chartFallback = <div className="h-[280px] w-full animate-pulse rounded-lg bg-[var(--neutral-100)]" />;
 
-const SubmissionsOverTimeChart = dynamic(
+const SubmissionsOverTimeChart = nextDynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.SubmissionsOverTimeChart })),
   { loading: () => chartFallback }
 );
-const ViewsVsSubmissionsChart = dynamic(
+const ViewsVsSubmissionsChart = nextDynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ViewsVsSubmissionsChart })),
   { loading: () => chartFallback }
 );
-const FormPerformanceBarChart = dynamic(
+const FormPerformanceBarChart = nextDynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.FormPerformanceBarChart })),
   { loading: () => chartFallback }
 );
-const ConversionRateBarChart = dynamic(
+const ConversionRateBarChart = nextDynamic(
   () => import("@/components/AnalyticsCharts").then((m) => ({ default: m.ConversionRateBarChart })),
   { loading: () => chartFallback }
 );
@@ -74,45 +67,10 @@ export default async function AnalyticsPage({
     return <AnalyticsLockedView />;
   }
 
-  const [
-    stats,
-    topForms,
-    submissionsOverTime,
-    viewsOverTime,
-    allFormsWithStats,
-    totalViews,
-    leadsBySource,
-    leadsByCampaign,
-  ] = await Promise.all([
-    getDashboardStats(accountOwnerId),
-    getTopForms(accountOwnerId, 10, assignedToUserId),
-    getSubmissionsOverTime(accountOwnerId, 30, assignedToUserId),
-    getViewsOverTime(accountOwnerId, 30),
-    getAllFormsWithStats(accountOwnerId),
-    getTotalViews(accountOwnerId),
-    getLeadsBySource(accountOwnerId),
-    getLeadsByCampaign(accountOwnerId),
-  ]);
-
-  const avgConversion =
-    allFormsWithStats.length > 0
-      ? allFormsWithStats
-          .filter((f) => f.views > 0)
-          .reduce((acc, f) => acc + f.conversionRate, 0) /
-        Math.max(1, allFormsWithStats.filter((f) => f.views > 0).length)
-      : 0;
-
-  const combinedTimeData = submissionsOverTime.map((s) => {
-    const v = viewsOverTime.find((x) => x.date === s.date);
-    return { date: s.date, views: v?.views ?? 0, submissions: s.submissions };
-  });
-
-  const hasData = stats.totalSubmissions > 0 || totalViews > 0 || stats.totalForms > 0;
-
   return (
     <div className="min-h-0 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8">
-        {/* Header */}
+        {/* Header — shell so first paint is fast */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
@@ -130,6 +88,55 @@ export default async function AnalyticsPage({
           </Link>
         </div>
 
+        <Suspense fallback={<AnalyticsLoading />}>
+          <AnalyticsContent
+            username={username}
+            accountOwnerId={accountOwnerId}
+            assignedToUserId={assignedToUserId}
+          />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+async function AnalyticsContent({
+  username,
+  accountOwnerId,
+  assignedToUserId,
+}: {
+  username: string;
+  accountOwnerId: string;
+  assignedToUserId: string | undefined;
+}) {
+  const {
+    stats,
+    topForms,
+    submissionsOverTime,
+    viewsOverTime,
+    allFormsWithStats,
+    totalViews,
+    leadsBySource,
+    leadsByCampaign,
+  } = await getAnalyticsPageDataCached(accountOwnerId, assignedToUserId);
+
+  const avgConversion =
+    allFormsWithStats.length > 0
+      ? allFormsWithStats
+          .filter((f) => f.views > 0)
+          .reduce((acc, f) => acc + f.conversionRate, 0) /
+        Math.max(1, allFormsWithStats.filter((f) => f.views > 0).length)
+      : 0;
+
+  const combinedTimeData = submissionsOverTime.map((s) => {
+    const v = viewsOverTime.find((x) => x.date === s.date);
+    return { date: s.date, views: v?.views ?? 0, submissions: s.submissions };
+  });
+
+  const hasData = stats.totalSubmissions > 0 || totalViews > 0 || stats.totalForms > 0;
+
+  return (
+    <>
         {/* KPI cards */}
         <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Key metrics">
           <div className="rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)] sm:p-6">
@@ -416,7 +423,6 @@ export default async function AnalyticsPage({
             </div>
           </>
         )}
-      </div>
-    </div>
+    </>
   );
 }

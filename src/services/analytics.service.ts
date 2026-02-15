@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 
 export async function recordEvent(formId: string, type: "view" | "submission", metadata?: Record<string, unknown>) {
@@ -410,4 +411,60 @@ export async function getLeadsByCampaign(userId: string): Promise<{ campaign: st
       won: counts.won,
     }))
     .sort((a, b) => b.leads - a.leads);
+}
+
+export type AnalyticsPageData = {
+  stats: { totalForms: number; totalSubmissions: number; automationEnabled: number };
+  topForms: { id: string; name: string; submissions: number; views: number }[];
+  submissionsOverTime: { date: string; submissions: number }[];
+  viewsOverTime: { date: string; views: number }[];
+  allFormsWithStats: { id: string; name: string; views: number; submissions: number; conversionRate: number }[];
+  totalViews: number;
+  leadsBySource: { source: string; leads: number; won: number }[];
+  leadsByCampaign: { campaign: string; source?: string; leads: number; won: number }[];
+};
+
+/** Fetches all data for the analytics page in one parallel batch. */
+export async function getAnalyticsPageData(
+  accountOwnerId: string,
+  assignedToUserId: string | undefined
+): Promise<AnalyticsPageData> {
+  const [
+    stats,
+    topForms,
+    submissionsOverTime,
+    viewsOverTime,
+    allFormsWithStats,
+    totalViews,
+    leadsBySource,
+    leadsByCampaign,
+  ] = await Promise.all([
+    getDashboardStats(accountOwnerId),
+    getTopForms(accountOwnerId, 10, assignedToUserId),
+    getSubmissionsOverTime(accountOwnerId, 30, assignedToUserId),
+    getViewsOverTime(accountOwnerId, 30),
+    getAllFormsWithStats(accountOwnerId),
+    getTotalViews(accountOwnerId),
+    getLeadsBySource(accountOwnerId),
+    getLeadsByCampaign(accountOwnerId),
+  ]);
+  return {
+    stats,
+    topForms,
+    submissionsOverTime,
+    viewsOverTime,
+    allFormsWithStats,
+    totalViews,
+    leadsBySource,
+    leadsByCampaign,
+  };
+}
+
+/** Cached 60s so repeat visits to analytics hit cache. */
+export function getAnalyticsPageDataCached(accountOwnerId: string, assignedToUserId: string | undefined) {
+  return unstable_cache(
+    () => getAnalyticsPageData(accountOwnerId, assignedToUserId),
+    ["analytics-page", accountOwnerId, assignedToUserId ?? ""],
+    { revalidate: 60 }
+  )();
 }
