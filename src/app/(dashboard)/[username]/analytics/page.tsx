@@ -74,7 +74,7 @@ export default async function AnalyticsPage({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Form analytics and lead conversion tracking
+              Form Analytics And Lead Conversion Tracking
             </h1>
             <p className="mt-1 text-base text-[var(--foreground-muted)]">
               Single view of form performance, submissions, and conversion metrics

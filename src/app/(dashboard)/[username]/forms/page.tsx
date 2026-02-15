@@ -64,7 +64,7 @@ async function FormsContent({
       <div className="mb-5 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-heading text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:text-xl">
-            Create and manage lead forms
+            Create And Manage Lead Forms
           </h1>
           <Link
             href={`/${username}/analytics`}

@@ -165,7 +165,7 @@ export default async function LeadsPage({
   return (
     <div className="max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
       <h1 className="font-heading mb-5 text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:mb-6 sm:text-xl">
-        Lead management dashboard
+        Lead Management Dashboard
       </h1>
       <Suspense fallback={<LeadsSkeleton />}>
         <LeadsContent session={session} username={username} searchParams={sp} />
