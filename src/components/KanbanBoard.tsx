@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { LeadDetailsModal } from "@/components/LeadDetailsModal";
 import {
   DndContext,
@@ -110,15 +110,16 @@ function DraggableCard({
   onViewLead: (lead: BoardLead & { stageName: string }) => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: lead.id });
-  let parsed: Record<string, unknown> = {};
-  try {
-    parsed = typeof lead.data === "string" ? JSON.parse(lead.data) : {};
-  } catch {
-    parsed = {};
-  }
-  const entries = Object.entries(parsed).filter(([, v]) => v != null && String(v).trim() !== "");
-  const primary = entries[0];
-  const secondary = entries.slice(1, 3);
+  const { primary, secondary } = useMemo(() => {
+    let parsed: Record<string, unknown> = {};
+    try {
+      parsed = typeof lead.data === "string" ? JSON.parse(lead.data) : {};
+    } catch {
+      parsed = {};
+    }
+    const entries = Object.entries(parsed).filter(([, v]) => v != null && String(v).trim() !== "");
+    return { primary: entries[0], secondary: entries.slice(1, 3) };
+  }, [lead.id, lead.data]);
   const label = (key: string) => keyToLabel.get(key) ?? humanizeKey(key);
 
   const handleViewClick = (e: React.MouseEvent) => {
@@ -130,11 +131,20 @@ function DraggableCard({
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      className={`cursor-grab rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-2.5 shadow-[var(--shadow-xs)] transition-shadow active:cursor-grabbing sm:p-3 ${isDragging ? "opacity-60 shadow-[var(--shadow-md)]" : "hover:shadow-[var(--shadow-sm)]"}`}
+      className={`rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] p-2.5 shadow-[var(--shadow-xs)] transition-shadow sm:p-3 ${isDragging ? "opacity-60 shadow-[var(--shadow-md)]" : "hover:shadow-[var(--shadow-sm)]"}`}
     >
       <div className="flex items-start justify-between gap-2">
+        <button
+          type="button"
+          className="shrink-0 touch-none cursor-grab active:cursor-grabbing rounded p-1 text-[var(--foreground-muted)] hover:bg-[var(--neutral-100)] hover:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-inset"
+          aria-label="Drag to move lead"
+          {...listeners}
+          {...attributes}
+        >
+          <svg className="size-4" fill="currentColor" viewBox="0 0 16 16" aria-hidden>
+            <path d="M2 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6-8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6-8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0 4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          </svg>
+        </button>
         <div className="min-w-0 flex-1">
           {primary && (
             <p className="truncate text-sm font-medium text-[var(--foreground)]">
@@ -170,6 +180,38 @@ function DraggableCard({
 
 const MemoizedDraggableCard = React.memo(DraggableCard) as typeof DraggableCard;
 
+const BoardColumn = React.memo(function BoardColumn({
+  id,
+  title,
+  count,
+  leads,
+  stageName,
+  keyToLabel,
+  onViewLead,
+}: {
+  id: string;
+  title: string;
+  count: number;
+  leads: BoardLead[];
+  stageName: string;
+  keyToLabel: Map<string, string>;
+  onViewLead: (lead: BoardLead & { stageName: string }) => void;
+}) {
+  return (
+    <DroppableColumn id={id} title={title} count={count}>
+      {leads.map((lead) => (
+        <MemoizedDraggableCard
+          key={lead.id}
+          lead={lead}
+          stageName={stageName}
+          keyToLabel={keyToLabel}
+          onViewLead={onViewLead}
+        />
+      ))}
+    </DroppableColumn>
+  );
+});
+
 export function KanbanBoard({
   formId,
   forms,
@@ -186,6 +228,7 @@ export function KanbanBoard({
   canAssignLeads?: boolean;
 }) {
   const initialBoard = initialBoardProp && initialBoardProp.pipeline.id ? initialBoardProp : null;
+  const initialBoardAppliedForFormIdRef = useRef<string | undefined>(undefined);
   const [board, setBoard] = useState<BoardData | null>(() =>
     initialBoard && formId ? initialBoard : null
   );
@@ -263,24 +306,28 @@ export function KanbanBoard({
 
   useEffect(() => {
     if (!selectedFormId) return;
-    if (initialBoard && selectedFormId === formId) {
+    if (selectedFormId !== formId) {
+      initialBoardAppliedForFormIdRef.current = undefined;
+      fetchBoard(selectedFormId);
+      return;
+    }
+    if (initialBoard && initialBoardAppliedForFormIdRef.current !== formId) {
       setBoard(initialBoard);
+      initialBoardAppliedForFormIdRef.current = formId;
       return;
     }
     fetchBoard(selectedFormId);
-  }, [selectedFormId, fetchBoard, formId, initialBoard]);
+  }, [selectedFormId, fetchBoard, formId]);
 
   const moveLeadOptimistic = useCallback((leadId: string, toStageId: string | null) => {
     setBoard((prev) => {
       if (!prev) return prev;
       let lead: BoardLead | null = null;
-      const newUnassigned = prev.unassignedLeads.filter((l) => {
-        if (l.id === leadId) {
-          lead = l;
-          return false;
-        }
-        return true;
-      });
+      const fromUnassigned = prev.unassignedLeads.some((l) => l.id === leadId);
+      if (fromUnassigned) {
+        const found = prev.unassignedLeads.find((l) => l.id === leadId);
+        if (found) lead = found;
+      }
       if (!lead) {
         for (const stage of prev.leadsByStage) {
           const found = stage.leads.find((l) => l.id === leadId);
@@ -291,27 +338,37 @@ export function KanbanBoard({
         }
       }
       if (!lead) return prev;
-      const newLeadsByStage = prev.leadsByStage.map((stage) => ({
-        ...stage,
-        leads: stage.leads.filter((l) => l.id !== leadId),
-      }));
       const updatedLead: BoardLead = {
         ...lead,
         stageId: toStageId === null || toStageId === UNASSIGNED_ID ? null : toStageId,
       };
-      if (toStageId === null || toStageId === UNASSIGNED_ID) {
-        return {
-          ...prev,
-          unassignedLeads: [...newUnassigned, updatedLead],
-          leadsByStage: newLeadsByStage,
-        };
+      const toUnassigned = toStageId === null || toStageId === UNASSIGNED_ID;
+
+      let newUnassigned: BoardLead[];
+      if (fromUnassigned) {
+        newUnassigned = prev.unassignedLeads.filter((l) => l.id !== leadId);
+      } else if (toUnassigned) {
+        newUnassigned = [...prev.unassignedLeads, updatedLead];
+      } else {
+        newUnassigned = prev.unassignedLeads;
       }
+
+      const newLeadsByStage = prev.leadsByStage.map((stage) => {
+        const isFromStage = stage.leads.some((l) => l.id === leadId);
+        const isToStage = stage.stageId === toStageId;
+        if (isFromStage && isToStage) {
+          const filtered = stage.leads.filter((l) => l.id !== leadId);
+          return { ...stage, leads: [...filtered, updatedLead] };
+        }
+        if (isFromStage) return { ...stage, leads: stage.leads.filter((l) => l.id !== leadId) };
+        if (isToStage) return { ...stage, leads: [...stage.leads, updatedLead] };
+        return stage;
+      });
+
       return {
         ...prev,
         unassignedLeads: newUnassigned,
-        leadsByStage: newLeadsByStage.map((s) =>
-          s.stageId === toStageId ? { ...s, leads: [...s.leads, updatedLead] } : s
-        ),
+        leadsByStage: newLeadsByStage,
       };
     });
   }, []);
@@ -328,7 +385,7 @@ export function KanbanBoard({
       const fromId = currentInStage ? currentInStage.stageId : UNASSIGNED_ID;
       if (fromId === toId) return;
 
-      const prevBoard = JSON.parse(JSON.stringify(board)) as BoardData;
+      const boardForRollback = board;
       moveLeadOptimistic(leadId, newStageId);
 
       try {
@@ -339,12 +396,12 @@ export function KanbanBoard({
           body: JSON.stringify({ stageId: newStageId }),
         });
         if (!res.ok) {
-          setBoard(prevBoard);
+          setBoard(boardForRollback);
           const err = await res.json().catch(() => ({}));
           setError((err as { error?: string })?.error ?? "Failed to update stage");
         }
       } catch {
-        setBoard(prevBoard);
+        setBoard(boardForRollback);
         setError("Failed to update stage");
       }
     },
@@ -374,38 +431,26 @@ export function KanbanBoard({
 
   const columnsContent = board ? (
     <>
-      <DroppableColumn
+      <BoardColumn
         id={UNASSIGNED_ID}
         title="New"
         count={board.unassignedLeads.length}
-      >
-        {board.unassignedLeads.map((lead) => (
-          <MemoizedDraggableCard
-            key={lead.id}
-            lead={lead}
-            stageName="New"
-            keyToLabel={keyToLabel}
-            onViewLead={handleViewLead}
-          />
-        ))}
-      </DroppableColumn>
+        leads={board.unassignedLeads}
+        stageName="New"
+        keyToLabel={keyToLabel}
+        onViewLead={handleViewLead}
+      />
       {board.leadsByStage.map((stage, idx) => (
-        <DroppableColumn
+        <BoardColumn
           key={stage.stageId}
           id={stage.stageId}
           title={idx === 0 && stage.stageName === "New" ? "To Contact" : stage.stageName}
           count={stage.leads.length}
-        >
-          {stage.leads.map((lead) => (
-            <MemoizedDraggableCard
-              key={lead.id}
-              lead={lead}
-              stageName={idx === 0 && stage.stageName === "New" ? "To Contact" : stage.stageName}
-              keyToLabel={keyToLabel}
-              onViewLead={handleViewLead}
-            />
-          ))}
-        </DroppableColumn>
+          leads={stage.leads}
+          stageName={idx === 0 && stage.stageName === "New" ? "To Contact" : stage.stageName}
+          keyToLabel={keyToLabel}
+          onViewLead={handleViewLead}
+        />
       ))}
     </>
   ) : null;
@@ -438,7 +483,11 @@ export function KanbanBoard({
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="min-w-0 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
             {/* Mobile: vertical stack (scroll down for all stages). md+: horizontal columns. */}
-            <div className="flex min-h-0 flex-col gap-3 p-3 sm:gap-4 sm:p-4 md:min-h-[480px] md:flex-row md:flex-nowrap md:min-w-0">
+            <div
+              className="flex min-h-0 flex-col gap-3 p-3 sm:gap-4 sm:p-4 md:min-h-[480px] md:flex-row md:flex-nowrap md:min-w-0"
+              tabIndex={0}
+              aria-label="Board columns"
+            >
               {columnsContent}
             </div>
           </div>
