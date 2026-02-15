@@ -3,13 +3,29 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getSessionCookieName, verifyToken, type SessionPayload } from "./jwt";
 import { prisma } from "./db";
-import { syncPlanFromCapturedPayment } from "@/services/payment.service";
 
 export const getSession = cache(async (): Promise<SessionPayload | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(getSessionCookieName())?.value;
   if (!token) return null;
   return verifyToken(token);
+});
+
+/**
+ * JWT-only session for layout: no DB. Use for dashboard layout so first byte can stream immediately.
+ * Only returns when token is valid; we only issue tokens after email verification, so no extra check.
+ */
+export const getMinimalSessionFromJwt = cache(async (): Promise<SessionPayload | null> => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(getSessionCookieName())?.value;
+  if (!token) return null;
+  const payload = await verifyToken(token);
+  if (!payload) return null;
+  return {
+    ...payload,
+    accountOwnerId: payload.accountOwnerId ?? payload.userId,
+    role: (payload.role ?? "owner") as SessionPayload["role"],
+  };
 });
 
 export async function requireSession(): Promise<SessionPayload> {
@@ -20,32 +36,32 @@ export async function requireSession(): Promise<SessionPayload> {
 
 export const CURRENT_ACCOUNT_COOKIE = "leadformhub_account";
 
-/** Cached verified session for the request. Returns null when no session; throws EMAIL_NOT_VERIFIED when session exists but not verified. Resolves account context: prefers own account unless CURRENT_ACCOUNT_COOKIE is set to another account the user is a member of (so users who are both owner and team member see their own dashboard by default). */
+/**
+ * Cached verified session. Plan is read from DB only (no payment sync in hot path).
+ * Plan is applied on payment-success (verifyAndFulfill); for webhooks, sync separately.
+ */
 export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
   if (!session) return null;
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { emailVerifiedAt: true, authProvider: true },
+    select: { emailVerifiedAt: true, authProvider: true, plan: true },
   });
   if (!user || !user.emailVerifiedAt) throw new Error("EMAIL_NOT_VERIFIED");
 
   const cookieStore = await cookies();
   const currentAccountId = cookieStore.get(CURRENT_ACCOUNT_COOKIE)?.value?.trim() || null;
 
-  // Prefer own account when cookie unset or set to self
   if (!currentAccountId || currentAccountId === session.userId) {
-    const plan = await syncPlanFromCapturedPayment(session.userId);
     return {
       ...session,
-      plan,
+      plan: user.plan,
       authProvider: user.authProvider ?? session.authProvider ?? undefined,
       accountOwnerId: session.userId,
       role: "owner",
     };
   }
 
-  // Cookie points to another account: use it only if user has active membership there
   let membership: { accountOwnerId: string; role: string } | null = null;
   try {
     membership = await prisma.teamMember.findFirst({
@@ -61,16 +77,15 @@ export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload |
   }
 
   if (membership) {
-    const ownerPlan = await syncPlanFromCapturedPayment(membership.accountOwnerId);
     const owner = await prisma.user.findUnique({
       where: { id: membership.accountOwnerId },
-      select: { username: true },
+      select: { username: true, plan: true },
     });
     if (!owner) return null;
     return {
       ...session,
       username: owner.username,
-      plan: ownerPlan,
+      plan: owner.plan,
       planValidUntil: undefined,
       authProvider: user.authProvider ?? session.authProvider ?? undefined,
       accountOwnerId: membership.accountOwnerId,
@@ -78,11 +93,9 @@ export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload |
     };
   }
 
-  // Invalid or no access to requested account: use own account
-  const plan = await syncPlanFromCapturedPayment(session.userId);
   return {
     ...session,
-    plan,
+    plan: user.plan,
     authProvider: user.authProvider ?? session.authProvider ?? undefined,
     accountOwnerId: session.userId,
     role: "owner",

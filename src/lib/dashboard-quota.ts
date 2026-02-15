@@ -19,7 +19,26 @@ export type DashboardPlanQuota = {
   totalSubmissions: number;
 };
 
-/** Fetches plan quota for the account (owner). Limits are shared across all team members. */
+type QuotaCountsRow = {
+  formsCount: bigint;
+  leadsThisMonth: bigint;
+  leadsToday: bigint;
+  totalSubmissions: bigint;
+};
+
+/** One round trip for form + lead counts (MySQL). Table/column names match Prisma schema. */
+async function fetchQuotaCounts(accountOwnerId: string, startOfMonth: Date, startOfToday: Date): Promise<QuotaCountsRow> {
+  const rows = await prisma.$queryRaw<QuotaCountsRow[]>`
+    SELECT
+      (SELECT COUNT(*) FROM Form WHERE user_id = ${accountOwnerId}) AS formsCount,
+      (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId} AND created_at >= ${startOfMonth}) AS leadsThisMonth,
+      (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId} AND created_at >= ${startOfToday}) AS leadsToday,
+      (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId}) AS totalSubmissions
+  `;
+  return rows[0] ?? { formsCount: 0n, leadsThisMonth: 0n, leadsToday: 0n, totalSubmissions: 0n };
+}
+
+/** Fetches plan quota for the account (owner). Limits are shared across all team members. Uses single query for counts + parallel OTP. */
 async function fetchDashboardPlanQuota(accountOwnerId: string, planKey: PlanKey): Promise<DashboardPlanQuota> {
   const limits = getPlanLimits(planKey);
   const startOfMonth = new Date();
@@ -28,31 +47,22 @@ async function fetchDashboardPlanQuota(accountOwnerId: string, planKey: PlanKey)
   const startOfToday = new Date();
   startOfToday.setUTCHours(0, 0, 0, 0);
 
-  const leadWhere = { userId: accountOwnerId };
-
-  const [formsCount, leadsThisMonth, leadsToday, totalSubmissions, otpUsage, otpLimit] = await Promise.all([
-    prisma.form.count({ where: { userId: accountOwnerId } }),
-    prisma.lead.count({
-      where: { ...leadWhere, createdAt: { gte: startOfMonth } },
-    }),
-    prisma.lead.count({
-      where: { ...leadWhere, createdAt: { gte: startOfToday } },
-    }),
-    prisma.lead.count({ where: leadWhere }),
+  const [counts, otpUsage, otpLimit] = await Promise.all([
+    fetchQuotaCounts(accountOwnerId, startOfMonth, startOfToday),
     getOtpUsageForUser(accountOwnerId, planKey),
     getOtpLimitForPlan(planKey),
   ]);
 
   return {
     plan: planKey,
-    formsUsed: formsCount,
+    formsUsed: Number(counts.formsCount),
     formsLimit: limits.maxForms === Infinity ? null : limits.maxForms,
-    leadsUsed: leadsThisMonth,
+    leadsUsed: Number(counts.leadsThisMonth),
     leadsLimit: limits.maxLeadsPerMonth,
     otpUsed: otpUsage.used,
     otpLimit,
-    leadsToday,
-    totalSubmissions,
+    leadsToday: Number(counts.leadsToday),
+    totalSubmissions: Number(counts.totalSubmissions),
   };
 }
 

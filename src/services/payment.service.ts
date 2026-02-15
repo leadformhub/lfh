@@ -71,8 +71,10 @@ export async function verifyAndFulfill(
 
 const PLAN_RANK: Record<string, number> = { free: 0, pro: 1, business: 2 };
 
-/** Sync user plan from their latest captured payment that we haven't applied yet (e.g. if verify never ran). Returns current plan from DB. Does not re-apply payments already applied (so manual downgrade to free stays). */
-export async function syncPlanFromCapturedPayment(userId: string): Promise<UserPlan> {
+/** Sync user plan from their latest captured payment that we haven't applied yet (e.g. if verify never ran). Returns current plan from DB. Does not re-apply payments already applied (so manual downgrade to free stays). When currentPlan is pro/business, skips DB (paid users already have plan applied) for fast path. */
+export async function syncPlanFromCapturedPayment(userId: string, currentPlan?: UserPlan): Promise<UserPlan> {
+  if (currentPlan && currentPlan !== "free") return currentPlan;
+
   const latest = await prisma.payment.findFirst({
     where: { userId, status: "captured", appliedAt: null },
     orderBy: { createdAt: "desc" },

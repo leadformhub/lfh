@@ -40,17 +40,20 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-/** When planKey is provided (e.g. from session), skips user lookup to save a DB round trip. */
+/** When planKey is provided (e.g. from session), skips user lookup. For free plan, returns 0 without DB (no OTP). */
 export async function getOtpUsageForUser(
   userId: string,
   planKey?: UserPlan
 ): Promise<{ used: number; monthStart: Date }> {
+  if (planKey === "free") return { used: 0, monthStart: new Date() };
+
   let planName: string;
   if (planKey) {
     planName = planKey;
   } else {
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: true } });
     if (!user) return { used: 0, monthStart: new Date() };
+    if (user.plan === "free") return { used: 0, monthStart: new Date() };
     planName = user.plan;
   }
 

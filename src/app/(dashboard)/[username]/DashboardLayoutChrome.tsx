@@ -1,9 +1,10 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { canManageIntegrations } from "@/lib/team";
 import { listTeamsForMember } from "@/services/team.service";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
+import { getVerifiedSessionCached } from "@/lib/auth";
 import { type PlanKey } from "@/lib/plans";
-import type { SessionPayload } from "@/lib/jwt";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
 import { DashboardFooter } from "@/components/DashboardFooter";
@@ -11,13 +12,27 @@ import { PlanExpiryBanner } from "@/components/PlanExpiryBanner";
 import { DashboardShellSkeleton } from "./DashboardShellSkeleton";
 
 type Props = {
-  session: SessionPayload;
+  layoutUsername: string;
   razorpayKeyId: string | null;
   children: React.ReactNode;
 };
 
-/** Fetches planQuota and otherTeams in parallel, then renders sidebar + main. Wrapped in Suspense so layout can stream. */
-async function DashboardChromeContent({ session, razorpayKeyId, children }: Props) {
+/** Resolves full session (DB), then planQuota + otherTeams in parallel. Redirects if username mismatch (e.g. team switch). */
+async function DashboardChromeContent({ layoutUsername, razorpayKeyId, children }: Props) {
+  let session;
+  try {
+    session = await getVerifiedSessionCached();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    if (msg === "EMAIL_NOT_VERIFIED") {
+      redirect("/api/auth/logout?redirect=" + encodeURIComponent("/login?error=verify_email"));
+    }
+    redirect("/login");
+  }
+  if (!session) redirect("/login");
+  if (session.username.toLowerCase() !== layoutUsername.toLowerCase()) {
+    redirect(`/${session.username}/dashboard`);
+  }
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const planKey = (session.plan ?? "free") as PlanKey;
   const isOwnAccount = session.accountOwnerId === session.userId;
@@ -60,10 +75,10 @@ async function DashboardChromeContent({ session, razorpayKeyId, children }: Prop
   );
 }
 
-export function DashboardLayoutChrome({ session, razorpayKeyId, children }: Props) {
+export function DashboardLayoutChrome({ layoutUsername, razorpayKeyId, children }: Props) {
   return (
     <Suspense fallback={<DashboardShellSkeleton />}>
-      <DashboardChromeContent session={session} razorpayKeyId={razorpayKeyId}>
+      <DashboardChromeContent layoutUsername={layoutUsername} razorpayKeyId={razorpayKeyId}>
         {children}
       </DashboardChromeContent>
     </Suspense>

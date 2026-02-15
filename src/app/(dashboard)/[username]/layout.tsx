@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { requireVerifiedSession } from "@/lib/auth";
+import { getMinimalSessionFromJwt } from "@/lib/auth";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { DashboardLayoutChrome } from "./DashboardLayoutChrome";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
@@ -13,6 +13,10 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Layout uses JWT-only auth (no DB) so the first byte can stream immediately.
+ * Full session + quota + teams load inside Suspense in DashboardLayoutChrome.
+ */
 export default async function DashboardLayout({
   children,
   params,
@@ -20,27 +24,16 @@ export default async function DashboardLayout({
   children: React.ReactNode;
   params: Promise<{ username: string }>;
 }) {
-  let session;
-  try {
-    session = await requireVerifiedSession();
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "";
-    if (msg === "EMAIL_NOT_VERIFIED") {
-      redirect("/api/auth/logout?redirect=" + encodeURIComponent("/login?error=verify_email"));
-    }
-    redirect("/login");
-  }
+  const minimal = await getMinimalSessionFromJwt();
+  if (!minimal) redirect("/login");
   const { username } = await params;
-  if (username.toLowerCase() !== session.username.toLowerCase()) {
-    redirect(`/${session.username}/dashboard`);
-  }
   const razorpayKeyId = getRazorpayKeyId();
-  const currentPlan = session.plan ?? "free";
+  const currentPlan = minimal.plan ?? "free";
   return (
     <UpgradeModalProvider currentPlan={currentPlan} razorpayKeyId={razorpayKeyId}>
       <DashboardSidebarProvider>
         <ToastProvider>
-          <DashboardLayoutChrome session={session} razorpayKeyId={razorpayKeyId}>
+          <DashboardLayoutChrome layoutUsername={username} razorpayKeyId={razorpayKeyId}>
             {children}
           </DashboardLayoutChrome>
         </ToastProvider>
