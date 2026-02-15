@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { verifyToken, getSessionCookieName, type SessionPayload } from "./jwt";
+import { getSessionCookieName, verifyToken, type SessionPayload } from "./jwt";
 import { prisma } from "./db";
 import { syncPlanFromCapturedPayment } from "@/services/payment.service";
 
@@ -18,7 +18,9 @@ export async function requireSession(): Promise<SessionPayload> {
   return session;
 }
 
-/** Cached verified session for the request. Returns null when no session; throws EMAIL_NOT_VERIFIED when session exists but not verified. */
+export const CURRENT_ACCOUNT_COOKIE = "leadformhub_account";
+
+/** Cached verified session for the request. Returns null when no session; throws EMAIL_NOT_VERIFIED when session exists but not verified. Resolves account context: prefers own account unless CURRENT_ACCOUNT_COOKIE is set to another account the user is a member of (so users who are both owner and team member see their own dashboard by default). */
 export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload | null> => {
   const session = await getSession();
   if (!session) return null;
@@ -27,8 +29,64 @@ export const getVerifiedSessionCached = cache(async (): Promise<SessionPayload |
     select: { emailVerifiedAt: true, authProvider: true },
   });
   if (!user || !user.emailVerifiedAt) throw new Error("EMAIL_NOT_VERIFIED");
+
+  const cookieStore = await cookies();
+  const currentAccountId = cookieStore.get(CURRENT_ACCOUNT_COOKIE)?.value?.trim() || null;
+
+  // Prefer own account when cookie unset or set to self
+  if (!currentAccountId || currentAccountId === session.userId) {
+    const plan = await syncPlanFromCapturedPayment(session.userId);
+    return {
+      ...session,
+      plan,
+      authProvider: user.authProvider ?? session.authProvider ?? undefined,
+      accountOwnerId: session.userId,
+      role: "owner",
+    };
+  }
+
+  // Cookie points to another account: use it only if user has active membership there
+  let membership: { accountOwnerId: string; role: string } | null = null;
+  try {
+    membership = await prisma.teamMember.findFirst({
+      where: {
+        memberUserId: session.userId,
+        accountOwnerId: currentAccountId,
+        status: "active",
+      },
+      select: { accountOwnerId: true, role: true },
+    });
+  } catch {
+    // TeamMember table may not exist yet (migration not run)
+  }
+
+  if (membership) {
+    const ownerPlan = await syncPlanFromCapturedPayment(membership.accountOwnerId);
+    const owner = await prisma.user.findUnique({
+      where: { id: membership.accountOwnerId },
+      select: { username: true },
+    });
+    if (!owner) return null;
+    return {
+      ...session,
+      username: owner.username,
+      plan: ownerPlan,
+      planValidUntil: undefined,
+      authProvider: user.authProvider ?? session.authProvider ?? undefined,
+      accountOwnerId: membership.accountOwnerId,
+      role: membership.role as SessionPayload["role"],
+    };
+  }
+
+  // Invalid or no access to requested account: use own account
   const plan = await syncPlanFromCapturedPayment(session.userId);
-  return { ...session, plan, authProvider: user.authProvider ?? session.authProvider ?? undefined };
+  return {
+    ...session,
+    plan,
+    authProvider: user.authProvider ?? session.authProvider ?? undefined,
+    accountOwnerId: session.userId,
+    role: "owner",
+  };
 });
 
 /** Use for dashboard and protected APIs. Ensures user has verified their email; throws if not. Plan is synced from captured payments so paid users always see the right plan. */

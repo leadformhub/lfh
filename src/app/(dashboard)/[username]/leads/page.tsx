@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
+import { getRole, canManageTeam } from "@/lib/team";
 import { getLeadsByUserId } from "@/services/leads.service";
 import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
 import { canUseBoard } from "@/lib/plan-features";
@@ -42,29 +43,31 @@ export default async function LeadsPage({
   params: Promise<{ username: string }>;
   searchParams: Promise<{ page?: string; formId?: string; search?: string; view?: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username } = await params;
   if (!session) redirect("/login");
   if (session.username.toLowerCase() !== username.toLowerCase()) redirect(`/${session.username}/leads`);
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
+
   const sp = await searchParams;
   const { page, formId, search, view } = sp;
   const pageNum = Math.max(1, parseInt(String(page || "1"), 10) || 1);
   const searchClean = typeof search === "string" && search.trim() ? search.trim() : undefined;
   const followUpDue = (sp as { followUpDue?: string }).followUpDue === "1";
-  const formsWithSchema = await getFormsWithSchemaByUserId(session.userId);
+  const formsWithSchema = await getFormsWithSchemaByUserId(accountOwnerId);
   const formsForSelect = formsWithSchema.map((f) => ({ id: f.id, name: f.name }));
   const formIdRaw = typeof formId === "string" && formId.trim() && formId !== "undefined" && formId !== "null" ? formId.trim() : undefined;
   let formIdClean = formIdRaw ?? "";
   const plan = (session.plan ?? "free") as PlanKey;
   const allowBoard = canUseBoard(plan);
   const razorpayKeyId = getRazorpayKeyId();
-  // Default to latest form when none selected (forms are ordered by createdAt desc)
   if (!formIdClean && formsForSelect.length > 0) {
     const latestFormId = formsForSelect[0].id;
     redirect(`/${username}/leads?formId=${encodeURIComponent(latestFormId)}`);
   }
 
-  // Fetch leads and form ONLY when a form is selected (one form → many leads).
   let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string; stageId?: string | null; stageName?: string; followUpBy?: string | null }[] = [];
   let total = 0;
   let perPage = 25;
@@ -79,16 +82,15 @@ export default async function LeadsPage({
 
   if (formIdClean) {
     const [formRow, pipelineExisting] = await Promise.all([
-      getFormById(formIdClean, session.userId),
-      getPipelineByFormId(session.userId, formIdClean),
+      getFormById(formIdClean, accountOwnerId),
+      getPipelineByFormId(accountOwnerId, formIdClean),
     ]);
     let pipeline = pipelineExisting;
-    // Only create pipeline when the form exists and belongs to the user (avoids FK / unique errors)
     if (!pipeline && formRow) {
       try {
-        const created = await createPipeline(session.userId, { formId: formIdClean, name: "Default" });
+        const created = await createPipeline(accountOwnerId, { formId: formIdClean, name: "Default" });
         await createDefaultStagesForPipeline(created.id);
-        pipeline = await getPipelineByFormId(session.userId, formIdClean);
+        pipeline = await getPipelineByFormId(accountOwnerId, formIdClean);
       } catch {
         pipeline = null;
       }
@@ -104,16 +106,17 @@ export default async function LeadsPage({
       };
     }
     const [leadsResult, boardForView] = await Promise.all([
-      getLeadsByUserId(session.userId, {
+      getLeadsByUserId(accountOwnerId, {
         page: pageNum,
         perPage: 25,
         formId: formIdClean,
         search: searchClean,
         plan,
         followUpDue: followUpDue || undefined,
+        assignedToUserId,
       }),
       allowBoard && pipeline
-        ? getLeadsByPipelineStages(session.userId, pipeline.id, plan).then(serializeBoardForApi)
+        ? getLeadsByPipelineStages(accountOwnerId, pipeline.id, plan, assignedToUserId ? { assignedToUserId } : undefined).then(serializeBoardForApi)
         : Promise.resolve(null),
     ]);
     const { leads, total: t, perPage: pp } = leadsResult;
@@ -162,6 +165,7 @@ export default async function LeadsPage({
           currentSearch={searchClean ?? ""}
           initialBoard={initialBoard}
           canUseBoard={allowBoard}
+          canAssignLeads={canManageTeam(session)}
           currentPlan={session.plan ?? "free"}
           razorpayKeyId={razorpayKeyId ?? null}
         />

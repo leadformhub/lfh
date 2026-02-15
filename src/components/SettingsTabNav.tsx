@@ -4,14 +4,23 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-type Tab = "account" | "plan-limits" | "usage";
+type Tab = "account" | "plan-limits" | "usage" | "team";
 
-export function SettingsTabNav({ pathname }: { pathname: string }) {
+export function SettingsTabNav({
+  pathname,
+  showTeamTab = true,
+  showPlanLimitsTab = true,
+}: {
+  pathname: string;
+  showTeamTab?: boolean;
+  showPlanLimitsTab?: boolean;
+}) {
   const searchParams = useSearchParams();
   const tab = (searchParams.get("tab") ?? "account") as Tab;
   const isAccount = tab === "account";
   const isPlanLimits = tab === "plan-limits";
   const isUsage = tab === "usage";
+  const isTeam = tab === "team";
 
   const tabClass = (active: boolean) =>
     cn(
@@ -25,7 +34,7 @@ export function SettingsTabNav({ pathname }: { pathname: string }) {
     <nav
       role="tablist"
       aria-label="Settings sections"
-      className="flex gap-1 rounded-xl bg-[var(--background-alt)] p-1.5 w-fit"
+      className="flex flex-wrap gap-1 rounded-xl bg-[var(--background-alt)] p-1.5 w-fit"
     >
       <Link
         href={pathname}
@@ -35,14 +44,16 @@ export function SettingsTabNav({ pathname }: { pathname: string }) {
       >
         Account
       </Link>
-      <Link
-        href={`${pathname}?tab=plan-limits`}
-        role="tab"
-        aria-selected={isPlanLimits}
-        className={tabClass(isPlanLimits)}
-      >
-        Plan & Limits
-      </Link>
+      {showPlanLimitsTab && (
+        <Link
+          href={`${pathname}?tab=plan-limits`}
+          role="tab"
+          aria-selected={isPlanLimits}
+          className={tabClass(isPlanLimits)}
+        >
+          Plan & Limits
+        </Link>
+      )}
       <Link
         href={`${pathname}?tab=usage`}
         role="tab"
@@ -51,6 +62,16 @@ export function SettingsTabNav({ pathname }: { pathname: string }) {
       >
         Usage
       </Link>
+      {showTeamTab && (
+        <Link
+          href={`${pathname}?tab=team`}
+          role="tab"
+          aria-selected={isTeam}
+          className={tabClass(isTeam)}
+        >
+          Team
+        </Link>
+      )}
     </nav>
   );
 }

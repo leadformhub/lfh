@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { updateLeadFollowUpBy } from "@/services/leads.service";
 
 /** PATCH follow-up date for a lead. Body: { followUpBy: string | null } (ISO date or null). */
@@ -10,6 +11,10 @@ export async function PATCH(
   const result = await getVerifiedSessionOrResponse();
   if ("response" in result) return result.response;
   const session = result.session;
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
+
   const { leadId } = await params;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
   let body: { followUpBy?: string | null } = {};
@@ -27,7 +32,7 @@ export async function PATCH(
     }
     followUpBy = parsed;
   }
-  const updated = await updateLeadFollowUpBy(leadId, session.userId, followUpBy);
+  const updated = await updateLeadFollowUpBy(leadId, accountOwnerId, followUpBy, assignedToUserId ? { assignedToUserId } : undefined);
   if (!updated) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
   return NextResponse.json({
     ok: true,

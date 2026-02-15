@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { getFormsByUserId } from "@/services/forms.service";
 import { getViewCountsForFormIds } from "@/services/analytics.service";
 import { FormsList } from "@/components/FormsList";
@@ -39,21 +40,21 @@ export default async function FormsPage({
   params: Promise<{ username: string }>;
   searchParams: Promise<{ page?: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username } = await params;
-  if (!session || session.username.toLowerCase() !== username.toLowerCase()) return null;
+  if (!session) redirect("/login");
+  if (session.username.toLowerCase() !== username.toLowerCase()) return null;
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
   const { page } = await searchParams;
   const { forms, total, page: currentPage, perPage } = await getFormsByUserId(
-    session.userId,
+    accountOwnerId,
     parseInt(page || "1", 10),
     25
   );
   const formIds = forms.map((f) => f.id);
   const viewCounts = await getViewCountsForFormIds(formIds);
 
-  const [formsCount] = await Promise.all([
-    prisma.form.count({ where: { userId: session.userId } }),
-  ]);
+  const formsCount = await prisma.form.count({ where: { userId: accountOwnerId } });
   const plan = (session.plan ?? "free") as PlanKey;
   const limits = getPlanLimits(plan);
   const canCreate = canCreateForm(plan, formsCount);

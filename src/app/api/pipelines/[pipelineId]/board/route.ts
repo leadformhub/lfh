@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { canUseBoard } from "@/lib/plan-features";
 import type { PlanKey } from "@/lib/plans";
 import { getLeadsByPipelineStages, trimLeadDataForBoard } from "@/services/pipelines.service";
@@ -11,6 +12,10 @@ export async function GET(
   const result = await getVerifiedSessionOrResponse();
   if ("response" in result) return result.response;
   const session = result.session;
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
+
   const plan = (session.plan ?? "free") as PlanKey;
   if (!canUseBoard(plan)) {
     return NextResponse.json(
@@ -20,7 +25,7 @@ export async function GET(
   }
   const { pipelineId } = await params;
   if (!pipelineId) return NextResponse.json({ error: "Pipeline ID required" }, { status: 400 });
-  const board = await getLeadsByPipelineStages(session.userId, pipelineId, plan);
+  const board = await getLeadsByPipelineStages(accountOwnerId, pipelineId, plan, assignedToUserId ? { assignedToUserId } : undefined);
   if (!board.pipeline.id) return NextResponse.json({ error: "Pipeline not found" }, { status: 404 });
   return NextResponse.json({
     pipeline: board.pipeline,

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { redirect } from "next/navigation";
 import { canUseIntegrations } from "@/lib/plan-features";
 import type { PlanKey } from "@/lib/plans";
@@ -11,11 +12,14 @@ export default async function IntegrationsLayout({
   children: React.ReactNode;
   params: Promise<{ username: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username } = await params;
   if (!session) redirect("/login");
   if (session.username.toLowerCase() !== username.toLowerCase()) {
     redirect(`/${session.username}/integrations/webhooks`);
+  }
+  if (getRole(session) === "sales") {
+    redirect(`/${username}/access-denied`);
   }
   const plan = (session.plan ?? "free") as PlanKey;
   if (!canUseIntegrations(plan)) {

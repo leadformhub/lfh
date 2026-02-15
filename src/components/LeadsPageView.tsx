@@ -41,6 +41,7 @@ export function LeadsPageView({
   currentSearch,
   initialBoard = null,
   canUseBoard = false,
+  canAssignLeads = false,
   currentPlan = "free",
   razorpayKeyId = null,
 }: {
@@ -56,6 +57,7 @@ export function LeadsPageView({
   currentSearch: string;
   initialBoard?: BoardData | null;
   canUseBoard?: boolean;
+  canAssignLeads?: boolean;
   currentPlan?: string;
   razorpayKeyId?: string | null;
 }) {
@@ -116,6 +118,7 @@ export function LeadsPageView({
           initialForm={initialForm}
           initialStages={initialStages}
           currentSearch={currentSearch}
+          canAssignLeads={canAssignLeads}
         />
       )}
       {activeTab === "board" && canUseBoard && (
@@ -125,6 +128,7 @@ export function LeadsPageView({
           username={username}
           initialForm={initialForm}
           initialBoard={initialBoard}
+          canAssignLeads={canAssignLeads}
         />
       )}
       {activeTab === "board" && !canUseBoard && (

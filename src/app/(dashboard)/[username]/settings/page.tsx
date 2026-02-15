@@ -13,6 +13,9 @@ import { ChangeEmailForm } from "@/components/ChangeEmailForm";
 import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
 import { DeleteAccountForm } from "@/components/DeleteAccountForm";
 import { SettingsTabNav } from "@/components/SettingsTabNav";
+import { TeamManagement } from "@/components/TeamManagement";
+import { canManageTeam, canAccessBilling, isOwner } from "@/lib/team";
+import { getMaxTeamMembers } from "@/lib/plans";
 
 export const metadata = {
   title: "Settings | LeadFormHub",
@@ -99,11 +102,17 @@ export default async function SettingsPage({
       ? "usage"
       : tabParam === "plan-limits"
         ? "plan-limits"
-        : "account";
+        : tabParam === "team"
+          ? "team"
+          : "account";
   const planLabel = session.plan.charAt(0).toUpperCase() + session.plan.slice(1);
   const razorpayKeyId = getRazorpayKeyId();
   const base = `/${username}`;
   const settingsPath = `/${username}/settings`;
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const showTeamTab = canManageTeam(session);
+  const showPlanLimitsTab = canAccessBilling(session);
+  const isAccountOwner = isOwner(session);
 
   // Usage data for Usage tab
   const planKey = session.plan as PlanKey;
@@ -112,9 +121,9 @@ export default async function SettingsPage({
   startOfMonth.setUTCDate(1);
   startOfMonth.setUTCHours(0, 0, 0, 0);
   const [formsCount, otpUsage, leadsThisMonth, otpLimit] = await Promise.all([
-    prisma.form.count({ where: { userId: session.userId } }),
-    getOtpUsageForUser(session.userId),
-    prisma.lead.count({ where: { userId: session.userId, createdAt: { gte: startOfMonth } } }),
+    prisma.form.count({ where: { userId: accountOwnerId } }),
+    getOtpUsageForUser(accountOwnerId),
+    prisma.lead.count({ where: { userId: accountOwnerId, createdAt: { gte: startOfMonth } } }),
     getOtpLimitForPlan(planKey),
   ]);
   const formsLimit = limits.maxForms === Infinity ? null : limits.maxForms;
@@ -131,9 +140,67 @@ export default async function SettingsPage({
             Manage your account, plan, and preferences.
           </p>
           <Suspense fallback={<div className="mt-4 h-12 w-48 rounded-xl bg-[var(--neutral-100)] animate-pulse" />}>
-            <SettingsTabNav pathname={settingsPath} />
+            <SettingsTabNav pathname={settingsPath} showTeamTab={showTeamTab} showPlanLimitsTab={showPlanLimitsTab} />
           </Suspense>
         </header>
+
+        {tab === "team" && !showTeamTab && (
+          <section
+            className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] p-6 sm:p-8"
+            aria-labelledby="access-denied-heading"
+          >
+            <h2 id="access-denied-heading" className="text-lg font-semibold text-[var(--foreground-heading)]">Access denied</h2>
+            <p className="mt-2 text-[var(--foreground-muted)]">You don&apos;t have permission to access this page.</p>
+          </section>
+        )}
+
+        {tab === "plan-limits" && !showPlanLimitsTab && (
+          <section
+            className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] p-6 sm:p-8"
+            aria-labelledby="access-denied-billing-heading"
+          >
+            <h2 id="access-denied-billing-heading" className="text-lg font-semibold text-[var(--foreground-heading)]">Access denied</h2>
+            <p className="mt-2 text-[var(--foreground-muted)]">You don&apos;t have permission to access this page.</p>
+          </section>
+        )}
+
+        {tab === "team" && showTeamTab && planKey === "free" && (
+          <div className="space-y-4 sm:space-y-5">
+            <section
+              className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden"
+              aria-labelledby="team-upgrade-heading"
+            >
+              <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--border-default)] bg-[var(--background-alt)]">
+                <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                  <IconAccount className="size-4 sm:size-5" />
+                </span>
+                <h2 id="team-upgrade-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
+                  Team Management
+                </h2>
+              </div>
+              <div className="px-4 sm:px-5 md:px-6 py-6">
+                <p className="text-base text-[var(--foreground)] font-medium">Upgrade to Pro to invite team members and collaborate.</p>
+                <p className="mt-2 text-sm text-[var(--foreground-muted)]">Invite admins and sales users, assign leads, and work together on the same account.</p>
+                <UpgradeModalButton
+                  title="Upgrade to Pro"
+                  description="Invite team members and collaborate. Pro includes up to 3 users; Agency includes unlimited team members."
+                  className="inline-flex items-center gap-2 mt-4 text-sm font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] hover:underline"
+                >
+                  <IconRocket className="size-4 shrink-0" />
+                  Upgrade to Pro
+                </UpgradeModalButton>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {tab === "team" && showTeamTab && (planKey === "pro" || planKey === "business") && (
+          <TeamManagement
+            username={username}
+            plan={session.plan}
+            maxMembers={limits.maxTeamMembers === Infinity ? Infinity : limits.maxTeamMembers}
+          />
+        )}
 
         {tab === "usage" && (
           /* Usage tab */
@@ -204,7 +271,7 @@ export default async function SettingsPage({
           </div>
         )}
 
-        {tab === "plan-limits" && (
+        {tab === "plan-limits" && showPlanLimitsTab && (
           /* Plan & Limits tab – 2 cards */
           <div className="grid grid-cols-1 gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2">
             {/* Card 1: Current Plan */}
@@ -292,48 +359,66 @@ export default async function SettingsPage({
         {tab === "account" && (
         /* Account tab */
         <div className="grid grid-cols-1 gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2">
-          {/* Card 1: Email change */}
-          <section
-            className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden transition-shadow hover:shadow-[var(--shadow-md)]"
-            aria-labelledby="email-heading"
-          >
-            <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--border-default)] bg-[var(--background-alt)]">
-              <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <IconAccount className="size-4 sm:size-5" />
-              </span>
-              <h2 id="email-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
-                Email
+          {!isAccountOwner && (
+            <section
+              className="min-w-0 sm:col-span-2 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] p-4 sm:p-5 md:p-6"
+              aria-labelledby="team-member-account-heading"
+            >
+              <h2 id="team-member-account-heading" className="text-base font-semibold text-[var(--foreground-heading)]">
+                Team member view
               </h2>
-            </div>
-            <div className="px-4 sm:px-5 md:px-6 py-4">
-              <p className="text-xs font-medium text-[var(--foreground-muted)]">Current email</p>
-              <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] break-all">{session.email}</p>
-              <p className="mt-3 text-xs font-medium text-[var(--foreground-muted)]">Change email</p>
-              <p className="mt-0.5 text-base text-[var(--foreground-muted)] mb-3">We&apos;ll send a verification link to your new address. After you verify, your email will be updated.</p>
-              <ChangeEmailForm />
-            </div>
-          </section>
+              <p className="mt-2 text-base text-[var(--foreground-muted)]">
+                You&apos;re viewing <strong>@{username}</strong>&apos;s workspace. Email, username, and account deletion are managed by the account owner. Switch to your own account to manage your profile.
+              </p>
+            </section>
+          )}
 
-          {/* Card 2: Username change */}
-          <section
-            className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden transition-shadow hover:shadow-[var(--shadow-md)]"
-            aria-labelledby="username-heading"
-          >
-            <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--border-default)] bg-[var(--background-alt)]">
-              <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                <IconAccount className="size-4 sm:size-5" />
-              </span>
-              <h2 id="username-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
-                Username
-              </h2>
-            </div>
-            <div className="px-4 sm:px-5 md:px-6 py-4">
-              <p className="text-xs font-medium text-[var(--foreground-muted)]">Current username</p>
-              <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] mb-2">@{session.username}</p>
-              <p className="text-base text-[var(--foreground-muted)] mb-3">{`Your profile URL will update to /${session.username} after you change it.`}</p>
-              <ChangeUsernameForm currentUsername={session.username} />
-            </div>
-          </section>
+          {isAccountOwner && (
+            <>
+              {/* Card 1: Email change */}
+              <section
+                className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden transition-shadow hover:shadow-[var(--shadow-md)]"
+                aria-labelledby="email-heading"
+              >
+                <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--border-default)] bg-[var(--background-alt)]">
+                  <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                    <IconAccount className="size-4 sm:size-5" />
+                  </span>
+                  <h2 id="email-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
+                    Email
+                  </h2>
+                </div>
+                <div className="px-4 sm:px-5 md:px-6 py-4">
+                  <p className="text-xs font-medium text-[var(--foreground-muted)]">Current email</p>
+                  <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] break-all">{session.email}</p>
+                  <p className="mt-3 text-xs font-medium text-[var(--foreground-muted)]">Change email</p>
+                  <p className="mt-0.5 text-base text-[var(--foreground-muted)] mb-3">We&apos;ll send a verification link to your new address. After you verify, your email will be updated.</p>
+                  <ChangeEmailForm />
+                </div>
+              </section>
+
+              {/* Card 2: Username change */}
+              <section
+                className="min-w-0 rounded-xl border border-[var(--border-default)] bg-white shadow-[var(--shadow-sm)] overflow-hidden transition-shadow hover:shadow-[var(--shadow-md)]"
+                aria-labelledby="username-heading"
+              >
+                <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--border-default)] bg-[var(--background-alt)]">
+                  <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
+                    <IconAccount className="size-4 sm:size-5" />
+                  </span>
+                  <h2 id="username-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
+                    Username
+                  </h2>
+                </div>
+                <div className="px-4 sm:px-5 md:px-6 py-4">
+                  <p className="text-xs font-medium text-[var(--foreground-muted)]">Current username</p>
+                  <p className="mt-0.5 text-base font-medium text-[var(--foreground-heading)] mb-2">@{session.username}</p>
+                  <p className="text-base text-[var(--foreground-muted)] mb-3">{`Your profile URL will update to /${session.username} after you change it.`}</p>
+                  <ChangeUsernameForm currentUsername={session.username} />
+                </div>
+              </section>
+            </>
+          )}
 
           {/* Row 2 – Card 1: Change password / Set password */}
           <section
@@ -404,23 +489,25 @@ export default async function SettingsPage({
             </nav>
           </section>
 
-          {/* Delete account – full width */}
-          <section
-            className="min-w-0 sm:col-span-2 rounded-xl border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/5 shadow-[var(--shadow-sm)] overflow-hidden"
-            aria-labelledby="delete-account-heading"
-          >
-            <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--color-danger)]/20 bg-[var(--color-danger)]/10">
-              <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-danger)]/20 text-[var(--color-danger)]">
-                <IconTrash className="size-4 sm:size-5" />
-              </span>
-              <h2 id="delete-account-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
-                Delete account
-              </h2>
-            </div>
-            <div className="px-4 sm:px-5 md:px-6 py-4">
-              <DeleteAccountForm authProvider={session.authProvider} />
-            </div>
-          </section>
+          {/* Delete account – full width (owner only) */}
+          {isAccountOwner && (
+            <section
+              className="min-w-0 sm:col-span-2 rounded-xl border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/5 shadow-[var(--shadow-sm)] overflow-hidden"
+              aria-labelledby="delete-account-heading"
+            >
+              <div className="flex items-center gap-3 px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-b border-[var(--color-danger)]/20 bg-[var(--color-danger)]/10">
+                <span className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-danger)]/20 text-[var(--color-danger)]">
+                  <IconTrash className="size-4 sm:size-5" />
+                </span>
+                <h2 id="delete-account-heading" className="text-base sm:text-lg font-semibold text-[var(--foreground-heading)]">
+                  Delete account
+                </h2>
+              </div>
+              <div className="px-4 sm:px-5 md:px-6 py-4">
+                <DeleteAccountForm authProvider={session.authProvider} />
+              </div>
+            </section>
+          )}
         </div>
         )}
       </div>

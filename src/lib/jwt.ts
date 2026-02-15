@@ -7,6 +7,8 @@ const SECRET = new TextEncoder().encode(
 const COOKIE_NAME = "leadformhub_session";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
+export type SessionRole = "owner" | "admin" | "sales";
+
 export interface SessionPayload {
   userId: string;
   username: string;
@@ -14,6 +16,10 @@ export interface SessionPayload {
   plan: string;
   planValidUntil?: string | null; // ISO date when paid plan expires; null for free or legacy
   authProvider?: string | null; // 'google' | 'email'; null/undefined for legacy
+  /** Set when resolved: account owner's user id (same as userId for owner). */
+  accountOwnerId?: string;
+  /** Set when resolved: owner | admin | sales. */
+  role?: SessionRole;
   iat?: number;
   exp?: number;
 }

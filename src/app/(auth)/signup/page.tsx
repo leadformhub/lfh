@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
   `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [recaptchaReady, setRecaptchaReady] = useState(false);
   const [recaptchaLoading, setRecaptchaLoading] = useState(false);
   const router = useRouter();
+  const inviteParam = searchParams.get("invite");
 
   const recaptchaSiteKey =
     typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
@@ -110,7 +112,12 @@ export default function SignupPage() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, ...(recaptchaToken ? { recaptchaToken } : {}) }),
+        body: JSON.stringify({
+          email,
+          password,
+          ...(recaptchaToken ? { recaptchaToken } : {}),
+          ...(inviteParam ? { invite: inviteParam } : {}),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {

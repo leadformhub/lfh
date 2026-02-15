@@ -16,6 +16,7 @@ type LeadRow = {
   stageId?: string | null;
   stageName?: string;
   followUpBy?: string | null;
+  assignedToUserId?: string | null;
 };
 
 type PipelineStage = { id: string; name: string };
@@ -99,6 +100,7 @@ export function LeadsTable({
   initialForm,
   initialStages,
   currentSearch,
+  canAssignLeads = false,
 }: {
   username: string;
   initialLeads: LeadRow[];
@@ -110,6 +112,7 @@ export function LeadsTable({
   initialForm: { id: string; name: string; schema_json: { fields: unknown[] } } | null;
   initialStages: { id: string; name: string }[];
   currentSearch: string;
+  canAssignLeads?: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -592,8 +595,12 @@ export function LeadsTable({
         onClose={() => setViewLeadId(null)}
         lead={viewLead}
         form={form}
+        canAssignLeads={canAssignLeads}
         onFollowUpUpdated={(leadId, followUpBy) =>
           setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, followUpBy } : l)))
+        }
+        onAssignUpdated={(leadId, assignedToUserId) =>
+          setLeads((prev) => prev.map((l) => (l.id === leadId ? { ...l, assignedToUserId } : l)))
         }
       />
     </div>

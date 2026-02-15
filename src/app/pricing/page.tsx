@@ -23,7 +23,7 @@ const pricingSchema = {
       name: "Free",
       price: "0",
       priceCurrency: "INR",
-      description: "1 form, 50 leads/month, branded subdomain",
+      description: "3 forms, 50 leads/month, branded subdomain",
     },
     {
       "@type": "Offer",

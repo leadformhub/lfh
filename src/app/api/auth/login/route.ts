@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { findUserByEmail } from "@/services/auth.service";
 import bcrypt from "bcryptjs";
@@ -6,10 +7,13 @@ import { createToken } from "@/lib/jwt";
 import { getSessionCookieName, getSessionMaxAge } from "@/lib/jwt";
 import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 
+const INVITE_PENDING_COOKIE = "leadformhub_invite_pending";
+
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
   recaptchaToken: z.string().optional(),
+  invite: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -22,7 +26,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const { email, password, recaptchaToken } = parsed.data;
+    const { email, password, recaptchaToken, invite } = parsed.data;
 
     if (isRecaptchaConfigured()) {
       const token = typeof recaptchaToken === "string" ? recaptchaToken.trim() : "";
@@ -62,6 +66,12 @@ export async function POST(req: NextRequest) {
       planValidUntil: user.planValidUntil?.toISOString() ?? null,
       authProvider: user.authProvider ?? undefined,
     });
+    let redirectInvite = invite?.trim() || null;
+    if (!redirectInvite) {
+      const cookieStore = await cookies();
+      const pendingInvite = cookieStore.get(INVITE_PENDING_COOKIE)?.value?.trim();
+      if (pendingInvite) redirectInvite = pendingInvite;
+    }
     const res = NextResponse.json({
       user: {
         id: user.id,
@@ -71,6 +81,7 @@ export async function POST(req: NextRequest) {
         plan: user.plan,
         emailVerifiedAt: user.emailVerifiedAt,
       },
+      redirectTo: redirectInvite ? `/accept-invite?token=${encodeURIComponent(redirectInvite)}` : undefined,
     });
     res.cookies.set(getSessionCookieName(), token, {
       httpOnly: true,
@@ -79,6 +90,9 @@ export async function POST(req: NextRequest) {
       maxAge: getSessionMaxAge(),
       path: "/",
     });
+    if (redirectInvite) {
+      res.cookies.set(INVITE_PENDING_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
+    }
     return res;
   } catch (e) {
     return NextResponse.json({ error: "Login failed" }, { status: 500 });

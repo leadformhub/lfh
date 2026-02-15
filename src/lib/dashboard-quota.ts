@@ -19,7 +19,8 @@ export type DashboardPlanQuota = {
   totalSubmissions: number;
 };
 
-async function fetchDashboardPlanQuota(userId: string, planKey: PlanKey): Promise<DashboardPlanQuota> {
+/** Fetches plan quota for the account (owner). Limits are shared across all team members. */
+async function fetchDashboardPlanQuota(accountOwnerId: string, planKey: PlanKey): Promise<DashboardPlanQuota> {
   const limits = getPlanLimits(planKey);
   const startOfMonth = new Date();
   startOfMonth.setUTCDate(1);
@@ -27,16 +28,18 @@ async function fetchDashboardPlanQuota(userId: string, planKey: PlanKey): Promis
   const startOfToday = new Date();
   startOfToday.setUTCHours(0, 0, 0, 0);
 
+  const leadWhere = { userId: accountOwnerId };
+
   const [formsCount, leadsThisMonth, leadsToday, totalSubmissions, otpUsage, otpLimit] = await Promise.all([
-    prisma.form.count({ where: { userId } }),
+    prisma.form.count({ where: { userId: accountOwnerId } }),
     prisma.lead.count({
-      where: { userId, createdAt: { gte: startOfMonth } },
+      where: { ...leadWhere, createdAt: { gte: startOfMonth } },
     }),
     prisma.lead.count({
-      where: { userId, createdAt: { gte: startOfToday } },
+      where: { ...leadWhere, createdAt: { gte: startOfToday } },
     }),
-    prisma.lead.count({ where: { userId } }),
-    getOtpUsageForUser(userId),
+    prisma.lead.count({ where: leadWhere }),
+    getOtpUsageForUser(accountOwnerId),
     getOtpLimitForPlan(planKey),
   ]);
 
@@ -55,14 +58,14 @@ async function fetchDashboardPlanQuota(userId: string, planKey: PlanKey): Promis
 
 /** Short-lived cross-request cache (60s) so repeated navigations avoid DB hits. */
 const getQuotaCrossRequest = unstable_cache(
-  (userId: string, planKey: PlanKey) => fetchDashboardPlanQuota(userId, planKey),
+  (accountOwnerId: string, planKey: PlanKey) => fetchDashboardPlanQuota(accountOwnerId, planKey),
   ["dashboard-plan-quota"],
   { revalidate: 60 }
 );
 
-/** Cached per-request so layout and dashboard page share one fetch; also uses 60s cross-request cache. */
+/** Cached per-request so layout and dashboard page share one fetch; also uses 60s cross-request cache. Plan limits are per account (shared by all team members). */
 export const getDashboardPlanQuotaCached = cache(
-  async (userId: string, planKey: PlanKey): Promise<DashboardPlanQuota> => {
-    return getQuotaCrossRequest(userId, planKey);
+  async (accountOwnerId: string, planKey: PlanKey): Promise<DashboardPlanQuota> => {
+    return getQuotaCrossRequest(accountOwnerId, planKey);
   }
 );

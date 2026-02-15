@@ -286,6 +286,31 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   return sendEmail(to, subject, html);
 }
 
+/** Team invite: inviterName is who sent the invite; inviteLink is the full URL. When teamOwnerName is set and different from inviter (e.g. admin invited you to owner's team), the email says "to join [teamOwnerName]'s team". */
+export async function sendTeamInvite(
+  to: string,
+  inviterName: string,
+  inviteLink: string,
+  teamOwnerName?: string
+): Promise<boolean> {
+  const subject = "You're invited to join a team on LeadFormHub";
+  const safeInviter = escapeHtml(inviterName || "A team member");
+  const inviteLine =
+    teamOwnerName && teamOwnerName !== inviterName
+      ? `${safeInviter} has invited you to join ${escapeHtml(teamOwnerName)}'s team on LeadFormHub.`
+      : `${safeInviter} has invited you to join their team on LeadFormHub.`;
+  const html = buildBrandedEmail({
+    headerSubtitle: "Team invitation",
+    body: `
+      <p style="margin:0 0 24px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">${inviteLine} Click the button below to accept the invitation and get access.</p>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 24px;"><tr><td><a href="${inviteLink}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none; background:${EMAIL_STYLE.buttonBg}; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Accept invitation</a></td></tr></table>
+      <p style="margin:0 0 8px; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">This link expires in 7 days.</p>
+      <p style="margin:0; font-size:13px; line-height:1.5; color:${EMAIL_STYLE.mutedColor};">If you didn't expect this invitation, you can safely ignore this email.</p>
+    `,
+  });
+  return sendEmail(to, subject, html);
+}
+
 export async function sendOtpEmail(to: string, otp: string): Promise<boolean> {
   const subject = "Your verification code";
   const html = buildOtpVerificationEmail(otp);

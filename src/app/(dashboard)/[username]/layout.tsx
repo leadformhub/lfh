@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireVerifiedSession } from "@/lib/auth";
+import { canManageIntegrations } from "@/lib/team";
+import { listTeamsForMember } from "@/services/team.service";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { type PlanKey } from "@/lib/plans";
@@ -39,9 +41,12 @@ export default async function DashboardLayout({
   if (username.toLowerCase() !== session.username.toLowerCase()) {
     redirect(`/${session.username}/dashboard`);
   }
-  const planQuota = await getDashboardPlanQuotaCached(session.userId, session.plan as PlanKey);
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const planQuota = await getDashboardPlanQuotaCached(accountOwnerId, session.plan as PlanKey);
   const razorpayKeyId = getRazorpayKeyId();
   const currentPlan = session.plan ?? "free";
+  const isOwnAccount = session.accountOwnerId === session.userId;
+  const otherTeams = isOwnAccount ? await listTeamsForMember(session.userId) : [];
   return (
     <UpgradeModalProvider currentPlan={currentPlan} razorpayKeyId={razorpayKeyId}>
       <DashboardSidebarProvider>
@@ -53,6 +58,9 @@ export default async function DashboardLayout({
             username={session.username}
             planQuota={planQuota}
             razorpayKeyId={razorpayKeyId ?? null}
+            showIntegrationsLink={canManageIntegrations(session)}
+            isTeamAccount={session.accountOwnerId !== session.userId}
+            otherTeams={otherTeams}
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col min-h-0">

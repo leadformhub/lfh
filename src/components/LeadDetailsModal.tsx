@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Modal, ModalCloseButton } from "@/components/ui/Modal";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import { useToast } from "@/components/ui/Toast";
 
 type LeadForModal = {
   id: string;
@@ -14,6 +15,7 @@ type LeadForModal = {
   stageId?: string | null;
   stageName?: string;
   followUpBy?: string | null;
+  assignedToUserId?: string | null;
   utmSource?: string | null;
   utmMedium?: string | null;
   utmCampaign?: string | null;
@@ -117,30 +119,50 @@ function getActivityLabel(activity: ActivityItem): string {
     if (fromName) return `Moved from ${fromName} to ${toName}`;
     return `Moved to ${toName}`;
   }
+  if (activity.type === "assigned" && activity.metadata) {
+    const m = activity.metadata;
+    const assigner = (m.assignedByEmail as string) || (m.assignedByUsername as string) || "Someone";
+    const assignedToEmail = m.assignedToEmail as string | undefined;
+    const fromAssignedToEmail = m.fromAssignedToEmail as string | undefined;
+    if (assignedToEmail) return `${assigner} assigned to ${assignedToEmail}`;
+    if (fromAssignedToEmail) return `${assigner} unassigned from ${fromAssignedToEmail}`;
+    return `${assigner} unassigned`;
+  }
   return "Activity";
 }
+
+type AssignableMember = { id: string; userId: string; email: string; role: string };
 
 export function LeadDetailsModal({
   open,
   onClose,
   lead,
   form,
+  canAssignLeads = false,
   onFollowUpUpdated,
+  onAssignUpdated,
 }: {
   open: boolean;
   onClose: () => void;
   lead: LeadForModal | null;
   form: ApiForm;
+  canAssignLeads?: boolean;
   onFollowUpUpdated?: (leadId: string, followUpBy: string | null) => void;
+  onAssignUpdated?: (leadId: string, assignedToUserId: string | null) => void;
 }) {
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<"details" | "timeline">("details");
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [activitiesRefreshTrigger, setActivitiesRefreshTrigger] = useState(0);
   const [activitiesLoading, setActivitiesLoading] = useState(false);
   const [followUpBy, setFollowUpBy] = useState<string | null>(lead?.followUpBy ?? null);
   const [followUpDateInput, setFollowUpDateInput] = useState("");
   const [savingFollowUp, setSavingFollowUp] = useState(false);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  const [assignableMembers, setAssignableMembers] = useState<AssignableMember[]>([]);
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [assignedToUserId, setAssignedToUserId] = useState<string | null>(lead?.assignedToUserId ?? null);
 
   const keyToLabelMap = React.useMemo(() => buildKeyToLabelMap(form), [form]);
   const data = React.useMemo(() => (lead ? parseData(lead.data) : {}), [lead?.data]);
@@ -151,7 +173,27 @@ export function LeadDetailsModal({
     setFollowUpDateInput("");
   }, [lead?.id, lead?.followUpBy]);
 
-  // Fetch activities when modal opens so notes show in Details and Timeline
+  useEffect(() => {
+    if (lead?.assignedToUserId != null) setAssignedToUserId(lead.assignedToUserId);
+    else setAssignedToUserId(null);
+  }, [lead?.id, lead?.assignedToUserId]);
+
+  useEffect(() => {
+    if (!open || !canAssignLeads) return;
+    fetch("/api/team", { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : { members: [] }))
+      .then((body: { members?: { id: string; email: string; role: string; memberUserId: string | null }[] }) => {
+        const list = body.members ?? [];
+        setAssignableMembers(
+          list
+            .filter((m) => m.memberUserId && (m.role === "admin" || m.role === "sales"))
+            .map((m) => ({ id: m.id, userId: m.memberUserId!, email: m.email, role: m.role }))
+        );
+      })
+      .catch(() => setAssignableMembers([]));
+  }, [open, canAssignLeads]);
+
+  // Fetch activities when modal opens or after assignment
   useEffect(() => {
     if (!open || !lead?.id) return;
     setActivitiesLoading(true);
@@ -160,7 +202,7 @@ export function LeadDetailsModal({
       .then((body: { activities?: ActivityItem[] }) => setActivities(body.activities ?? []))
       .catch(() => setActivities([]))
       .finally(() => setActivitiesLoading(false));
-  }, [open, lead?.id]);
+  }, [open, lead?.id, activitiesRefreshTrigger]);
 
   if (!lead) return null;
 
@@ -199,6 +241,58 @@ export function LeadDetailsModal({
                 </div>
               </div>
             </div>
+            {canAssignLeads && assignableMembers.length > 0 && (
+              <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--neutral-50)]/50 p-4">
+                <p className="text-sm font-medium text-[var(--foreground-muted)]">Assign to</p>
+                <select
+                  value={assignedToUserId ?? ""}
+                  onChange={async (e) => {
+                    const value = e.target.value;
+                    const next = value === "" ? null : value;
+                    if (!lead?.id) return;
+                    setAssignLoading(true);
+                    try {
+                      const res = await fetch(`/api/leads/${lead.id}/assign`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "same-origin",
+                        body: JSON.stringify({ assignedToUserId: next }),
+                      });
+                      if (res.ok) {
+                        setAssignedToUserId(next);
+                        onAssignUpdated?.(lead.id, next);
+                        const data = await res.json().catch(() => ({}));
+                        const email = data.assignedToEmail as string | undefined;
+                        addToast({
+                          title: "Assigned successfully",
+                          description: next && email ? `Lead assigned to ${email}` : "Lead unassigned",
+                          variant: "success",
+                        });
+                        setActivitiesRefreshTrigger((t) => t + 1);
+                      } else {
+                        const data = await res.json().catch(() => ({}));
+                        addToast({
+                          title: "Assignment failed",
+                          description: (data.error as string) ?? "Failed to update assignment.",
+                          variant: "danger",
+                        });
+                      }
+                    } finally {
+                      setAssignLoading(false);
+                    }
+                  }}
+                  disabled={assignLoading}
+                  className="w-full min-h-[44px] rounded-lg border border-[var(--border-default)] bg-white px-3 py-2 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] disabled:opacity-50"
+                >
+                  <option value="">Unassigned</option>
+                  {assignableMembers.map((m) => (
+                    <option key={m.id} value={m.userId}>
+                      {m.email} ({m.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--neutral-50)]/50 p-4">
               <p className="text-sm font-medium text-[var(--foreground-muted)]">Follow-up</p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -515,6 +609,16 @@ export function LeadDetailsModal({
                             viewBox="0 0 24 24"
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        )}
+                        {activity.type === "assigned" && (
+                          <svg
+                            className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 text-[var(--foreground-muted)]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                         )}
                       </div>

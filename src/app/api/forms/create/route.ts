@@ -23,9 +23,10 @@ export async function POST(req: NextRequest) {
   const result = await getVerifiedSessionOrResponse();
   if ("response" in result) return result.response;
   const session = result.session;
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
   try {
-    const formsCount = await prisma.form.count({ where: { userId: session.userId } });
-    const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { plan: true } });
+    const formsCount = await prisma.form.count({ where: { userId: accountOwnerId } });
+    const user = await prisma.user.findUnique({ where: { id: accountOwnerId }, select: { plan: true } });
     const plan = (user?.plan ?? "free") as PlanKey;
     if (!canCreateForm(plan, formsCount)) {
       return NextResponse.json(
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       },
     };
     const form = await createForm({
-      userId: session.userId,
+      userId: accountOwnerId,
       name: data.name,
       schema,
     });

@@ -98,11 +98,16 @@ const LOCKED_UPGRADE_MESSAGES: Record<string, { title: string; description: stri
   },
 };
 
+type OtherTeam = { ownerId: string; ownerUsername: string; ownerName: string | null };
+
 export function DashboardSidebar({
   username,
   planQuota,
   razorpayKeyId,
-}: { username: string; planQuota: PlanQuota; razorpayKeyId: string | null }) {
+  showIntegrationsLink = true,
+  isTeamAccount = false,
+  otherTeams = [],
+}: { username: string; planQuota: PlanQuota; razorpayKeyId: string | null; showIntegrationsLink?: boolean; isTeamAccount?: boolean; otherTeams?: OtherTeam[] }) {
   const pathname = usePathname();
   const { open, setOpen } = useSidebar();
   const { showUpgradeModal } = useUpgradeModal();
@@ -111,6 +116,10 @@ export function DashboardSidebar({
   const plan = planQuota.plan as PlanKey;
   const analyticsUnlocked = canUseAnalytics(plan);
   const integrationsUnlocked = canUseIntegrations(plan);
+
+  const navItemsFiltered = showIntegrationsLink
+    ? navItems
+    : navItems.filter((item) => item.href !== "integrations/webhooks");
 
   return (
     <>
@@ -153,7 +162,7 @@ export function DashboardSidebar({
 
         <nav className="flex-1 overflow-y-auto px-3 py-5" aria-label="Main">
           <ul className="space-y-1">
-            {navItems.map(({ href, label, icon: Icon }) => {
+            {navItemsFiltered.map(({ href, label, icon: Icon }) => {
               const isAnalyticsLocked = href === "analytics" && !analyticsUnlocked;
               const isIntegrationsLocked = href === "integrations/webhooks" && !integrationsUnlocked;
               const isLocked = isAnalyticsLocked || isIntegrationsLocked;
@@ -207,6 +216,40 @@ export function DashboardSidebar({
               );
             })}
           </ul>
+
+          {isTeamAccount && (
+            <div className="mt-4 border-t border-white/10 pt-3">
+              <a
+                href="/api/auth/use-my-account"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+                onClick={() => setOpen(false)}
+              >
+                <svg className="size-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                My account
+              </a>
+            </div>
+          )}
+
+          {!isTeamAccount && otherTeams.length > 0 && (
+            <div className="mt-4 border-t border-white/10 pt-3">
+              <p className="px-3 pb-2 text-[10px] font-medium uppercase tracking-wider text-slate-400">Teams</p>
+              {otherTeams.map((team) => (
+                <a
+                  key={team.ownerId}
+                  href={`/api/auth/switch-account?username=${encodeURIComponent(team.ownerUsername)}`}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+                  onClick={() => setOpen(false)}
+                >
+                  <svg className="size-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {team.ownerName ? `${team.ownerName}'s team` : team.ownerUsername}
+                </a>
+              ))}
+            </div>
+          )}
         </nav>
 
         {/* Plan card with usage and progress bars */}

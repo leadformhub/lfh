@@ -54,6 +54,8 @@ export async function getLeadsByUserId(
     search?: string;
     plan?: string;
     followUpDue?: boolean;
+    /** When set (e.g. Sales role), only return leads assigned to this user. */
+    assignedToUserId?: string;
   } = {}
 ) {
   const page = Math.max(1, options.page ?? 1);
@@ -65,6 +67,7 @@ export async function getLeadsByUserId(
     formId?: string;
     dataJson?: { contains: string };
     followUpBy?: { not: null };
+    assignedToUserId?: string;
   } = { userId };
   const formId = options.formId?.trim();
   if (formId && formId !== "undefined" && formId !== "null") {
@@ -74,9 +77,11 @@ export async function getLeadsByUserId(
   if (search) {
     where.dataJson = { contains: search };
   }
-  // "Due for follow-up" = show leads that have any follow-up date set (so you can see your follow-up list)
   if (options.followUpDue) {
     where.followUpBy = { not: null };
+  }
+  if (options.assignedToUserId) {
+    where.assignedToUserId = options.assignedToUserId;
   }
 
   const isFree = options.plan === "free";
@@ -120,15 +125,27 @@ export async function getLeadsByUserId(
   return { leads, total, page, perPage };
 }
 
-export async function getLeadById(leadId: string, userId: string, plan?: string) {
+export async function getLeadById(
+  leadId: string,
+  userId: string,
+  options?: { plan?: string; /** When set (Sales), lead must be assigned to this user. */ assignedToUserId?: string }
+) {
+  const plan = options?.plan;
+  const assignedToUserId = options?.assignedToUserId;
+  const where: { id: string; userId: string; assignedToUserId?: string } = { id: leadId, userId };
+  if (assignedToUserId) {
+    where.assignedToUserId = assignedToUserId;
+  }
   const lead = await prisma.lead.findFirst({
-    where: { id: leadId, userId },
+    where,
     include: { form: true },
   });
   if (!lead) return null;
   if (plan === "free") {
+    const capWhere: { userId: string; assignedToUserId?: string } = { userId };
+    if (assignedToUserId) capWhere.assignedToUserId = assignedToUserId;
     const topIds = await prisma.lead.findMany({
-      where: { userId },
+      where: capWhere,
       orderBy: { createdAt: "desc" },
       take: FREE_PLAN_LEADS_CAP,
       select: { id: true },
@@ -142,10 +159,13 @@ export async function getLeadById(leadId: string, userId: string, plan?: string)
 export async function updateLeadFollowUpBy(
   leadId: string,
   userId: string,
-  followUpBy: Date | null
+  followUpBy: Date | null,
+  options?: { assignedToUserId?: string }
 ) {
+  const where: { id: string; userId: string; assignedToUserId?: string } = { id: leadId, userId };
+  if (options?.assignedToUserId) where.assignedToUserId = options.assignedToUserId;
   const updated = await prisma.lead.updateMany({
-    where: { id: leadId, userId },
+    where,
     data: { followUpBy },
   });
   if (updated.count === 0) return null;
@@ -155,10 +175,18 @@ export async function updateLeadFollowUpBy(
   });
 }
 
-export async function deleteLead(leadId: string, userId: string) {
-  return prisma.lead.deleteMany({
-    where: { id: leadId, userId },
+export async function deleteLead(leadId: string, userId: string, options?: { assignedToUserId?: string }) {
+  const where: { id: string; userId: string; assignedToUserId?: string } = { id: leadId, userId };
+  if (options?.assignedToUserId) where.assignedToUserId = options.assignedToUserId;
+  return prisma.lead.deleteMany({ where });
+}
+
+export async function updateLeadAssignment(leadId: string, accountOwnerId: string, assignedToUserId: string | null) {
+  const updated = await prisma.lead.updateMany({
+    where: { id: leadId, userId: accountOwnerId },
+    data: { assignedToUserId },
   });
+  return updated.count > 0;
 }
 
 export function parseLeadData(dataJson: string | null | undefined): Record<string, unknown> {
@@ -174,9 +202,15 @@ export function parseLeadData(dataJson: string | null | undefined): Record<strin
   return {};
 }
 
-export async function getLeadsForExport(userId: string, formId?: string, plan?: string) {
-  const where: { userId: string; formId?: string } = { userId };
+export async function getLeadsForExport(
+  userId: string,
+  formId?: string,
+  plan?: string,
+  options?: { assignedToUserId?: string }
+) {
+  const where: { userId: string; formId?: string; assignedToUserId?: string } = { userId };
   if (formId) where.formId = formId;
+  if (options?.assignedToUserId) where.assignedToUserId = options.assignedToUserId;
   const take = plan === "free" ? FREE_PLAN_LEADS_CAP : undefined;
   return prisma.lead.findMany({
     where,

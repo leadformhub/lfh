@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { getLeadById } from "@/services/leads.service";
 import { getLeadActivities, createLeadActivity } from "@/services/lead-activity.service";
 
@@ -16,8 +17,11 @@ export async function GET(
   const { leadId } = await params;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
 
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
   const plan = (session.plan ?? "free") as string;
-  const lead = await getLeadById(leadId, session.userId, plan);
+  const lead = await getLeadById(leadId, accountOwnerId, { plan, assignedToUserId });
   if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
 
   const activities = await getLeadActivities(leadId);
@@ -42,8 +46,11 @@ export async function POST(
   const session = result.session;
   const { leadId } = await params;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
   const plan = (session.plan ?? "free") as string;
-  const lead = await getLeadById(leadId, session.userId, plan);
+  const lead = await getLeadById(leadId, accountOwnerId, { plan, assignedToUserId });
   if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
   let body: { type?: string; body?: string } = {};
   try {

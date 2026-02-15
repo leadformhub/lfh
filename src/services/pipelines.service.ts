@@ -187,7 +187,8 @@ const leadSelect = {
 export async function getLeadsByPipelineStages(
   userId: string,
   pipelineId: string,
-  plan?: string
+  plan?: string,
+  options?: { assignedToUserId?: string }
 ): Promise<{
   pipeline: { id: string; name: string; formId: string | null };
   stages: { id: string; name: string; order: number; leads: LeadInStage[] }[];
@@ -205,10 +206,13 @@ export async function getLeadsByPipelineStages(
     };
   }
 
-  const leadWhere: { userId: string; formId: string | null } = {
+  const leadWhere: { userId: string; formId: string | null; assignedToUserId?: string } = {
     userId,
     formId: pipeline.formId,
   };
+  if (options?.assignedToUserId) {
+    leadWhere.assignedToUserId = options.assignedToUserId;
+  }
 
   const take =
     plan === "free" ? FREE_PLAN_LEADS_CAP : BOARD_LEADS_CAP;

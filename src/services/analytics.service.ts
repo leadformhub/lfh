@@ -79,52 +79,99 @@ function startOfMonthUTC(): Date {
   return d;
 }
 
-/** Leads submitted today (lightweight count). */
-export async function getLeadsToday(userId: string): Promise<number> {
-  return prisma.lead.count({
-    where: { userId, createdAt: { gte: startOfTodayUTC() } },
-  });
+/** Leads submitted today (lightweight count). Optional assignedToUserId for Sales. */
+export async function getLeadsToday(userId: string, assignedToUserId?: string): Promise<number> {
+  const where: { userId: string; createdAt: { gte: Date }; assignedToUserId?: string } = {
+    userId,
+    createdAt: { gte: startOfTodayUTC() },
+  };
+  if (assignedToUserId) where.assignedToUserId = assignedToUserId;
+  return prisma.lead.count({ where });
 }
 
-/** Leads submitted this month (lightweight count). */
-export async function getLeadsThisMonth(userId: string): Promise<number> {
-  return prisma.lead.count({
-    where: { userId, createdAt: { gte: startOfMonthUTC() } },
-  });
+/** Leads submitted this month (lightweight count). Optional assignedToUserId for Sales. */
+export async function getLeadsThisMonth(userId: string, assignedToUserId?: string): Promise<number> {
+  const where: { userId: string; createdAt: { gte: Date }; assignedToUserId?: string } = {
+    userId,
+    createdAt: { gte: startOfMonthUTC() },
+  };
+  if (assignedToUserId) where.assignedToUserId = assignedToUserId;
+  return prisma.lead.count({ where });
 }
 
-/** Overall conversion rate (submissions / views * 100). Returns 0 if no views. */
-export async function getConversionRate(userId: string): Promise<number> {
+/** Overall conversion rate (submissions / views * 100). Returns 0 if no views. Optional assignedToUserId for Sales. */
+export async function getConversionRate(userId: string, assignedToUserId?: string): Promise<number> {
+  const leadWhere: { userId: string; assignedToUserId?: string } = { userId };
+  if (assignedToUserId) leadWhere.assignedToUserId = assignedToUserId;
   const [views, submissions] = await Promise.all([
     prisma.analyticsEvent.count({
       where: { type: "view", form: { userId } },
     }),
-    prisma.lead.count({ where: { userId } }),
+    prisma.lead.count({ where: leadWhere }),
   ]);
   if (views === 0) return 0;
   return Math.round((submissions / views) * 100 * 10) / 10;
 }
 
-/** Single top-performing form by submission count (lightweight). */
+/** Single top-performing form by submission count (lightweight). Optional assignedToUserId for Sales. */
 export async function getTopPerformingForm(
-  userId: string
+  userId: string,
+  assignedToUserId?: string
 ): Promise<{ id: string; name: string; submissions: number } | null> {
+  if (assignedToUserId) {
+    const byForm = await prisma.lead.groupBy({
+      by: ["formId"],
+      where: { userId, assignedToUserId, formId: { not: null } },
+      _count: { id: true },
+    });
+    if (byForm.length === 0) return null;
+    const top = byForm.reduce((a, b) => (a._count.id >= b._count.id ? a : b));
+    const form = await prisma.form.findFirst({
+      where: { id: top.formId!, userId },
+      select: { id: true, name: true },
+    });
+    return form ? { id: form.id, name: form.name, submissions: top._count.id } : null;
+  }
   const forms = await prisma.form.findMany({
     where: { userId },
     select: { id: true, name: true, _count: { select: { leads: true } } },
   });
   if (forms.length === 0) return null;
-  const top = forms.reduce((a, b) =>
-    a._count.leads >= b._count.leads ? a : b
-  );
-  return {
-    id: top.id,
-    name: top.name,
-    submissions: top._count.leads,
-  };
+  const top = forms.reduce((a, b) => (a._count.leads >= b._count.leads ? a : b));
+  return { id: top.id, name: top.name, submissions: top._count.leads };
 }
 
-export async function getTopForms(userId: string, limit = 5) {
+export async function getTopForms(userId: string, limit = 5, assignedToUserId?: string) {
+  if (assignedToUserId) {
+    const byForm = await prisma.lead.groupBy({
+      by: ["formId"],
+      where: { userId, assignedToUserId, formId: { not: null } },
+      _count: { id: true },
+    });
+    byForm.sort((a, b) => b._count.id - a._count.id);
+    const topSlice = byForm.slice(0, limit);
+    const formIds = topSlice.map((r) => r.formId!).filter(Boolean);
+    const forms = await prisma.form.findMany({
+      where: { id: { in: formIds }, userId },
+      select: { id: true, name: true },
+    });
+    const formMap = new Map(forms.map((f) => [f.id, f]));
+    const views = await prisma.analyticsEvent.groupBy({
+      by: ["formId"],
+      where: { formId: { in: formIds }, type: "view" },
+      _count: true,
+    });
+    const viewMap = Object.fromEntries(views.map((v) => [v.formId, v._count]));
+    return topSlice.map((r) => {
+      const form = formMap.get(r.formId!);
+      return {
+        id: r.formId!,
+        name: form?.name ?? "Form",
+        submissions: r._count.id,
+        views: viewMap[r.formId!] ?? 0,
+      };
+    });
+  }
   const forms = await prisma.form.findMany({
     where: { userId },
     include: { _count: { select: { leads: true } } },
@@ -146,32 +193,31 @@ export async function getTopForms(userId: string, limit = 5) {
   }));
 }
 
-/** Submissions per day for last N days (from Lead table). Uses DB aggregation for scale. */
-export async function getSubmissionsOverTime(userId: string, days = 30) {
+/** Submissions per day for last N days (from Lead table). Optional assignedToUserId for Sales. */
+export async function getSubmissionsOverTime(userId: string, days = 30, assignedToUserId?: string) {
   const since = new Date();
   since.setDate(since.getDate() - days);
   since.setHours(0, 0, 0, 0);
 
-  type Row = { date: Date; submissions: bigint };
-  const rows = await prisma.$queryRaw<Row[]>`
-    SELECT DATE(created_at) as date, COUNT(*) as submissions
-    FROM Lead
-    WHERE user_id = ${userId} AND created_at >= ${since}
-    GROUP BY DATE(created_at)
-    ORDER BY date
-  `;
+  const where: { userId: string; createdAt: { gte: Date }; assignedToUserId?: string } = {
+    userId,
+    createdAt: { gte: since },
+  };
+  if (assignedToUserId) where.assignedToUserId = assignedToUserId;
 
+  const leads = await prisma.lead.findMany({
+    where,
+    select: { createdAt: true },
+  });
   const byDay: Record<string, number> = {};
   for (let i = 0; i < days; i++) {
     const d = new Date();
     d.setDate(d.getDate() - (days - 1 - i));
     byDay[d.toISOString().slice(0, 10)] = 0;
   }
-  for (const row of rows) {
-    const dateKey = row.date instanceof Date ? row.date.toISOString().slice(0, 10) : String(row.date).slice(0, 10);
-    if (byDay[dateKey] != null) {
-      byDay[dateKey] = Number(row.submissions);
-    }
+  for (const l of leads) {
+    const key = l.createdAt.toISOString().slice(0, 10);
+    if (byDay[key] != null) byDay[key]++;
   }
   return Object.entries(byDay)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -252,9 +298,11 @@ export async function getViewCountsForFormIds(formIds: string[]): Promise<Record
   return Object.fromEntries(rows.map((r) => [r.formId, r._count]));
 }
 
-export async function getRecentLeads(userId: string, limit = 5) {
+export async function getRecentLeads(userId: string, limit = 5, assignedToUserId?: string) {
+  const where: { userId: string; assignedToUserId?: string } = { userId };
+  if (assignedToUserId) where.assignedToUserId = assignedToUserId;
   const leads = await prisma.lead.findMany({
-    where: { userId },
+    where,
     include: { form: { select: { name: true, id: true } } },
     orderBy: { createdAt: "desc" },
     take: limit,

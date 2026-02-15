@@ -131,10 +131,11 @@ function LoginForm() {
           return;
         }
       }
+      const inviteParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("invite") : null;
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, ...(recaptchaToken ? { recaptchaToken } : {}) }),
+        body: JSON.stringify({ email, password, ...(recaptchaToken ? { recaptchaToken } : {}), ...(inviteParam ? { invite: inviteParam } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -142,8 +143,9 @@ function LoginForm() {
         return;
       }
       if (typeof window !== "undefined") window.localStorage.setItem("leadformhub_last_login_method", "email");
+      const redirectTo = data.redirectTo;
       const username = data.user?.username;
-      router.push(username ? `/${username}/dashboard` : "/");
+      router.push(redirectTo || (username ? `/${username}/dashboard` : "/"));
       router.refresh();
     } catch {
       setError("Something went wrong");

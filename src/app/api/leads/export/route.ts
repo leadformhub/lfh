@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { prisma } from "@/lib/db";
 import { getLeadsForExport, parseLeadData } from "@/services/leads.service";
 import { getFormById, getFormsWithSchemaByUserId } from "@/services/forms.service";
@@ -28,12 +29,19 @@ export async function GET(req: NextRequest) {
   const isExcel = format === "xlsx" || format === "excel";
   const report = searchParams.get("report") || undefined;
 
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
+
   if (report === "source") {
     const plan = (session.plan ?? "free") as PlanKey;
     if (!canUseSourceDashboard(plan)) {
       return NextResponse.json({ error: "Source report is available on Pro and Business plans." }, { status: 403 });
     }
-    const sourceRows = await getLeadsBySource(session.userId);
+    if (role === "sales") {
+      return NextResponse.json({ error: "You don't have permission to export the source report." }, { status: 403 });
+    }
+    const sourceRows = await getLeadsBySource(accountOwnerId);
     const dateStr = new Date().toISOString().slice(0, 10);
     const headers = ["Source", "Leads", "Won", "Conversion %"];
     const csv =
@@ -62,17 +70,17 @@ export async function GET(req: NextRequest) {
   const watermarkText = getWatermarkText(userName);
 
   const plan = (session.plan ?? "free") as string;
-  const leads = await getLeadsForExport(session.userId, formId, plan);
+  const leads = await getLeadsForExport(accountOwnerId, formId, plan, assignedToUserId ? { assignedToUserId } : undefined);
 
   let orderedFields: { storageKey: string; label: string }[];
   if (formId) {
-    const form = await getFormById(formId, session.userId);
+    const form = await getFormById(formId, accountOwnerId);
     const schema = form?.schema ? { fields: form.schema.fields ?? [] } : { fields: [] };
     orderedFields = schema.fields
       .filter((f) => f.type !== "hidden" && f.type !== "recaptcha")
       .map((f) => ({ storageKey: f.name ?? f.id, label: f.label || f.id }));
   } else {
-    const formsWithSchema = await getFormsWithSchemaByUserId(session.userId);
+    const formsWithSchema = await getFormsWithSchemaByUserId(accountOwnerId);
     const byStorageKey = new Map<string, string>();
     for (const form of formsWithSchema) {
       for (const field of form.schema?.fields ?? []) {

@@ -21,6 +21,17 @@ enum UserStatus {
   banned
 }
 
+enum TeamMemberRole {
+  admin
+  sales
+}
+
+enum TeamMemberStatus {
+  pending
+  active
+  inactive
+}
+
 // Form/lead field definitions live in JSON only. No DB column mapping.
 
 model User {
@@ -38,7 +49,7 @@ model User {
   updatedAt         DateTime  @updatedAt @map("updated_at")
 
   forms                Form[]
-  leads                Lead[]
+  leads                Lead[]             @relation("LeadOwner")
   pipelines            Pipeline[]
   subscriptions        Subscription[]
   passwordResets           PasswordReset[]
@@ -50,6 +61,10 @@ model User {
   supportRequests      SupportRequest[]
   feedback             Feedback[]
   webhooks             Webhook[]
+  teamMembershipsAsMember   TeamMember[]    @relation("TeamMemberAsMember")
+  teamMembersAsAccountOwner  TeamMember[]   @relation("TeamMemberAsOwner")
+  invitedTeamMembers         TeamMember[]    @relation("TeamMemberInvitedBy")
+  assignedLeads              Lead[]             @relation("LeadAssignedTo")
 }
 
 model EmailChangeRequest {
@@ -119,6 +134,28 @@ model AccountDeletionRequest {
   @@map("account_deletion_requests")
 }
 
+model TeamMember {
+  id                  String           @id @default(cuid())
+  accountOwnerId      String           @map("account_owner_id")
+  memberUserId        String?          @map("member_user_id")
+  email               String           @db.VarChar(255)
+  role                TeamMemberRole
+  status              TeamMemberStatus  @default(pending)
+  inviteToken         String?          @unique @map("invite_token") @db.VarChar(512)
+  inviteTokenExpiresAt DateTime?        @map("invite_token_expires_at")
+  invitedAt           DateTime         @default(now()) @map("invited_at")
+  invitedById         String?          @map("invited_by_id")
+
+  accountOwner User @relation("TeamMemberAsOwner", fields: [accountOwnerId], references: [id], onDelete: Cascade)
+  memberUser   User? @relation("TeamMemberAsMember", fields: [memberUserId], references: [id], onDelete: Cascade)
+  invitedBy    User? @relation("TeamMemberInvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@unique([accountOwnerId, email])
+  @@index([memberUserId])
+  @@index([accountOwnerId])
+  @@map("team_members")
+}
+
 model Form {
   id         String    @id @default(cuid())
   userId     String    @map("user_id")
@@ -176,6 +213,7 @@ model Lead {
   id         String    @id @default(cuid())
   formId     String?   @map("form_id") // null when form was deleted; leads are kept
   userId     String?   @map("user_id")  // null when user deleted; leads kept but unmapped
+  assignedToUserId String? @map("assigned_to_user_id") // for Sales visibility
   stageId    String?   @map("stage_id") // optional; for Kanban board
   dataJson   String    @db.Text @map("data_json") // JSON of submitted field values (keyed by field id)
   ipAddress      String?   @map("ip_address")
@@ -191,12 +229,15 @@ model Lead {
   createdAt      DateTime  @default(now()) @map("created_at")
 
   form       Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
-  user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user       User?          @relation("LeadOwner", fields: [userId], references: [id], onDelete: SetNull)
+  assignedTo User?          @relation("LeadAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
   stage      PipelineStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
   activities LeadActivity[]
 
   @@index([formId])
   @@index([userId])
+  @@index([assignedToUserId])
+  @@index([userId, assignedToUserId])
   @@index([stageId])
   @@index([createdAt])
   @@index([userId, createdAt])

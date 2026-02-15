@@ -11,6 +11,8 @@ import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 import { prisma } from "@/lib/db";
 import { parseFormSchema } from "@/lib/form-schema";
 import { validateName, validateEmail, validatePhone, isNameField } from "@/lib/validators";
+import { getLeadsLimit, hasLeadsRemaining } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
 
 type SchemaField = { id: string; type: string; name?: string; label: string; required: boolean };
 
@@ -135,16 +137,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
     }
 
-    if (form.user?.plan === "free") {
+    const plan = (form.user?.plan ?? "free") as PlanKey;
+    const leadsLimit = getLeadsLimit(plan);
+    if (leadsLimit !== null) {
       const startOfMonth = new Date();
       startOfMonth.setUTCDate(1);
       startOfMonth.setUTCHours(0, 0, 0, 0);
       const leadsThisMonth = await prisma.lead.count({
         where: { userId: form.userId, createdAt: { gte: startOfMonth } },
       });
-      if (leadsThisMonth >= 50) {
+      if (!hasLeadsRemaining(plan, leadsThisMonth)) {
         return NextResponse.json(
-          { error: "Monthly lead limit (50) reached for the free plan. Upgrade to accept more." },
+          { error: `Monthly lead limit (${leadsLimit}) reached for your plan. Upgrade to accept more.` },
           { status: 403 }
         );
       }

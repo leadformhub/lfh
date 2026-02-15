@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { NewFormClient } from "@/components/NewFormClient";
@@ -10,14 +10,15 @@ export default async function NewFormPage({
 }: {
   params: Promise<{ username: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   if (!session) redirect("/login");
   const { username } = await params;
   if (username.toLowerCase() !== session.username.toLowerCase()) {
     redirect(`/${session.username}/forms/new`);
   }
 
-  const formsCount = await prisma.form.count({ where: { userId: session.userId } });
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const formsCount = await prisma.form.count({ where: { userId: accountOwnerId } });
   const plan = (session.plan ?? "free") as PlanKey;
   if (!canCreateForm(plan, formsCount)) {
     redirect(`/${username}/pricing?reason=form_limit`);

@@ -8,6 +8,7 @@ import {
   getTopPerformingForm,
 } from "@/services/analytics.service";
 import { getVerifiedSessionCached } from "@/lib/auth";
+import { getRole } from "@/lib/team";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
 import { canUseAnalytics } from "@/lib/plan-features";
 import { canCreateForm, type PlanKey } from "@/lib/plans";
@@ -47,7 +48,11 @@ export default async function DashboardPage({
     return null;
   }
 
-  const planQuota = await getDashboardPlanQuotaCached(session.userId, session.plan as PlanKey);
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
+
+  const planQuota = await getDashboardPlanQuotaCached(accountOwnerId, session.plan as PlanKey);
   const { leadsToday, leadsThisMonth, totalSubmissions, formsUsed } = {
     leadsToday: planQuota.leadsToday,
     leadsThisMonth: planQuota.leadsUsed,
@@ -58,11 +63,11 @@ export default async function DashboardPage({
   const plan = session.plan as PlanKey;
   const showAnalytics = canUseAnalytics(plan);
   const [recentLeads, topForms, submissionsOverTime, conversionRate, topPerformingForm] = await Promise.all([
-    getRecentLeads(session.userId, 5),
-    getTopForms(session.userId, 5),
-    showAnalytics ? getSubmissionsOverTime(session.userId, 30) : Promise.resolve([]),
-    getConversionRate(session.userId),
-    getTopPerformingForm(session.userId),
+    getRecentLeads(accountOwnerId, 5, assignedToUserId),
+    getTopForms(accountOwnerId, 5, assignedToUserId),
+    showAnalytics ? getSubmissionsOverTime(accountOwnerId, 30, assignedToUserId) : Promise.resolve([]),
+    getConversionRate(accountOwnerId, assignedToUserId),
+    getTopPerformingForm(accountOwnerId, assignedToUserId),
   ]);
 
   const maxSubmissions = Math.max(1, ...submissionsOverTime.map((d) => d.submissions));

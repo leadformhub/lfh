@@ -5,7 +5,7 @@ export type FeatureValue = string | boolean;
 
 export type PlanFeatureRow = {
   /** Feature category for grouping (optional) */
-  category?: "Forms & leads" | "Verification" | "Dashboard & export" | "Sharing & embed" | "Integrations & API" | "Support";
+  category?: "Forms & leads" | "Verification" | "Dashboard & export" | "Team & collaboration" | "Sharing & embed" | "Integrations & API" | "Support";
   /** Feature label shown in UI */
   label: string;
   /** Value per plan: string for limits, true/false for included/not */
@@ -46,6 +46,11 @@ export const PLAN_FEATURES: PlanFeatureRow[] = [
   { category: "Dashboard & export", label: "UTM & referrer stored per lead", free: true, pro: true, business: true },
   { category: "Dashboard & export", label: "Leads by source & campaign (Analytics)", free: false, pro: true, business: true },
   { category: "Dashboard & export", label: "Export source report", free: false, pro: true, business: true },
+  // Team & collaboration
+  { category: "Team & collaboration", label: "Team members", free: "0", pro: "3", business: "Unlimited" },
+  { category: "Team & collaboration", label: "Invite team (admin, sales roles)", free: false, pro: true, business: true },
+  { category: "Team & collaboration", label: "Lead assignment (assign to team members)", free: false, pro: true, business: true },
+  { category: "Team & collaboration", label: "Switch between accounts (for team members)", free: false, pro: true, business: true },
   // Sharing & embed
   { category: "Sharing & embed", label: "Branded form URL (leadformhub.com/yourbrand)", free: true, pro: true, business: true },
   { category: "Sharing & embed", label: "Form embed (iframe code)", free: true, pro: true, business: true },
@@ -67,6 +72,7 @@ export const PLAN_FEATURE_CATEGORIES = [
   "Forms & leads",
   "Verification",
   "Dashboard & export",
+  "Team & collaboration",
   "Sharing & embed",
   "Integrations & API",
   "Support",
@@ -125,9 +131,9 @@ export function getPlanFeatureBullets(plan: PlanKey): string[] {
     case "free":
       return ["3 forms", "50 leads/month", "CSV export", "Dashboard", "Form embed", "Form builder", "Redirect after submit"];
     case "pro":
-      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "100 OTP/month", "Analytics", "Lead source analytics", "Remove branding", "Priority support"];
+      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "100 OTP/month", "3 team members", "Lead assignment", "Analytics", "Lead source analytics", "Remove branding", "Priority support"];
     case "business":
-      return ["Everything in Pro", "1,000 OTP/month", "CRM integrations", "API & webhooks", "Dedicated support"];
+      return ["Everything in Pro", "1,000 OTP/month", "Unlimited team members", "CRM integrations", "API & webhooks", "Dedicated support"];
     default:
       return getPlanFeatureBullets("free");
   }

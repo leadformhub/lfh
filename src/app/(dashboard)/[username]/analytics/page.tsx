@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
 import { canUseAnalytics } from "@/lib/plan-features";
+import { getRole } from "@/lib/team";
 import type { PlanKey } from "@/lib/plans";
 import { AnalyticsLockedView } from "./AnalyticsLockedView";
 import {
@@ -55,9 +56,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function AnalyticsPage({
   params,
 }: { params: Promise<{ username: string }> }) {
-  const session = await getSession();
+  let session;
+  try {
+    session = await getVerifiedSessionCached();
+  } catch {
+    return null;
+  }
   const { username } = await params;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) return null;
+
+  const accountOwnerId = session.accountOwnerId ?? session.userId;
+  const role = getRole(session);
+  const assignedToUserId = role === "sales" ? session.userId : undefined;
 
   const plan = session.plan as PlanKey;
   if (!canUseAnalytics(plan)) {
@@ -74,14 +84,14 @@ export default async function AnalyticsPage({
     leadsBySource,
     leadsByCampaign,
   ] = await Promise.all([
-    getDashboardStats(session.userId),
-    getTopForms(session.userId, 10),
-    getSubmissionsOverTime(session.userId, 30),
-    getViewsOverTime(session.userId, 30),
-    getAllFormsWithStats(session.userId),
-    getTotalViews(session.userId),
-    getLeadsBySource(session.userId),
-    getLeadsByCampaign(session.userId),
+    getDashboardStats(accountOwnerId),
+    getTopForms(accountOwnerId, 10, assignedToUserId),
+    getSubmissionsOverTime(accountOwnerId, 30, assignedToUserId),
+    getViewsOverTime(accountOwnerId, 30),
+    getAllFormsWithStats(accountOwnerId),
+    getTotalViews(accountOwnerId),
+    getLeadsBySource(accountOwnerId),
+    getLeadsByCampaign(accountOwnerId),
   ]);
 
   const avgConversion =

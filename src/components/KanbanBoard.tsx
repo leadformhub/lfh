@@ -176,12 +176,14 @@ export function KanbanBoard({
   username,
   initialForm,
   initialBoard: initialBoardProp = null,
+  canAssignLeads = false,
 }: {
   formId: string;
   forms: { id: string; name: string }[];
   username: string;
   initialForm: ApiForm;
   initialBoard?: BoardData | null;
+  canAssignLeads?: boolean;
 }) {
   const initialBoard = initialBoardProp && initialBoardProp.pipeline.id ? initialBoardProp : null;
   const [board, setBoard] = useState<BoardData | null>(() =>
@@ -447,7 +449,9 @@ export function KanbanBoard({
         onClose={() => setViewLead(null)}
         lead={viewLead ? { ...viewLead, formId: viewLead.formId ?? "", formName: viewLead.formName } : null}
         form={initialForm}
+        canAssignLeads={canAssignLeads}
         onFollowUpUpdated={handleFollowUpUpdated}
+        onAssignUpdated={() => selectedFormId && fetchBoard(selectedFormId)}
       />
     </div>
   );
