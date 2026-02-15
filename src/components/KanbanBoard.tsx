@@ -235,6 +235,8 @@ export function KanbanBoard({
   const [error, setError] = useState<string | null>(null);
   const [selectedFormId, setSelectedFormId] = useState(formId);
   const [viewLead, setViewLead] = useState<(BoardLead & { stageName: string }) | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const handleViewLead = useCallback((lead: BoardLead & { stageName: string }) => {
     setViewLead(lead);
@@ -482,6 +484,12 @@ export function KanbanBoard({
       {!board ? (
         <div className="flex min-h-[320px] items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] text-[var(--foreground-muted)]">
           {error && selectedFormId ? "Couldn't load board." : selectedFormId ? "Loading board…" : "Select a form"}
+        </div>
+      ) : !mounted ? (
+        <div className="min-w-0 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)] shadow-[var(--shadow-sm)]">
+          <div className="flex min-h-0 flex-col gap-3 p-3 sm:gap-4 sm:p-4 md:min-h-[480px] md:flex-row md:flex-nowrap md:min-w-0 items-center justify-center text-[var(--foreground-muted)]">
+            Loading board…
+          </div>
         </div>
       ) : (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>

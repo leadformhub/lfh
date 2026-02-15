@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { createLeadActivity } from "@/services/lead-activity.service";
 import { runFormAutomation } from "@/services/automation.service";
@@ -310,23 +311,16 @@ export async function updateLeadStage(
   };
 
   if (stageId === null) {
-    const lead = await prisma.lead.findFirst({
+    const result = await prisma.lead.updateMany({
       where: leadWhere,
-      select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
-    });
-    if (!lead) return { ok: false, error: "Lead not found" };
-    const fromStageId = lead.stageId ?? null;
-    const fromStageName = lead.stage?.name ?? "New";
-
-    await prisma.lead.update({
-      where: { id: leadId },
       data: { stageId: null },
     });
+    if (result.count === 0) return { ok: false, error: "Lead not found" };
     void createLeadActivity(leadId, "stage_changed", {
       stageId: null,
       stageName: "New",
-      fromStageId,
-      fromStageName,
+      fromStageId: null,
+      fromStageName: null,
     }).catch((err) =>
       console.error("[pipelines] Failed to log stage change activity:", err)
     );
@@ -339,32 +333,35 @@ export async function updateLeadStage(
     return { ok: true };
   }
 
-  const [lead, stage] = await Promise.all([
-    prisma.lead.findFirst({
-      where: leadWhere,
-      select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
-    }),
-    prisma.pipelineStage.findFirst({
+  const assignCondition =
+    options?.assignedToUserId != null
+      ? Prisma.sql`AND assigned_to_user_id = ${options.assignedToUserId}`
+      : Prisma.empty;
+  const [updateCount, stage] = await Promise.all([
+    prisma.$executeRaw(
+      Prisma.sql`
+        UPDATE Lead
+        SET stage_id = ${stageId}
+        WHERE id = ${leadId}
+          AND user_id = ${userId}
+          ${assignCondition}
+          AND (SELECT p.user_id FROM pipeline_stages ps INNER JOIN pipelines p ON p.id = ps.pipeline_id WHERE ps.id = ${stageId}) = ${userId}
+      `
+    ) as Promise<number>,
+    prisma.pipelineStage.findUnique({
       where: { id: stageId },
-      include: { pipeline: { select: { userId: true } } },
+      select: { name: true },
     }),
   ]);
-  if (!lead) return { ok: false, error: "Lead not found" };
-  if (!stage || stage.pipeline.userId !== userId) return { ok: false, error: "Stage not found" };
+  if (updateCount === 0) return { ok: false, error: "Lead not found" };
+  if (!stage) return { ok: false, error: "Stage not found" };
 
-  const fromStageId = lead.stageId ?? null;
-  const fromStageName = lead.stage?.name ?? "New";
   const newStageName = stage.name === "New" ? "To Contact" : stage.name;
-
-  await prisma.lead.update({
-    where: { id: leadId },
-    data: { stageId },
-  });
   void createLeadActivity(leadId, "stage_changed", {
     stageId,
     stageName: newStageName,
-    fromStageId,
-    fromStageName,
+    fromStageId: null,
+    fromStageName: null,
   }).catch((err) =>
     console.error("[pipelines] Failed to log stage change activity:", err)
   );
