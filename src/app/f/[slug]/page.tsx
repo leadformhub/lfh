@@ -28,14 +28,17 @@ export async function generateMetadata({
 
 export default async function PublicFormPage({
   params,
-}: { params: Promise<{ slug: string }> }) {
+  searchParams,
+}: { params: Promise<{ slug: string }>; searchParams: Promise<{ embed?: string }> }) {
   unstable_noStore(); // ensure fresh form/schema every time
   const { slug: formId } = await params;
+  const { embed: embedParam } = await searchParams;
+  const isEmbed = embedParam === "1";
   const form = await getFormByIdForPublic(formId);
   if (!form) notFound();
   if (form.lockedAt) {
     return (
-      <div className="min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:py-12">
+      <div className={isEmbed ? "bg-neutral-100 py-4 px-3" : "min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:py-12"}>
         <div className="max-w-lg mx-auto w-full min-w-0 rounded-xl border border-neutral-200 bg-white p-6 text-center text-neutral-600">
           <h1 className="text-xl font-bold text-neutral-900 mb-2">{form.name}</h1>
           <p>This form is not accepting submissions right now. Upgrade to unlock.</p>
@@ -67,8 +70,12 @@ export default async function PublicFormPage({
 
   const showFormName = settings.showFormName !== false;
 
+  const wrapperClass = isEmbed
+    ? "bg-neutral-100 py-4 px-3 sm:px-4"
+    : "min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6";
+
   return (
-    <div className="min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6">
+    <div className={wrapperClass}>
       <div className="max-w-lg mx-auto w-full min-w-0">
         {showFormName && (
           <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 break-words">{form.name}</h1>

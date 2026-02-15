@@ -451,6 +451,42 @@ export function PublicForm({
                   }`}
                 />
                 {fieldErrors[f.id] && <p className="mt-1 text-red-600 text-base">{fieldErrors[f.id]}</p>}
+                {needsOtp && phoneField?.id === f.id && submissionsEnabled && (
+                  <div className="mt-3 space-y-2">
+                    {!otpSent ? (
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        disabled={loading}
+                        className="px-4 py-2 bg-neutral-800 text-white rounded-lg text-sm hover:bg-neutral-700 disabled:opacity-50"
+                      >
+                        Send OTP
+                      </button>
+                    ) : !otpVerified ? (
+                      <>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          placeholder="Enter 6-digit OTP"
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                          className="w-full min-w-0 border border-neutral-300 rounded-lg px-3 py-2.5 sm:py-2 bg-white text-neutral-900 text-base sm:text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          disabled={loading || otpCode.length !== 6}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
+                        >
+                          Verify OTP
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-green-600 text-base">Phone verified</p>
+                    )}
+                  </div>
+                )}
               </>
             )}
             {f.type === "textarea" && (
@@ -527,41 +563,6 @@ export function PublicForm({
         <p className="text-amber-700 text-base bg-amber-50 rounded-lg px-3 py-2">
           This form is not accepting submissions at the moment.
         </p>
-      )}
-      {needsOtp && submissionsEnabled && (
-        <div className="border-t border-neutral-200 pt-4">
-          <div className="text-sm font-medium text-neutral-700 mb-2">Phone verification</div>
-          {!otpSent ? (
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              disabled={loading}
-              className="px-4 py-2 bg-neutral-800 text-white rounded-lg text-sm hover:bg-neutral-700 disabled:opacity-50"
-            >
-              Send OTP
-            </button>
-          ) : !otpVerified ? (
-            <div className="space-y-2">
-              <input
-                type="text"
-                placeholder="Enter 6-digit OTP"
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="w-full min-w-0 border border-neutral-300 rounded-lg px-3 py-2.5 sm:py-2 bg-white text-neutral-900 text-base sm:text-sm"
-              />
-              <button
-                type="button"
-                onClick={handleVerifyOtp}
-                disabled={loading || otpCode.length !== 6}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
-              >
-                Verify OTP
-              </button>
-            </div>
-          ) : (
-            <p className="text-green-600 text-base">Phone verified</p>
-          )}
-        </div>
       )}
       <button
         type="submit"
