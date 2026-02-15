@@ -12,7 +12,7 @@ type Props = {
   username: string;
   accountOwnerId: string;
   plan: PlanKey;
-  razorpayKeyId: string | undefined;
+  razorpayKeyId: string | null;
 };
 
 export async function DashboardQuickActions({
@@ -30,7 +30,7 @@ export async function DashboardQuickActions({
         username={username}
         canCreate={canCreate}
         currentPlan={plan}
-        razorpayKeyId={razorpayKeyId ?? null}
+        razorpayKeyId={razorpayKeyId}
       />
       <Link
         href={`/${username}/leads`}

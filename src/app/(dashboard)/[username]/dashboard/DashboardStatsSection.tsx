@@ -4,7 +4,7 @@ import {
   getTopPerformingForm,
 } from "@/services/analytics.service";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
-import { canCreateForm, type PlanKey } from "@/lib/plans";
+import { type PlanKey } from "@/lib/plans";
 import { Card, CardContent } from "@/components/ui/Card";
 
 type Props = {
