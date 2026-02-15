@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
   `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
 
-export default function SignupPage() {
+function SignupForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -270,5 +270,13 @@ export default function SignupPage() {
         .
       </p>
     </article>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[60vh] items-center justify-center text-white/60">Loading…</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }
