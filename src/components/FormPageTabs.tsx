@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { FormBuilder } from "@/components/FormBuilder";
 import { FormAutomation } from "@/components/FormAutomation";
 import type { FormSchema, AutomationRule } from "@/lib/form-schema";
@@ -43,6 +44,18 @@ export function FormPageTabs({
   const searchParams = useSearchParams();
   const tab = (searchParams.get("tab") as Tab) || "design";
   const basePath = `/${username}/forms/${formId}`;
+  const [iframeCopied, setIframeCopied] = useState(false);
+
+  const copyIframeCode = async () => {
+    try {
+      await navigator.clipboard.writeText(iframeCode);
+      setIframeCopied(true);
+      setTimeout(() => setIframeCopied(false), 2000);
+    } catch {
+      // fallback for older browsers
+      setIframeCopied(false);
+    }
+  };
 
   return (
     <div className="min-h-full bg-[var(--background-alt)] p-4 sm:p-6 lg:p-8">
@@ -120,7 +133,16 @@ export function FormPageTabs({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-1">iframe code</label>
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <label className="text-sm font-medium text-[var(--foreground-muted)]">iframe code</label>
+                <button
+                  type="button"
+                  onClick={copyIframeCode}
+                  className="shrink-0 rounded-md border border-[var(--border-default)] bg-[var(--background-elevated)] px-2.5 py-1.5 text-xs font-medium text-[var(--foreground)] shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--neutral-100)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-accent)]"
+                >
+                  {iframeCopied ? "Copied!" : "Copy"}
+                </button>
+              </div>
               <pre className="w-full min-w-0 overflow-x-auto rounded-lg border border-[var(--border-default)] bg-[var(--neutral-50)] p-3 text-sm text-[var(--foreground)]">
                 {iframeCode}
               </pre>
