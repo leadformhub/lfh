@@ -19,11 +19,12 @@ export type DashboardPlanQuota = {
   totalSubmissions: number;
 };
 
+/** MySQL COUNT(*) can come back as bigint; we use Number() so fallback can be number (ES2017-safe). */
 type QuotaCountsRow = {
-  formsCount: bigint;
-  leadsThisMonth: bigint;
-  leadsToday: bigint;
-  totalSubmissions: bigint;
+  formsCount: number | bigint;
+  leadsThisMonth: number | bigint;
+  leadsToday: number | bigint;
+  totalSubmissions: number | bigint;
 };
 
 /** One round trip for form + lead counts (MySQL). Table/column names match Prisma schema. */
@@ -36,7 +37,7 @@ async function fetchQuotaCounts(accountOwnerId: string, startOfMonth: Date, star
       (SELECT COUNT(*) FROM Lead WHERE user_id = ${accountOwnerId}) AS totalSubmissions
   `;
   if (rows[0]) return rows[0];
-  return { formsCount: 0, leadsThisMonth: 0, leadsToday: 0, totalSubmissions: 0 } as QuotaCountsRow;
+  return { formsCount: 0, leadsThisMonth: 0, leadsToday: 0, totalSubmissions: 0 };
 }
 
 /** Fetches plan quota for the account (owner). Limits are shared across all team members. Uses single query for counts + parallel OTP. */
