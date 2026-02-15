@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { canCreateForm } from "@/lib/plans";
 import type { UserPlan } from "@prisma/client";
@@ -65,6 +66,14 @@ export async function getFormsWithSchemaByUserId(userId: string, limit = 500) {
     schema: parseFormSchema(f.schemaJson),
   }));
 }
+
+/** Cached 60s for leads page to avoid repeated form list fetches on nav/form switch. */
+export const getFormsWithSchemaByUserIdCached = (userId: string, limit = 500) =>
+  unstable_cache(
+    () => getFormsWithSchemaByUserId(userId, limit),
+    ["leads-forms", userId],
+    { revalidate: 60 }
+  )();
 
 export async function getFormById(formId: string, userId?: string) {
   const form = await prisma.form.findUnique({

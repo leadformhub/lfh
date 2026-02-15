@@ -4,19 +4,15 @@ import { redirect } from "next/navigation";
 import { getVerifiedSessionCached } from "@/lib/auth";
 import { getRole, canManageTeam } from "@/lib/team";
 import { getLeadsByUserId } from "@/services/leads.service";
-import { getFormsWithSchemaByUserId, getFormById } from "@/services/forms.service";
+import { getFormsWithSchemaByUserIdCached, getFormById } from "@/services/forms.service";
 import { canUseBoard } from "@/lib/plan-features";
 import type { PlanKey } from "@/lib/plans";
-import {
-  getPipelineByFormId,
-  createPipeline,
-  createDefaultStagesForPipeline,
-  getLeadsByPipelineStages,
-  serializeBoardForApi,
-} from "@/services/pipelines.service";
+import { getOrCreatePipelineForForm, getLeadsByPipelineStages, serializeBoardForApi } from "@/services/pipelines.service";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { LeadsPageView } from "@/components/LeadsPageView";
 import { SITE_URL } from "@/lib/seo";
+import { Skeleton } from "@/components/ui/Skeleton";
+import type { SessionPayload } from "@/lib/jwt";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -36,37 +32,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export const dynamic = "force-dynamic";
 
-export default async function LeadsPage({
-  params,
+function LeadsSkeleton() {
+  return (
+    <div className="min-w-0 space-y-4">
+      <div className="flex flex-wrap gap-3">
+        <Skeleton className="h-11 w-52 rounded-[var(--radius-md)]" />
+        <Skeleton className="h-11 w-24 rounded-[var(--radius-md)]" />
+        <Skeleton className="h-11 w-40 rounded-[var(--radius-md)]" />
+      </div>
+      <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)]">
+        <Skeleton className="h-64 w-full rounded-none" />
+      </div>
+    </div>
+  );
+}
+
+async function LeadsContent({
+  session,
+  username,
   searchParams,
 }: {
-  params: Promise<{ username: string }>;
-  searchParams: Promise<{ page?: string; formId?: string; search?: string; view?: string }>;
+  session: SessionPayload;
+  username: string;
+  searchParams: { page?: string; formId?: string; search?: string; view?: string; followUpDue?: string };
 }) {
-  const session = await getVerifiedSessionCached();
-  const { username } = await params;
-  if (!session) redirect("/login");
-  if (session.username.toLowerCase() !== username.toLowerCase()) redirect(`/${session.username}/leads`);
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const role = getRole(session);
   const assignedToUserId = role === "sales" ? session.userId : undefined;
-
-  const sp = await searchParams;
-  const { page, formId, search, view } = sp;
-  const pageNum = Math.max(1, parseInt(String(page || "1"), 10) || 1);
-  const searchClean = typeof search === "string" && search.trim() ? search.trim() : undefined;
-  const followUpDue = (sp as { followUpDue?: string }).followUpDue === "1";
-  const formsWithSchema = await getFormsWithSchemaByUserId(accountOwnerId);
-  const formsForSelect = formsWithSchema.map((f) => ({ id: f.id, name: f.name }));
-  const formIdRaw = typeof formId === "string" && formId.trim() && formId !== "undefined" && formId !== "null" ? formId.trim() : undefined;
-  let formIdClean = formIdRaw ?? "";
   const plan = (session.plan ?? "free") as PlanKey;
   const allowBoard = canUseBoard(plan);
   const razorpayKeyId = getRazorpayKeyId();
-  if (!formIdClean && formsForSelect.length > 0) {
-    const latestFormId = formsForSelect[0].id;
-    redirect(`/${username}/leads?formId=${encodeURIComponent(latestFormId)}`);
-  }
+
+  const pageNum = Math.max(1, parseInt(String(searchParams.page || "1"), 10) || 1);
+  const searchClean = typeof searchParams.search === "string" && searchParams.search.trim() ? searchParams.search.trim() : undefined;
+  const followUpDue = searchParams.followUpDue === "1";
+
+  const formsWithSchema = await getFormsWithSchemaByUserIdCached(accountOwnerId);
+  const formsForSelect = formsWithSchema.map((f) => ({ id: f.id, name: f.name }));
+  const formIdRaw = typeof searchParams.formId === "string" && searchParams.formId.trim() && searchParams.formId !== "undefined" && searchParams.formId !== "null" ? searchParams.formId.trim() : undefined;
+  const formIdClean = formIdRaw ?? (formsForSelect.length > 0 ? formsForSelect[0].id : "");
 
   let leadsData: { id: string; formName: string; formId: string; data: string; createdAt: string; stageId?: string | null; stageName?: string; followUpBy?: string | null }[] = [];
   let total = 0;
@@ -81,20 +85,10 @@ export default async function LeadsPage({
   } | null = null;
 
   if (formIdClean) {
-    const [formRow, pipelineExisting] = await Promise.all([
+    const [formRow, pipeline] = await Promise.all([
       getFormById(formIdClean, accountOwnerId),
-      getPipelineByFormId(accountOwnerId, formIdClean),
+      getOrCreatePipelineForForm(accountOwnerId, formIdClean),
     ]);
-    let pipeline = pipelineExisting;
-    if (!pipeline && formRow) {
-      try {
-        const created = await createPipeline(accountOwnerId, { formId: formIdClean, name: "Default" });
-        await createDefaultStagesForPipeline(created.id);
-        pipeline = await getPipelineByFormId(accountOwnerId, formIdClean);
-      } catch {
-        pipeline = null;
-      }
-    }
     if (pipeline?.stages?.length) {
       initialStages = pipeline.stages.map((s) => ({ id: s.id, name: s.name }));
     }
@@ -119,10 +113,9 @@ export default async function LeadsPage({
         ? getLeadsByPipelineStages(accountOwnerId, pipeline.id, plan, assignedToUserId ? { assignedToUserId } : undefined).then(serializeBoardForApi)
         : Promise.resolve(null),
     ]);
-    const { leads, total: t, perPage: pp } = leadsResult;
-    total = t;
-    perPage = pp;
-    leadsData = leads.map((l) => ({
+    total = leadsResult.total;
+    perPage = leadsResult.perPage;
+    leadsData = leadsResult.leads.map((l) => ({
       id: l.id,
       formName: l.form?.name ?? "Form Deleted",
       formId: l.formId ?? "",
@@ -136,39 +129,46 @@ export default async function LeadsPage({
   }
 
   return (
+    <LeadsPageView
+      username={username}
+      initialLeads={leadsData}
+      initialTotal={total}
+      initialPage={pageNum}
+      perPage={perPage}
+      forms={formsForSelect}
+      initialFormId={formIdClean}
+      initialForm={initialForm}
+      initialStages={initialStages}
+      currentSearch={searchClean ?? ""}
+      initialBoard={initialBoard}
+      canUseBoard={allowBoard}
+      canAssignLeads={canManageTeam(session)}
+      currentPlan={session.plan ?? "free"}
+      razorpayKeyId={razorpayKeyId ?? null}
+    />
+  );
+}
+
+export default async function LeadsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ username: string }>;
+  searchParams: Promise<{ page?: string; formId?: string; search?: string; view?: string; followUpDue?: string }>;
+}) {
+  const session = await getVerifiedSessionCached();
+  const { username } = await params;
+  if (!session) redirect("/login");
+  if (session.username.toLowerCase() !== username.toLowerCase()) redirect(`/${session.username}/leads`);
+
+  const sp = await searchParams;
+  return (
     <div className="max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
-      <h1 className="font-heading mb-5 text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:mb-6 sm:text-xl">Lead management dashboard</h1>
-      <Suspense
-        fallback={
-          <div className="min-w-0 space-y-5">
-            <div className="flex flex-wrap gap-3">
-              <div className="skeleton h-11 w-52" />
-              <div className="skeleton h-11 w-24" />
-              <div className="skeleton h-11 w-40" />
-            </div>
-            <div className="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--background-elevated)]">
-              <div className="skeleton h-64 w-full" />
-            </div>
-          </div>
-        }
-      >
-        <LeadsPageView
-          username={username}
-          initialLeads={leadsData}
-          initialTotal={total}
-          initialPage={pageNum}
-          perPage={perPage}
-          forms={formsForSelect}
-          initialFormId={formIdClean ?? ""}
-          initialForm={initialForm}
-          initialStages={initialStages}
-          currentSearch={searchClean ?? ""}
-          initialBoard={initialBoard}
-          canUseBoard={allowBoard}
-          canAssignLeads={canManageTeam(session)}
-          currentPlan={session.plan ?? "free"}
-          razorpayKeyId={razorpayKeyId ?? null}
-        />
+      <h1 className="font-heading mb-5 text-lg font-semibold tracking-tight text-[var(--foreground-heading)] sm:mb-6 sm:text-xl">
+        Lead management dashboard
+      </h1>
+      <Suspense fallback={<LeadsSkeleton />}>
+        <LeadsContent session={session} username={username} searchParams={sp} />
       </Suspense>
     </div>
   );

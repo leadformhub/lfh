@@ -87,24 +87,17 @@ export async function getLeadsByUserId(
   const isFree = options.plan === "free";
 
   if (isFree) {
-    const topIds = await prisma.lead.findMany({
+    const allLeads = await prisma.lead.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: FREE_PLAN_LEADS_CAP,
-      select: { id: true },
-    });
-    const ids = topIds.map((r) => r.id);
-    if (ids.length === 0) return { leads: [], total: 0, page, perPage };
-    const total = ids.length;
-    const paginatedIds = ids.slice(skip, skip + perPage);
-    const leads = await prisma.lead.findMany({
-      where: { id: { in: paginatedIds } },
       include: {
         form: { select: { id: true, name: true } },
         stage: { select: { id: true, name: true } },
       },
-      orderBy: { createdAt: "desc" },
     });
+    const total = allLeads.length;
+    const leads = allLeads.slice(skip, skip + perPage);
     return { leads, total, page, perPage };
   }
 

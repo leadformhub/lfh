@@ -89,6 +89,33 @@ export async function getPipelineByFormId(userId: string, formId: string | null)
   });
 }
 
+/** Get pipeline for form, or create with default stages in one transaction. Reduces 3 round trips to 1 when creating. */
+export async function getOrCreatePipelineForForm(userId: string, formId: string) {
+  const existing = await prisma.pipeline.findFirst({
+    where: { userId, formId },
+    include: { stages: { orderBy: { order: "asc" } } },
+  });
+  if (existing) return existing;
+  const defaults = [
+    { name: "To Contact", order: 0 },
+    { name: "Contacted", order: 1 },
+    { name: "Won", order: 2 },
+  ];
+  const pipeline = await prisma.$transaction(async (tx) => {
+    const created = await tx.pipeline.create({
+      data: { userId, formId, name: "Default" },
+    });
+    await tx.pipelineStage.createMany({
+      data: defaults.map((d) => ({ pipelineId: created.id, name: d.name, order: d.order })),
+    });
+    return tx.pipeline.findUniqueOrThrow({
+      where: { id: created.id },
+      include: { stages: { orderBy: { order: "asc" } } },
+    });
+  });
+  return pipeline;
+}
+
 export async function getStagesByPipelineId(pipelineId: string) {
   return prisma.pipelineStage.findMany({
     where: { pipelineId },
