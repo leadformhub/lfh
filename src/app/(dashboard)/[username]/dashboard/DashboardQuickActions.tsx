@@ -30,7 +30,7 @@ export async function DashboardQuickActions({
         username={username}
         canCreate={canCreate}
         currentPlan={plan}
-        razorpayKeyId={razorpayKeyId}
+        razorpayKeyId={razorpayKeyId ?? null}
       />
       <Link
         href={`/${username}/leads`}
