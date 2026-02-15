@@ -298,6 +298,16 @@ export async function getViewCountsForFormIds(formIds: string[]): Promise<Record
   return Object.fromEntries(rows.map((r) => [r.formId, r._count]));
 }
 
+/** View counts for all forms of a user. Run in parallel with getFormsByUserId to avoid sequential round trips. */
+export async function getViewCountsForUserForms(userId: string): Promise<Record<string, number>> {
+  const rows = await prisma.analyticsEvent.groupBy({
+    by: ["formId"],
+    where: { type: "view", form: { userId } },
+    _count: true,
+  });
+  return Object.fromEntries(rows.map((r) => [r.formId, r._count]));
+}
+
 export async function getRecentLeads(userId: string, limit = 5, assignedToUserId?: string) {
   const where: { userId: string; assignedToUserId?: string } = { userId };
   if (assignedToUserId) where.assignedToUserId = assignedToUserId;

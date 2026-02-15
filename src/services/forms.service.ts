@@ -52,6 +52,15 @@ export async function getFormsByUserId(userId: string, page = 1, perPage = 25) {
   return { forms, total, page, perPage };
 }
 
+/** Cached 30s for forms list page so repeat visits / same page hit cache. */
+export function getFormsByUserIdCached(userId: string, page = 1, perPage = 25) {
+  return unstable_cache(
+    () => getFormsByUserId(userId, page, perPage),
+    ["forms-list", userId, String(page), String(perPage)],
+    { revalidate: 30 }
+  )();
+}
+
 /** Forms with parsed schema_json for leads table column definitions (fields from schema). */
 export async function getFormsWithSchemaByUserId(userId: string, limit = 500) {
   const forms = await prisma.form.findMany({
