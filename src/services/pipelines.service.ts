@@ -34,7 +34,7 @@ export function serializeBoardForApi(board: {
       id: l.id,
       formId: l.formId,
       stageId: l.stageId,
-      data: trimLeadDataForBoard(l.dataJson),
+      data: l.dataJson,
       createdAt: l.createdAt.toISOString(),
       formName: l.form?.name ?? null,
       followUpBy: l.followUpBy?.toISOString() ?? null,
@@ -47,7 +47,7 @@ export function serializeBoardForApi(board: {
         id: l.id,
         formId: l.formId,
         stageId: l.stageId,
-        data: trimLeadDataForBoard(l.dataJson),
+        data: l.dataJson,
         createdAt: l.createdAt.toISOString(),
         formName: l.form?.name ?? null,
         followUpBy: l.followUpBy?.toISOString() ?? null,
@@ -205,15 +205,19 @@ const leadSelect = {
   form: { select: { name: true } as const },
 } as const;
 
+/** Pipeline with stages, as returned by getPipelineByFormId. Pass to getLeadsByPipelineStages to skip re-fetching. */
+export type PipelineWithStages = Awaited<ReturnType<typeof getPipelineByFormId>>;
+
 /**
  * Returns pipeline with stages and leads grouped by stage.
  * Leads with stageId = null are included in the first stage (or "unassigned").
  * Respects free plan cap (50 leads). Paid plans capped at BOARD_LEADS_CAP for performance.
  * Uses a single leads query and minimal select to reduce DB time and payload.
+ * Pass pipelineWithStages when you already have the pipeline to avoid an extra DB round-trip.
  */
 export async function getLeadsByPipelineStages(
   userId: string,
-  pipelineId: string,
+  pipelineIdOrPipeline: string | PipelineWithStages,
   plan?: string,
   options?: { assignedToUserId?: string }
 ): Promise<{
@@ -221,10 +225,13 @@ export async function getLeadsByPipelineStages(
   stages: { id: string; name: string; order: number; leads: LeadInStage[] }[];
   unassignedLeads: LeadInStage[];
 }> {
-  const pipeline = await prisma.pipeline.findFirst({
-    where: { id: pipelineId, userId },
-    include: { stages: { orderBy: { order: "asc" } } },
-  });
+  const pipeline: PipelineWithStages | null =
+    typeof pipelineIdOrPipeline === "object"
+      ? pipelineIdOrPipeline
+      : await prisma.pipeline.findFirst({
+          where: { id: pipelineIdOrPipeline, userId },
+          include: { stages: { orderBy: { order: "asc" } } },
+        });
   if (!pipeline) {
     return {
       pipeline: { id: "", name: "", formId: null },
@@ -261,7 +268,7 @@ export async function getLeadsByPipelineStages(
       id: lead.id,
       formId: lead.formId,
       stageId: lead.stageId,
-      dataJson: lead.dataJson,
+      dataJson: trimLeadDataForBoard(lead.dataJson),
       createdAt: lead.createdAt,
       followUpBy: lead.followUpBy ?? null,
       form: lead.form ? { id: "", name: lead.form.name } : null,
@@ -288,27 +295,34 @@ export async function getLeadsByPipelineStages(
 /**
  * Update a lead's stage. Verifies lead belongs to user and stage belongs to user's pipeline.
  * Pass stageId null to clear the lead's stage (move to "New" / unassigned).
+ * When assignedToUserId is set (e.g. Sales role), lead must be assigned to that user.
  */
 export async function updateLeadStage(
   leadId: string,
   userId: string,
-  stageId: string | null
+  stageId: string | null,
+  options?: { assignedToUserId?: string }
 ): Promise<{ ok: boolean; error?: string }> {
-  const lead = await prisma.lead.findFirst({
-    where: { id: leadId, userId },
-    select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
-  });
-  if (!lead) return { ok: false, error: "Lead not found" };
-
-  const fromStageId = lead.stageId ?? null;
-  const fromStageName = lead.stage?.name ?? "New";
+  const leadWhere = {
+    id: leadId,
+    userId,
+    ...(options?.assignedToUserId != null && { assignedToUserId: options.assignedToUserId }),
+  };
 
   if (stageId === null) {
+    const lead = await prisma.lead.findFirst({
+      where: leadWhere,
+      select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
+    });
+    if (!lead) return { ok: false, error: "Lead not found" };
+    const fromStageId = lead.stageId ?? null;
+    const fromStageName = lead.stage?.name ?? "New";
+
     await prisma.lead.update({
       where: { id: leadId },
       data: { stageId: null },
     });
-    await createLeadActivity(leadId, "stage_changed", {
+    void createLeadActivity(leadId, "stage_changed", {
       stageId: null,
       stageName: "New",
       fromStageId,
@@ -316,27 +330,37 @@ export async function updateLeadStage(
     }).catch((err) =>
       console.error("[pipelines] Failed to log stage change activity:", err)
     );
-    runAutomationForStageChange(leadId, "New").catch((err) =>
+    void runAutomationForStageChange(leadId, "New").catch((err) =>
       console.error("[pipelines] Automation failed:", err)
     );
-    triggerWebhooksForStageChange(leadId, userId).catch((err) =>
+    void triggerWebhooksForStageChange(leadId, userId).catch((err) =>
       console.error("[webhooks] stage change failed:", err)
     );
     return { ok: true };
   }
 
-  const stage = await prisma.pipelineStage.findFirst({
-    where: { id: stageId },
-    include: { pipeline: { select: { userId: true } } },
-  });
+  const [lead, stage] = await Promise.all([
+    prisma.lead.findFirst({
+      where: leadWhere,
+      select: { id: true, stageId: true, stage: { select: { id: true, name: true } } },
+    }),
+    prisma.pipelineStage.findFirst({
+      where: { id: stageId },
+      include: { pipeline: { select: { userId: true } } },
+    }),
+  ]);
+  if (!lead) return { ok: false, error: "Lead not found" };
   if (!stage || stage.pipeline.userId !== userId) return { ok: false, error: "Stage not found" };
+
+  const fromStageId = lead.stageId ?? null;
+  const fromStageName = lead.stage?.name ?? "New";
+  const newStageName = stage.name === "New" ? "To Contact" : stage.name;
 
   await prisma.lead.update({
     where: { id: leadId },
     data: { stageId },
   });
-  const newStageName = stage.name === "New" ? "To Contact" : stage.name;
-  await createLeadActivity(leadId, "stage_changed", {
+  void createLeadActivity(leadId, "stage_changed", {
     stageId,
     stageName: newStageName,
     fromStageId,
@@ -344,10 +368,10 @@ export async function updateLeadStage(
   }).catch((err) =>
     console.error("[pipelines] Failed to log stage change activity:", err)
   );
-  runAutomationForStageChange(leadId, newStageName).catch((err) =>
+  void runAutomationForStageChange(leadId, newStageName).catch((err) =>
     console.error("[pipelines] Automation failed:", err)
   );
-  triggerWebhooksForStageChange(leadId, userId).catch((err) =>
+  void triggerWebhooksForStageChange(leadId, userId).catch((err) =>
     console.error("[webhooks] stage change failed:", err)
   );
   return { ok: true };

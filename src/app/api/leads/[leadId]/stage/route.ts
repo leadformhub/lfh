@@ -3,7 +3,6 @@ import { getVerifiedSessionOrResponse } from "@/lib/auth";
 import { getRole } from "@/lib/team";
 import { canUseBoard } from "@/lib/plan-features";
 import type { PlanKey } from "@/lib/plans";
-import { getLeadById } from "@/services/leads.service";
 import { updateLeadStage } from "@/services/pipelines.service";
 
 export async function PATCH(
@@ -24,20 +23,18 @@ export async function PATCH(
       { status: 403 }
     );
   }
-  const { leadId } = await params;
+  const [resolvedParams, body] = await Promise.all([
+    params,
+    req.json().then((b: { stageId?: string | null }) => b).catch(() => null),
+  ]);
+  if (body === null) return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  const { leadId } = resolvedParams;
   if (!leadId) return NextResponse.json({ error: "Lead ID required" }, { status: 400 });
+  const stageId = body.stageId === null ? null : (body.stageId && String(body.stageId).trim()) || null;
 
-  const lead = await getLeadById(leadId, accountOwnerId, { plan, assignedToUserId });
-  if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 });
-
-  let body: { stageId?: string | null } = {};
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-  const stageId = body.stageId === null ? null : body.stageId?.trim() || null;
-  const { ok, error } = await updateLeadStage(leadId, accountOwnerId, stageId);
+  const { ok, error } = await updateLeadStage(leadId, accountOwnerId, stageId, {
+    assignedToUserId,
+  });
   if (!ok) {
     return NextResponse.json({ error: error ?? "Failed to update stage" }, { status: 404 });
   }

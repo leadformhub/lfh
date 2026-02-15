@@ -44,6 +44,11 @@ export async function GET(req: NextRequest) {
   }
   if (!pipeline) return NextResponse.json({ error: "Pipeline not found" }, { status: 404 });
 
-  const board = await getLeadsByPipelineStages(accountOwnerId, pipeline.id, plan, assignedToUserId ? { assignedToUserId } : undefined);
+  const board = await getLeadsByPipelineStages(
+    accountOwnerId,
+    pipeline,
+    plan,
+    assignedToUserId ? { assignedToUserId } : undefined
+  );
   return NextResponse.json(serializeBoardForApi(board));
 }

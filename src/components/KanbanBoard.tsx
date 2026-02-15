@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef, startTransition } from "react";
 import { LeadDetailsModal } from "@/components/LeadDetailsModal";
 import {
   DndContext,
@@ -374,7 +374,7 @@ export function KanbanBoard({
   }, []);
 
   const handleDragEnd = useCallback(
-    async (event: DragEndEvent) => {
+    (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || !board) return;
       const leadId = active.id as string;
@@ -386,24 +386,28 @@ export function KanbanBoard({
       if (fromId === toId) return;
 
       const boardForRollback = board;
-      moveLeadOptimistic(leadId, newStageId);
+      startTransition(() => {
+        moveLeadOptimistic(leadId, newStageId);
+      });
 
-      try {
-        const res = await fetch(`/api/leads/${leadId}/stage`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ stageId: newStageId }),
-        });
-        if (!res.ok) {
+      fetch(`/api/leads/${leadId}/stage`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ stageId: newStageId }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            setBoard(boardForRollback);
+            return res.json().catch(() => ({})).then((err: { error?: string }) => {
+              setError(err?.error ?? "Failed to update stage");
+            });
+          }
+        })
+        .catch(() => {
           setBoard(boardForRollback);
-          const err = await res.json().catch(() => ({}));
-          setError((err as { error?: string })?.error ?? "Failed to update stage");
-        }
-      } catch {
-        setBoard(boardForRollback);
-        setError("Failed to update stage");
-      }
+          setError("Failed to update stage");
+        });
     },
     [board, moveLeadOptimistic]
   );
