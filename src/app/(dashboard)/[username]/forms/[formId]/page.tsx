@@ -25,15 +25,17 @@ export default async function FormPage({
   const session = await getSession();
   const { username, formId } = await params;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) redirect("/login");
-  const form = await getFormById(formId, session.userId);
+
+  const userId = session.userId;
+  const [form, formStats, rules] = await Promise.all([
+    getFormById(formId, userId),
+    getFormStats(formId, userId),
+    getAutomationRulesByFormId(formId, userId),
+  ]);
   if (!form) redirect(`/${username}/forms`);
   if (form.lockedAt) redirect(`/${username}/forms`);
 
   const plan = (session.plan ?? "free") as PlanKey;
-  const [formStats, rules] = await Promise.all([
-    getFormStats(formId, session.userId),
-    getAutomationRulesByFormId(formId, session.userId),
-  ]);
 
   const schema: FormSchema = {
     fields: form.schema?.fields ?? [],

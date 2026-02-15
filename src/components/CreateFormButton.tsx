@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { FormLimitUpgradeDialog } from "@/components/FormLimitUpgradeDialog";
 
+function prefetchFormDesigner() {
+  void import("@/components/FormBuilder");
+}
+
 const buttonClass =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-accent)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]";
 
@@ -43,6 +47,7 @@ export function CreateFormButton({
       <button
         type="button"
         onClick={handleClick}
+        onMouseEnter={canCreate ? prefetchFormDesigner : undefined}
         className={buttonClass}
         data-debug-can-create={String(canCreate)}
         data-debug-forms-count={formsCount}

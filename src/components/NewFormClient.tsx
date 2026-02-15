@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { canUseOtp } from "@/lib/plans";
 import { canUseEmailAlertOnLead } from "@/lib/plan-features";
+
+function usePrefetchFormDesigner() {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      void import("@/components/FormBuilder");
+    }, 400);
+    return () => clearTimeout(t);
+  }, []);
+}
 
 export function NewFormClient({
   plan,
@@ -35,6 +44,8 @@ export function NewFormClient({
   const planKey = plan as "free" | "pro" | "business";
   const isFreeUser = !canUseOtp(planKey);
   const canUseEmailAlert = canUseEmailAlertOnLead(planKey);
+
+  usePrefetchFormDesigner();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

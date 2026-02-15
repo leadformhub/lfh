@@ -1,12 +1,38 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FormBuilder } from "@/components/FormBuilder";
-import { FormAutomation } from "@/components/FormAutomation";
 import type { FormSchema, AutomationRule } from "@/lib/form-schema";
 import type { PlanKey } from "@/lib/plans";
+
+const FormBuilder = dynamic(
+  () => import("@/components/FormBuilder").then((m) => ({ default: m.FormBuilder })),
+  {
+    loading: () => (
+      <div className="flex min-h-[320px] items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" aria-hidden />
+          <span className="text-sm text-[var(--foreground-muted)]">Loading form designer…</span>
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
+const FormAutomation = dynamic(
+  () => import("@/components/FormAutomation").then((m) => ({ default: m.FormAutomation })),
+  {
+    loading: () => (
+      <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)]">
+        <div className="size-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" aria-hidden />
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
 type Tab = "design" | "embed" | "automation";
 
