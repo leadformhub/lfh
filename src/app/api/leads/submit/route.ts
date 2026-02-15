@@ -6,6 +6,7 @@ import { isPhoneVerifiedForSubmission, isEmailVerifiedForSubmission } from "@/se
 import { recordEvent } from "@/services/analytics.service";
 import { sendNewLeadNotification } from "@/lib/email";
 import { runFormAutomation } from "@/services/automation.service";
+import { dispatchWebhooksForEvent } from "@/services/webhook.service";
 import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 import { prisma } from "@/lib/db";
 import { parseFormSchema } from "@/lib/form-schema";
@@ -244,6 +245,14 @@ export async function POST(req: NextRequest) {
       formName: form.name,
       adminEmail: form.user?.email ?? null,
     }).catch((err) => console.error("[leads/submit] Automation failed:", err));
+
+    dispatchWebhooksForEvent(form.userId, "lead.created", {
+      id: lead.id,
+      dataJson: lead.dataJson,
+      createdAt: lead.createdAt,
+      utmSource: lead.utmSource ?? null,
+      stage: null,
+    }).catch((err) => console.error("[webhooks] lead.created failed:", err));
 
     if (form.user?.username) {
       revalidatePath(`/${form.user.username}`);

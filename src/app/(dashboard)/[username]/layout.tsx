@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireVerifiedSession } from "@/lib/auth";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
+import { getRazorpayKeyId } from "@/lib/razorpay";
 import { type PlanKey } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
+import { UpgradeModalProvider } from "@/components/UpgradeModalProvider";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { PlanExpiryBanner } from "@/components/PlanExpiryBanner";
+import { ToastProvider } from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -37,14 +40,19 @@ export default async function DashboardLayout({
     redirect(`/${session.username}/dashboard`);
   }
   const planQuota = await getDashboardPlanQuotaCached(session.userId, session.plan as PlanKey);
+  const razorpayKeyId = getRazorpayKeyId();
+  const currentPlan = session.plan ?? "free";
   return (
-    <DashboardSidebarProvider>
-        <div className="flex h-screen min-h-screen overflow-hidden bg-[var(--dashboard-main-bg)]">
+    <UpgradeModalProvider currentPlan={currentPlan} razorpayKeyId={razorpayKeyId}>
+      <DashboardSidebarProvider>
+        <ToastProvider>
+          <div className="flex h-screen min-h-screen overflow-hidden bg-[var(--dashboard-main-bg)]">
         {/* Left column: theme-aware sidebar */}
         <div className="flex w-0 shrink-0 flex-col bg-[var(--dashboard-sidebar-bg)] lg:w-64">
           <DashboardSidebar
             username={session.username}
             planQuota={planQuota}
+            razorpayKeyId={razorpayKeyId ?? null}
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col min-h-0">
@@ -58,6 +66,8 @@ export default async function DashboardLayout({
           </main>
         </div>
       </div>
+      </ToastProvider>
     </DashboardSidebarProvider>
+    </UpgradeModalProvider>
   );
 }

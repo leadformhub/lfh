@@ -49,6 +49,7 @@ model User {
   auditLogs            AuditLog[]
   supportRequests      SupportRequest[]
   feedback             Feedback[]
+  webhooks             Webhook[]
 }
 
 model EmailChangeRequest {
@@ -381,4 +382,43 @@ model Feedback {
   @@index([userId])
   @@index([createdAt])
   @@map("feedback")
+}
+
+model Webhook {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  name         String   @db.VarChar(255)
+  url          String   @db.VarChar(2048)
+  triggerEvent String   @map("trigger_event") @db.VarChar(64) // lead.created | lead.stage_changed | lead.won
+  secretKey    String?  @map("secret_key") @db.VarChar(512)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs WebhookLog[]
+
+  @@index([userId])
+  @@index([userId, triggerEvent, active])
+  @@map("webhooks")
+}
+
+model WebhookLog {
+  id             String   @id @default(cuid())
+  webhookId      String   @map("webhook_id")
+  event          String   @db.VarChar(64)
+  targetUrl      String   @map("target_url") @db.VarChar(2048)
+  status         String   @db.VarChar(32) // success | failed
+  httpStatus     Int?     @map("http_status")
+  responseTimeMs Int?     @map("response_time_ms")
+  attemptCount   Int      @default(1) @map("attempt_count")
+  errorMessage   String?  @map("error_message") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  webhook Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([webhookId, createdAt])
+  @@index([webhookId, status])
+  @@map("webhook_logs")
 }

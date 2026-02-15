@@ -109,6 +109,11 @@ export function canUseSourceDashboard(plan: PlanKey): boolean {
   return plan === "pro" || plan === "business";
 }
 
+/** Integrations (Webhooks) is Pro/Business only. Free users see the menu item but are redirected to upgrade. */
+export function canUseIntegrations(plan: PlanKey): boolean {
+  return plan === "pro" || plan === "business";
+}
+
 /** Email automation (trigger-based rules) is Pro/Business only. */
 export function canUseAutomation(plan: PlanKey): boolean {
   return plan === "pro" || plan === "business";

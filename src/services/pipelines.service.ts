@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { createLeadActivity } from "@/services/lead-activity.service";
 import { runFormAutomation } from "@/services/automation.service";
+import { dispatchWebhooksForEvent } from "@/services/webhook.service";
 
 const FREE_PLAN_LEADS_CAP = 50;
 
@@ -287,6 +288,9 @@ export async function updateLeadStage(
     runAutomationForStageChange(leadId, "New").catch((err) =>
       console.error("[pipelines] Automation failed:", err)
     );
+    triggerWebhooksForStageChange(leadId, userId).catch((err) =>
+      console.error("[webhooks] stage change failed:", err)
+    );
     return { ok: true };
   }
 
@@ -312,7 +316,40 @@ export async function updateLeadStage(
   runAutomationForStageChange(leadId, newStageName).catch((err) =>
     console.error("[pipelines] Automation failed:", err)
   );
+  triggerWebhooksForStageChange(leadId, userId).catch((err) =>
+    console.error("[webhooks] stage change failed:", err)
+  );
   return { ok: true };
+}
+
+async function triggerWebhooksForStageChange(leadId: string, userId: string): Promise<void> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    select: {
+      id: true,
+      dataJson: true,
+      createdAt: true,
+      utmSource: true,
+      stage: { select: { name: true } },
+    },
+  });
+  if (!lead) return;
+  await dispatchWebhooksForEvent(userId, "lead.stage_changed", {
+    id: lead.id,
+    dataJson: lead.dataJson,
+    createdAt: lead.createdAt,
+    utmSource: lead.utmSource,
+    stage: lead.stage,
+  });
+  if (lead.stage?.name?.toLowerCase() === "won") {
+    await dispatchWebhooksForEvent(userId, "lead.won", {
+      id: lead.id,
+      dataJson: lead.dataJson,
+      createdAt: lead.createdAt,
+      utmSource: lead.utmSource,
+      stage: lead.stage,
+    });
+  }
 }
 
 async function runAutomationForStageChange(leadId: string, stageName: string): Promise<void> {

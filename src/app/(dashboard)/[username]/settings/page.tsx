@@ -8,6 +8,7 @@ import { getPlanLimits, type PlanKey } from "@/lib/plans";
 import { getOtpLimitForPlan } from "@/lib/plan-quotas";
 import { getOtpUsageForUser } from "@/services/otp.service";
 import { UpgradePlanCard } from "@/components/UpgradePlanCard";
+import { UpgradeModalButton } from "@/components/UpgradeModalButton";
 import { ChangeEmailForm } from "@/components/ChangeEmailForm";
 import { ChangeUsernameForm } from "@/components/ChangeUsernameForm";
 import { DeleteAccountForm } from "@/components/DeleteAccountForm";
@@ -191,13 +192,14 @@ export default async function SettingsPage({
               <p className="text-base text-[var(--foreground-muted)]">
                 Usage resets at the start of each calendar month. Upgrade your plan for higher limits.
               </p>
-              <Link
-                href="/pricing"
+              <UpgradeModalButton
+                title="Upgrade your plan"
+                description="Usage resets each month. Upgrade to Pro or Business for higher limits."
                 className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] hover:underline"
               >
                 <IconDoc className="size-4 shrink-0" />
                 View pricing
-              </Link>
+              </UpgradeModalButton>
             </section>
           </div>
         )}
@@ -256,13 +258,14 @@ export default async function SettingsPage({
                     <span><strong>Business:</strong> Unlimited forms, 1,000 OTP/month</span>
                   </li>
                 </ul>
-                <Link
-                  href="/pricing"
+                <UpgradeModalButton
+                  title="Plans and limits"
+                  description="Free: 3 forms, no OTP. Pro: unlimited forms, 100 OTP/month. Business: 1,000 OTP/month and full access."
                   className="inline-flex items-center gap-2 mt-2 text-sm font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] hover:underline"
                 >
                   <IconDoc className="size-4 shrink-0" />
                   View full pricing
-                </Link>
+                </UpgradeModalButton>
               </div>
             </section>
 
@@ -385,13 +388,12 @@ export default async function SettingsPage({
                 <span className="font-medium">Dashboard</span>
                 <IconArrow className="size-4 shrink-0 text-[var(--foreground-muted)]" />
               </Link>
-              <Link
-                href="/pricing"
-                className="flex items-center justify-between gap-3 px-4 sm:px-5 md:px-6 py-3.5 text-[var(--foreground)] hover:bg-[var(--background-alt)] transition-colors min-h-[44px] sm:min-h-[48px]"
+              <UpgradeModalButton
+                className="flex w-full items-center justify-between gap-3 px-4 sm:px-5 md:px-6 py-3.5 text-[var(--foreground)] hover:bg-[var(--background-alt)] transition-colors min-h-[44px] sm:min-h-[48px] text-left"
               >
                 <span className="font-medium">Pricing</span>
                 <IconArrow className="size-4 shrink-0 text-[var(--foreground-muted)]" />
-              </Link>
+              </UpgradeModalButton>
               <Link
                 href="/faq"
                 className="flex items-center justify-between gap-3 px-4 sm:px-5 md:px-6 py-3.5 text-[var(--foreground)] hover:bg-[var(--background-alt)] transition-colors min-h-[44px] sm:min-h-[48px]"

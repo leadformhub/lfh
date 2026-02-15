@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FormSchema, AutomationRule } from "@/lib/form-schema";
+import { useUpgradeModal } from "@/components/UpgradeModalProvider";
 
 function newRule(): AutomationRule {
   return {
@@ -34,6 +34,7 @@ export function FormAutomation({
   canUseAutomation?: boolean;
 }) {
   const router = useRouter();
+  const { showUpgradeModal } = useUpgradeModal();
   const [rules, setRules] = useState<AutomationRule[]>(initialRules);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -121,12 +122,18 @@ export function FormAutomation({
             <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
               Email automation is available on Pro and Business plans. Upgrade to create and run automation rules.
             </p>
-            <Link
-              href={`/${username}/settings?tab=plan-limits`}
+            <button
+              type="button"
+              onClick={() =>
+                showUpgradeModal(
+                  "Upgrade to use email automation",
+                  "Email automation is available on Pro and Business plans. Create trigger-based rules to email leads or admins."
+                )
+              }
               className="shrink-0 rounded-lg border border-amber-600 bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
             >
               Upgrade
-            </Link>
+            </button>
           </div>
         </div>
       )}

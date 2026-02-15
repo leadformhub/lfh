@@ -3,11 +3,13 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
+import { useUpgradeModal } from "@/components/UpgradeModalProvider";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const params = useParams();
   const username = params.username as string;
+  const { showUpgradeModal } = useUpgradeModal();
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [error, setError] = useState("");
 
@@ -74,12 +76,15 @@ function PaymentSuccessContent() {
         Back to dashboard
       </Link>
       {" · "}
-      <Link
-        href={`/${username}/pricing`}
-        className="text-[var(--color-accent)] underline"
+      <button
+        type="button"
+        onClick={() =>
+          showUpgradeModal("Upgrade your plan", "Choose Pro or Business for more forms, OTP, and features.")
+        }
+        className="text-[var(--color-accent)] underline bg-transparent border-none cursor-pointer p-0 font-inherit"
       >
         Pricing
-      </Link>
+      </button>
     </div>
   );
 }

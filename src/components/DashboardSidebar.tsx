@@ -5,14 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/DashboardSidebarContext";
-import { canUseAnalytics } from "@/lib/plan-features";
+import { canUseAnalytics, canUseIntegrations } from "@/lib/plan-features";
 import type { PlanKey } from "@/lib/plans";
+import { useUpgradeModal } from "@/components/UpgradeModalProvider";
 
 const navItems = [
   { href: "dashboard", label: "Dashboard", icon: DashboardIcon },
   { href: "forms", label: "Forms", icon: FormsIcon },
   { href: "leads", label: "Leads", icon: LeadsIcon },
   { href: "analytics", label: "Analytics", icon: AnalyticsIcon },
+  { href: "integrations/webhooks", label: "Integrations", icon: IntegrationsIcon },
   { href: "raise-request", label: "Raise request", icon: RaiseRequestIcon },
   { href: "settings", label: "Settings", icon: SettingsIcon },
 ];
@@ -52,6 +54,13 @@ function RaiseRequestIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+function IntegrationsIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+    </svg>
+  );
+}
 function SettingsIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -78,16 +87,30 @@ type PlanQuota = {
   otpLimit: number | null;
 };
 
+const LOCKED_UPGRADE_MESSAGES: Record<string, { title: string; description: string }> = {
+  analytics: {
+    title: "Upgrade to access Analytics",
+    description: "Views, submissions over time, and conversion metrics are available on Pro and Business plans.",
+  },
+  "integrations/webhooks": {
+    title: "Upgrade to access Integrations",
+    description: "Webhooks and integrations are available on Pro and Business plans. Connect your forms to external tools.",
+  },
+};
+
 export function DashboardSidebar({
   username,
   planQuota,
-}: { username: string; planQuota: PlanQuota }) {
+  razorpayKeyId,
+}: { username: string; planQuota: PlanQuota; razorpayKeyId: string | null }) {
   const pathname = usePathname();
   const { open, setOpen } = useSidebar();
+  const { showUpgradeModal } = useUpgradeModal();
 
   const base = `/${username}`;
   const plan = planQuota.plan as PlanKey;
   const analyticsUnlocked = canUseAnalytics(plan);
+  const integrationsUnlocked = canUseIntegrations(plan);
 
   return (
     <>
@@ -132,10 +155,37 @@ export function DashboardSidebar({
           <ul className="space-y-1">
             {navItems.map(({ href, label, icon: Icon }) => {
               const isAnalyticsLocked = href === "analytics" && !analyticsUnlocked;
-              const path = isAnalyticsLocked ? `${base}/pricing` : `${base}/${href}`;
+              const isIntegrationsLocked = href === "integrations/webhooks" && !integrationsUnlocked;
+              const isLocked = isAnalyticsLocked || isIntegrationsLocked;
+              const path = `${base}/${href}`;
               const active =
-                !isAnalyticsLocked &&
-                (pathname === `${base}/${href}` || (href !== "dashboard" && pathname.startsWith(`${base}/${href}`)));
+                !isLocked &&
+                (pathname === path || (href !== "dashboard" && pathname.startsWith(path)));
+              const lockContent = isLocked ? LOCKED_UPGRADE_MESSAGES[href] : null;
+
+              if (isLocked && lockContent) {
+                return (
+                  <li key={href}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        showUpgradeModal(lockContent.title, lockContent.description);
+                        setOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60",
+                        "text-slate-400 hover:bg-white/10 hover:text-slate-200"
+                      )}
+                      title={lockContent.title}
+                    >
+                      <Icon className="size-5 shrink-0 opacity-90" />
+                      {label}
+                      <LockIcon className="ml-auto size-4 shrink-0 opacity-80" aria-hidden />
+                    </button>
+                  </li>
+                );
+              }
+
               return (
                 <li key={href}>
                   <Link
@@ -145,19 +195,13 @@ export function DashboardSidebar({
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60",
                       active
                         ? "bg-white/15 !text-white"
-                        : isAnalyticsLocked
-                          ? "text-slate-400 hover:bg-white/10 hover:text-slate-200"
-                          : label === "Dashboard"
-                            ? "!text-white hover:bg-white/10"
-                            : "text-slate-300 hover:bg-white/10 hover:text-white"
+                        : label === "Dashboard"
+                          ? "!text-white hover:bg-white/10"
+                          : "text-slate-300 hover:bg-white/10 hover:text-white"
                     )}
-                    title={isAnalyticsLocked ? "Upgrade to access Analytics" : undefined}
                   >
                     <Icon className="size-5 shrink-0 opacity-90" />
                     {label}
-                    {isAnalyticsLocked && (
-                      <LockIcon className="ml-auto size-4 shrink-0 opacity-80" aria-hidden />
-                    )}
                   </Link>
                 </li>
               );
@@ -240,13 +284,14 @@ export function DashboardSidebar({
                 )}
               </div>
             </div>
-            <Link
-              href={`${base}/pricing`}
+            <button
+              type="button"
+              onClick={() => showUpgradeModal("Upgrade your plan", "Get more forms, leads, and features with Pro or Business plans.")}
               className="mt-2 flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-medium text-blue-400 transition-colors hover:bg-white/5 hover:text-blue-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
             >
               <LockIcon className="size-3 shrink-0" />
               Upgrade Plan
-            </Link>
+            </button>
           </div>
         </div>
       </aside>
