@@ -77,9 +77,9 @@ export function FormPageTabs({
             {formStats && (
               <section
                 className="rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)] sm:p-5"
-                aria-label="Form analytics"
+                aria-label="Form Analytics"
               >
-                <h2 className="font-heading text-sm font-semibold text-[var(--foreground-muted)]">Form analytics</h2>
+                <h2 className="font-heading text-sm font-semibold text-[var(--foreground-muted)]">Form Analytics</h2>
                 <div className="mt-3 grid grid-cols-3 gap-4">
                   <div>
                     <p className="text-xl font-bold tracking-tight text-[var(--foreground-heading)]">{formStats.views.toLocaleString()}</p>

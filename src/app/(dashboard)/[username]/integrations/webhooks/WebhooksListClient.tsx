@@ -106,7 +106,7 @@ export function WebhooksListClient({
           href={`${base}/new`}
           className="mt-4 inline-flex min-h-[44px] items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
         >
-          Add your first webhook
+          Add Your First Webhook
         </Link>
       </div>
     );

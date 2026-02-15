@@ -261,7 +261,7 @@ export function WebhookEditClient({
               href={`${base}/logs`}
               className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[var(--border-default)] bg-white px-4 text-sm font-medium text-[var(--foreground-muted)] hover:bg-[var(--background-alt)]"
             >
-              View logs
+              View Logs
             </Link>
             <button
               type="submit"

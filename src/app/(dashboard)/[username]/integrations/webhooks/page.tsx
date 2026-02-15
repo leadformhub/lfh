@@ -39,13 +39,13 @@ export default async function WebhooksPage({
             href={`${base}/logs`}
             className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg border border-[var(--border-default)] bg-white px-4 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--background-alt)] sm:w-auto"
           >
-            View logs
+            View Logs
           </Link>
           <Link
             href={`${base}/new`}
             className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg bg-[var(--color-accent)] px-4 text-sm font-medium text-white transition-colors hover:opacity-90 sm:w-auto"
           >
-            Add webhook
+            Add Webhook
           </Link>
         </div>
       </div>

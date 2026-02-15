@@ -70,7 +70,7 @@ async function FormsContent({
             href={`/${username}/analytics`}
             className="text-sm font-medium text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-hover)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
           >
-            Form analytics
+            Form Analytics
           </Link>
         </div>
         <CreateFormButton
