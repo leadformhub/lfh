@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef, startTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LeadDetailsModal } from "@/components/LeadDetailsModal";
 
@@ -131,6 +131,7 @@ export function LeadsTable({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [stages, setStages] = useState<PipelineStage[]>(initialStages ?? []);
   const [updatingStageLeadId, setUpdatingStageLeadId] = useState<string | null>(null);
+  const stageRollbackRef = useRef<LeadRow[] | null>(null);
 
   const currentFormId = initialFormId;
 
@@ -204,35 +205,46 @@ export function LeadsTable({
   const base = `/${username}/leads`;
   const colCount = 1 + schemaColumns.length + 1 + 1 + 1 + 1; // Id + schema columns + Status + Submitted + Follow up + Actions
 
-  async function handleStatusChange(leadId: string, newStageId: string | null) {
-    setUpdatingStageLeadId(leadId);
-    try {
-      const res = await fetch(`/api/leads/${leadId}/stage`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ stageId: newStageId }),
+  function handleStatusChange(leadId: string, newStageId: string | null) {
+    const stageName =
+      newStageId === null || newStageId === ""
+        ? "New"
+        : stages.find((s) => s.id === newStageId)?.name ?? "New";
+    stageRollbackRef.current = null;
+    startTransition(() => {
+      setLeads((prev) => {
+        stageRollbackRef.current = prev;
+        return prev.map((l) => {
+          if (l.id !== leadId) return l;
+          return { ...l, stageId: newStageId || null, stageName };
+        });
       });
-      if (res.ok) {
-        setLeads((prev) =>
-          prev.map((l) => {
-            if (l.id !== leadId) return l;
-            const stageName =
-              newStageId === null || newStageId === ""
-                ? "New"
-                : stages.find((s) => s.id === newStageId)?.name ?? "New";
-            return { ...l, stageId: newStageId || null, stageName };
-          })
-        );
-      } else {
-        const data = await res.json().catch(() => ({}));
-        alert(data.error ?? "Failed to update status.");
-      }
-    } catch {
-      alert("Failed to update status. Please try again.");
-    } finally {
-      setUpdatingStageLeadId(null);
-    }
+    });
+    setUpdatingStageLeadId(leadId);
+    fetch(`/api/leads/${leadId}/stage`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ stageId: newStageId }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          const rollback = stageRollbackRef.current;
+          if (rollback) setLeads(rollback);
+          return res.json().catch(() => ({})).then((data: { error?: string }) => {
+            alert(data?.error ?? "Failed to update status.");
+          });
+        }
+      })
+      .catch(() => {
+        const rollback = stageRollbackRef.current;
+        if (rollback) setLeads(rollback);
+        alert("Failed to update status. Please try again.");
+      })
+      .finally(() => {
+        stageRollbackRef.current = null;
+        setUpdatingStageLeadId(null);
+      });
   }
 
   function formatDisplayValue(val: string): string {
