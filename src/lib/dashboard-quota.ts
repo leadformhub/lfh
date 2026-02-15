@@ -39,7 +39,7 @@ async function fetchDashboardPlanQuota(accountOwnerId: string, planKey: PlanKey)
       where: { ...leadWhere, createdAt: { gte: startOfToday } },
     }),
     prisma.lead.count({ where: leadWhere }),
-    getOtpUsageForUser(accountOwnerId),
+    getOtpUsageForUser(accountOwnerId, planKey),
     getOtpLimitForPlan(planKey),
   ]);
 
