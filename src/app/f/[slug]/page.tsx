@@ -4,6 +4,7 @@ import { recordEvent } from "@/services/analytics.service";
 import { getRecaptchaSiteKey } from "@/lib/recaptcha";
 import { notFound } from "next/navigation";
 import { PublicForm } from "@/components/PublicForm";
+import { EmbedHeightReporter } from "@/components/EmbedHeightReporter";
 
 export const dynamic = "force-dynamic";
 
@@ -38,12 +39,15 @@ export default async function PublicFormPage({
   if (!form) notFound();
   if (form.lockedAt) {
     return (
-      <div className={isEmbed ? "bg-neutral-100 py-4 px-3" : "min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:py-12"}>
-        <div className="max-w-lg mx-auto w-full min-w-0 rounded-xl border border-neutral-200 bg-white p-6 text-center text-neutral-600">
-          <h1 className="text-xl font-bold text-neutral-900 mb-2">{form.name}</h1>
-          <p>This form is not accepting submissions right now. Upgrade to unlock.</p>
+      <>
+        {isEmbed && <EmbedHeightReporter />}
+        <div className={isEmbed ? "bg-neutral-100 py-4 px-3" : "min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:py-12"}>
+          <div className="max-w-lg mx-auto w-full min-w-0 rounded-xl border border-neutral-200 bg-white p-6 text-center text-neutral-600">
+            <h1 className="text-xl font-bold text-neutral-900 mb-2">{form.name}</h1>
+            <p>This form is not accepting submissions right now. Upgrade to unlock.</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
   await recordEvent(form.id, "view");
@@ -75,7 +79,9 @@ export default async function PublicFormPage({
     : "min-h-screen bg-neutral-100 py-6 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6";
 
   return (
-    <div className={wrapperClass}>
+    <>
+      {isEmbed && <EmbedHeightReporter />}
+      <div className={wrapperClass}>
       <div className="max-w-lg mx-auto w-full min-w-0">
         {showFormName && (
           <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 break-words">{form.name}</h1>
@@ -103,5 +109,6 @@ export default async function PublicFormPage({
         )}
       </div>
     </div>
+    </>
   );
 }

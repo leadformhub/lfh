@@ -42,7 +42,22 @@ export default async function FormPage({
     settings: form.schema?.settings,
   };
   const embedUrl = `${process.env.NEXTAUTH_URL || "https://leadformhub.com"}/f/${form.id}?embed=1`;
-  const iframeCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0"></iframe>`;
+  const iframeCode = `<iframe src="${embedUrl}" width="100%" height="400" frameborder="0" title="Form"></iframe>
+<script>
+(function(){
+  window.addEventListener("message", function(e) {
+    if (e.data && e.data.type === "leadformhub-resize" && typeof e.data.height === "number") {
+      var iframes = document.getElementsByTagName("iframe");
+      for (var i = 0; i < iframes.length; i++) {
+        if (iframes[i].contentWindow === e.source) {
+          iframes[i].style.height = Math.max(200, e.data.height) + "px";
+          break;
+        }
+      }
+    }
+  });
+})();
+</script>`;
 
   return (
     <FormPageTabs
