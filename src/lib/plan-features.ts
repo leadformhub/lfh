@@ -64,8 +64,8 @@ export const PLAN_FEATURES: PlanFeatureRow[] = [
   // Support
   { category: "Support", label: "Help & FAQ", free: true, pro: true, business: true },
   { category: "Support", label: "Email support", free: true, pro: true, business: true },
-  { category: "Support", label: "Priority support", free: false, pro: true, business: true },
-  { category: "Support", label: "Dedicated support", free: false, pro: false, business: true },
+  { category: "Support", label: "Support Available", free: false, pro: true, business: true },
+  { category: "Support", label: "Priority Support", free: false, pro: false, business: true },
 ];
 
 export const PLAN_FEATURE_CATEGORIES = [
@@ -131,9 +131,9 @@ export function getPlanFeatureBullets(plan: PlanKey): string[] {
     case "free":
       return ["3 forms", "50 leads/month", "CSV export", "Dashboard", "Form embed", "Form builder", "Redirect after submit"];
     case "pro":
-      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "100 OTP/month", "3 team members", "Lead assignment", "Analytics", "Lead source analytics", "Remove branding", "Priority support"];
+      return ["Everything in Free", "Unlimited forms", "Unlimited leads", "100 OTP/month", "3 team members", "Lead assignment", "Analytics", "Lead source analytics", "Remove branding", "Support Available"];
     case "business":
-      return ["Everything in Pro", "1,000 OTP/month", "Unlimited team members", "CRM integrations", "API & webhooks", "Dedicated support"];
+      return ["Everything in Pro", "1,000 OTP/month", "Unlimited team members", "CRM integrations", "API & webhooks", "Priority Support"];
     default:
       return getPlanFeatureBullets("free");
   }
