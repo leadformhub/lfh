@@ -23,8 +23,8 @@ declare global {
 }
 
 const PLANS = [
-  { plan: "pro" as const, name: "Pro", price: "₹299/month" },
-  { plan: "business" as const, name: "Business", price: "₹999/month" },
+  { plan: "pro" as const, name: "Pro", actualPrice: "₹2,999", price: "₹299/month" },
+  { plan: "business" as const, name: "Business", actualPrice: "₹9,999", price: "₹999/month" },
 ];
 
 export function UpgradePlanCard({
@@ -136,7 +136,10 @@ export function UpgradePlanCard({
               className="rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)] p-4"
             >
               <div className="font-semibold text-[var(--foreground-heading)]">{p.name}</div>
-              <div className="mt-1 text-2xl font-bold text-[var(--foreground-heading)]">{p.price}</div>
+              <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                <span className="text-lg font-medium text-[var(--foreground-muted)] line-through">{p.actualPrice}</span>
+                <span className="text-2xl font-bold text-[var(--foreground-heading)]">{p.price}</span>
+              </div>
               <ul className="mt-2 space-y-1 text-sm text-[var(--foreground-muted)]">
                 {getPlanFeatureBullets(p.plan).map((f) => (
                   <li key={f} className="flex items-center gap-1.5">

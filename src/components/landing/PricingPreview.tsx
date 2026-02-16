@@ -10,6 +10,7 @@ const planMeta = [
     key: "free" as PlanKey,
     name: "Free",
     price: "₹0",
+    actualPrice: null as string | null,
     period: "(Forever)",
     description: "Ideal for testing and early use",
     cta: "Start Free",
@@ -20,6 +21,7 @@ const planMeta = [
     key: "pro" as PlanKey,
     name: "Pro",
     price: "₹299",
+    actualPrice: "₹2,999",
     period: "/month",
     description: "For growing teams",
     cta: "Start Free, Upgrade Later",
@@ -30,6 +32,7 @@ const planMeta = [
     key: "business" as PlanKey,
     name: "Business",
     price: "₹999",
+    actualPrice: "₹9,999",
     period: "/month",
     description: "For agencies & scale",
     cta: "Start Free, Upgrade Later",
@@ -64,7 +67,12 @@ export function PricingPreview() {
               <h3 className="font-heading text-lg font-semibold text-[var(--foreground-heading)]">
                 {plan.name}
               </h3>
-              <div className="mt-4 flex items-baseline gap-1">
+              <div className="mt-4 flex flex-wrap items-baseline gap-2">
+                {plan.actualPrice && (
+                  <span className="font-heading text-xl font-medium text-[var(--foreground-muted)] line-through">
+                    {plan.actualPrice}
+                  </span>
+                )}
                 <span className="font-heading text-4xl font-bold tracking-tight text-[var(--foreground-heading)]">
                   {plan.price}
                 </span>
