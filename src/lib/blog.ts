@@ -40,9 +40,9 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "google-forms-vs-business-form-builders",
-    title: "Google Forms vs Business Form Builders",
+    title: "Google Forms vs Business Form Builders | Comparison",
     description:
-      "Compare Google Forms vs business form builders for lead capture, data quality, analytics, and scalability. When to use a dedicated online form builder for business.",
+      "Compare Google Forms vs business form builders for lead capture, data quality, analytics, and scalability. See when Google Forms is enough and when to use a dedicated online form builder for business.",
     publishedAt: "2025-02-10",
   },
   {
