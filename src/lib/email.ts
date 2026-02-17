@@ -616,6 +616,66 @@ export async function sendPlanExpiryReminder(
   return sendEmail(to, "Your LeadFormHub plan expires soon", html);
 }
 
+/** Daily users list report to SUPPORT_EMAIL. */
+export async function sendDailyUsersReport(
+  supportEmail: string,
+  users: Array<{
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    plan: string;
+    status: string;
+    createdAt: Date;
+  }>
+): Promise<boolean> {
+  const dateStr = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const rows =
+    users.length === 0
+      ? `<tr><td colspan="6" style="padding:16px 20px; font-size:14px; color:${EMAIL_STYLE.mutedColor};">No users.</td></tr>`
+      : users
+          .map(
+            (u) =>
+              `<tr>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor};">${escapeHtml(u.username)}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor};">${escapeHtml(u.name)}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px;"><a href="mailto:${escapeHtml(u.email)}" style="color:${EMAIL_STYLE.buttonBg}; text-decoration:none;">${escapeHtml(u.email)}</a></td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor};">${escapeHtml(u.plan)}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor};">${escapeHtml(u.status)}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor};">${escapeHtml(u.createdAt.toISOString().slice(0, 10))}</td>
+              </tr>`
+          )
+          .join("");
+  const body = `
+    <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">Daily users report for <strong>${escapeHtml(dateStr)}</strong>. Total: <strong>${users.length}</strong> user(s).</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px; overflow:hidden; border-collapse:collapse;">
+      <tr>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Username</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Name</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Email</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Plan</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Status</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Joined</td>
+      </tr>
+      ${rows}
+    </table>
+  `;
+  const html = buildBrandedEmail({
+    headerSubtitle: "Daily users report",
+    body,
+    title: `Daily users report · ${dateStr}`,
+  });
+  return sendEmail(
+    supportEmail,
+    `LeadFormHub daily users report · ${dateStr} (${users.length} users)`,
+    html
+  );
+}
+
 /** User-facing ticket confirmation email. */
 function buildTicketConfirmationEmailHtml(options: {
   ticketNumber: string;
