@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE_URL } from "@/lib/seo";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { FacebookPixel } from "@/components/FacebookPixel";
 import { ProcessingProvider } from "@/components/ProcessingProvider";
 import "./globals.css";
 
@@ -106,6 +107,7 @@ export default function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <RecaptchaScript />
         <GoogleAnalytics />
+        <FacebookPixel />
         <ProcessingProvider>{children}</ProcessingProvider>
       </body>
     </html>

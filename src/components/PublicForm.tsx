@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { FormFieldSchema } from "@/lib/form-schema";
 import { validateName, validateEmail, validatePhone, isNameField } from "@/lib/validators";
+import { trackFacebookLead } from "@/lib/facebook-pixel";
 
 /** reCAPTCHA v3 (score-based): load with render=siteKey for execute() */
 function getRecaptchaScriptUrl(siteKey: string): string {
@@ -289,6 +290,7 @@ export function PublicForm({
         return;
       }
       setSuccess(true);
+      trackFacebookLead();
       if (redirectUrl) {
         window.location.href = redirectUrl;
       }
