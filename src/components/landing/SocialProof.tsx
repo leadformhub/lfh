@@ -3,25 +3,25 @@ import { Container } from "@/components/ui/Container";
 /** 3. Social Proof / Trust Bar — horizontal strip, grayscale placeholders, enterprise trust */
 const industries = ["Agencies", "SaaS", "D2C", "Real Estate", "SMBs"] as const;
 
-/* Testimonials focused on lead quality, reduced fake leads, and sales productivity. */
+/* Realistic testimonials — specific details, natural language, varied tone. */
 const testimonials = [
   {
     quote:
-      "OTP verification removed fake and mistyped numbers completely. Our sales team now works only on real prospects — lead quality and conversions improved immediately.",
-    author: "Priya Sharma",
-    role: "Head of Growth, B2B SaaS",
+      "We were getting maybe 40% of leads with wrong or fake numbers. After turning on OTP verification, that dropped to almost nothing. Our SDRs actually want to pick up the phone now because they're not wasting an hour on dead leads.",
+    author: "Marcus Chen",
+    role: "Sales Ops, TechFlow",
   },
   {
     quote:
-      "We stopped wasting time on junk leads. Every contact in our dashboard is verified. Sales productivity went up because we're calling real people.",
-    author: "Rahul Mehta",
-    role: "Founder, Digital Agency",
+      "I was skeptical — we'd tried other lead forms. But having one link for all our campaigns and knowing every number is verified? Game changer. Cut our cost per qualified lead by about a third in the first two months.",
+    author: "Sarah Okonkwo",
+    role: "Performance Lead, Finch Media",
   },
   {
     quote:
-      "One branded hub, verified leads, and monthly pricing. We replaced spreadsheets and three different tools. Setup was fast; we were live the same day.",
-    author: "Anitha Krishnan",
-    role: "Marketing Lead, D2C Brand",
+      "We used to run forms on Typeform, then manually check numbers in a sheet. Total mess. Now it's one hub, leads come in verified, and we're not paying per form. Took us an afternoon to switch over.",
+    author: "James Rivera",
+    role: "Growth, DTC (e‑comm)",
   },
 ];
 

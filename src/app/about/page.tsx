@@ -49,6 +49,11 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   ),
+  founder: (
+    <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  ),
 };
 
 export default function AboutPage() {
@@ -88,6 +93,28 @@ export default function AboutPage() {
                 Get Started Free
                 <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
               </Link>
+            </div>
+          </Container>
+        </section>
+
+        {/* Founder Story */}
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <div className="animate-in flex items-center gap-4">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
+                {icons.founder}
+              </span>
+              <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
+                Why we started LeadFormHub
+              </h2>
+            </div>
+            <div className="mt-8 space-y-4 text-[var(--foreground-muted)]">
+              <p>
+                The founder was running ads with lead forms and spending heavily on campaigns. After each campaign ended, when calling leads to follow up, too many contact numbers turned out to be invalid—wrong digits, fake entries, or numbers that never answered. That waste of time and ad spend was the trigger.
+              </p>
+              <p>
+                We built LeadFormHub so small business owners could afford verified lead capture: optional OTP verification to cut down invalid contacts, transparent pricing that fits real budgets, and one place to capture and act on leads. We want every business to get real, callable leads without burning money on bad data.
+              </p>
             </div>
           </Container>
         </section>
