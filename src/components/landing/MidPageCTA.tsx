@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 export function MidPageCTA() {
   return (
     <section
-      className="section-padding relative overflow-hidden py-16 sm:py-20 lg:py-24"
+      className="cta-dark section-padding relative overflow-hidden py-16 sm:py-20 lg:py-24"
       style={{
         backgroundColor: "#0f172a",
         color: "#f8fafc",

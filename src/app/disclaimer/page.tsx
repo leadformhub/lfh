@@ -45,22 +45,17 @@ export default function DisclaimerPage() {
                 You are responsible for how you design, publish, and use forms and for the collection, storage, and use of lead data. You must ensure your forms and practices comply with applicable law and that you have necessary consents and permissions. LeadFormHub is a tool; we do not control or endorse the content of your forms or the manner in which you use lead information.
               </p>
 
-              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">5. Trust Badges and Standards</h2>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                References to standards such as GDPR, SOC 2, or ISO 27001 on our website indicate that we follow practices aligned with such frameworks where applicable. Such references are not certifications or attestations unless explicitly stated. We design with Indian data and privacy expectations in mind, but you remain responsible for your own compliance obligations.
-              </p>
-
-              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">6. Third-Party Links and Integrations</h2>
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">5. Third-Party Links and Integrations</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 Our website and platform may contain links to third-party sites or integrate with external services. We do not control and are not responsible for the content, privacy practices, or availability of those third parties. Your use of them is at your own risk.
               </p>
 
-              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">7. Changes</h2>
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">6. Changes</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 We may update this Disclaimer from time to time. The &quot;Last updated&quot; date above will be revised accordingly. Continued use of LeadFormHub after changes constitutes acceptance of the updated disclaimer.
               </p>
 
-              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">8. Contact</h2>
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">7. Contact</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 For questions about this Disclaimer, contact us via the{" "}
                 <Link href="/contact" className="font-medium text-[var(--color-accent)] hover:underline">contact</Link>

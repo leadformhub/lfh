@@ -106,6 +106,18 @@ footer[role="contentinfo"] h4 {
   color: var(--footer-heading) !important;
 }
 
+/* Footer: selection must contrast with dark bg (global ::selection uses dark text → invisible here) */
+footer[role="contentinfo"] ::selection {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Dark CTA section (Get Started with LeadFormHub Today): same fix for selection visibility */
+.cta-dark ::selection {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
 /* Brand logo: sign-in/sign-up only (auth-dark), white logo on dark background */
 .logo-header img {
   height: 2rem;

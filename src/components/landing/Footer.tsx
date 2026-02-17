@@ -8,13 +8,12 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { FeedbackTrigger } from "@/components/FeedbackModal";
 import { cn } from "@/lib/utils";
 
-const TRUST_DISCLAIMER =
-  "We follow practices aligned with these standards. This is not a certification or attestation.";
+const TRUST_TOOLTIP = "We build with security and privacy in mind.";
 
 const trustBadges = [
-  { label: "GDPR Ready", tooltip: TRUST_DISCLAIMER },
-  { label: "SOC 2 Aligned", tooltip: TRUST_DISCLAIMER },
-  { label: "ISO 27001 Practices", tooltip: TRUST_DISCLAIMER },
+  { label: "Secure by design", tooltip: TRUST_TOOLTIP },
+  { label: "Encrypted data", tooltip: TRUST_TOOLTIP },
+  { label: "Privacy-conscious", tooltip: TRUST_TOOLTIP },
 ] as const;
 
 /** Enterprise Footer — grouped by user intent; accordion on mobile, grid on desktop */

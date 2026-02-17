@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 /** 12. Final Conversion CTA — strong headline, subtext, Get Started Free + Get In Touch */
 export function CTA() {
   return (
-    <section className="section-padding bg-[var(--color-primary)]">
+    <section className="cta-dark section-padding bg-[var(--color-primary)]" aria-label="Get started">
       <Container size="narrow">
         <div className="text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight !text-white sm:text-4xl [text-shadow:0_0_20px_rgba(255,255,255,0.12)]">
