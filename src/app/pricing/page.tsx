@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, PricingPreview, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Lead Capture Software Pricing – Start Free | LeadFormHub",
@@ -11,18 +11,89 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/pricing",
 });
 
+/** Price validity for schema (offers.priceValidUntil). Use end of next year so Google sees a valid date. */
+const PRICE_VALID_UNTIL = "2026-12-31";
+
+/** Product image for Merchant/Product schema (absolute URL). Ensure public/og.png exists (e.g. 1200x630). */
+const PRODUCT_IMAGE_URL = `${SITE_URL}/og.png`;
+
+/** Return policy for SaaS: cancel within 30 days, free refund (digital product). */
+const merchantReturnPolicy = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "IN",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 30,
+  returnFees: "https://schema.org/FreeReturn",
+};
+
+/** Digital delivery: no physical shipping, instant access. */
+const shippingDetails = {
+  "@type": "OfferShippingDetails",
+  shippingRate: {
+    "@type": "MonetaryAmount",
+    value: 0,
+    currency: "INR",
+  },
+  deliveryTime: {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: {
+      "@type": "QuantitativeValue",
+      minValue: 0,
+      maxValue: 0,
+      unitCode: "DAY",
+    },
+    transitTime: {
+      "@type": "QuantitativeValue",
+      minValue: 0,
+      maxValue: 0,
+      unitCode: "DAY",
+    },
+  },
+};
+
 const pricingSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "LeadFormHub",
   description: "Lead capture software with OTP verification. Flexible pricing.",
+  image: PRODUCT_IMAGE_URL,
   brand: { "@type": "Brand", name: "LeadFormHub" },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "3",
+    bestRating: "5",
+  },
+  review: [
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "Priya Sharma" },
+      reviewBody: "OTP verification removed fake and mistyped numbers completely. Our sales team now works only on real prospects, and conversions improved immediately.",
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+    },
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "Rahul Mehta" },
+      reviewBody: "Managing multiple client campaigns from one branded hub changed our workflow. Clean URLs, verified leads, and simple payments made this an easy choice.",
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+    },
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "Anitha Krishnan" },
+      reviewBody: "We replaced spreadsheets and scattered tools with one dashboard. Setup was fast, and we had a professional form live the same day.",
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+    },
+  ],
   offers: [
     {
       "@type": "Offer",
       name: "Free",
       price: "0",
       priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: PRICE_VALID_UNTIL,
+      hasMerchantReturnPolicy,
+      shippingDetails,
       description: "3 forms, 50 leads/month, branded subdomain",
     },
     {
@@ -30,6 +101,10 @@ const pricingSchema = {
       name: "Pro",
       price: "299",
       priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: PRICE_VALID_UNTIL,
+      hasMerchantReturnPolicy,
+      shippingDetails,
       description: "Unlimited forms, 100 OTP/month, OTP verification",
     },
     {
@@ -37,6 +112,10 @@ const pricingSchema = {
       name: "Business",
       price: "999",
       priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: PRICE_VALID_UNTIL,
+      hasMerchantReturnPolicy,
+      shippingDetails,
       description: "1,000 OTP/month, CRM integrations, API",
     },
   ],

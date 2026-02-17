@@ -20,7 +20,7 @@ import {
   FAQ,
   Footer,
 } from "@/components/landing";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Free Online Form Builder with Unlimited Submissions | LeadFormHub",
@@ -29,10 +29,14 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/",
 });
 
+/** Product image for Merchant/Product schema (absolute URL). Ensure public/og.png exists. */
+const PRODUCT_IMAGE_URL = `${SITE_URL}/og.png`;
+
 const reviewSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "LeadFormHub",
+  image: PRODUCT_IMAGE_URL,
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.9",
