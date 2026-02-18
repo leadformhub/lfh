@@ -676,6 +676,64 @@ export async function sendDailyUsersReport(
   );
 }
 
+/** Daily feedback report (latest 10) to SUPPORT_EMAIL. */
+export async function sendDailyFeedbackReport(
+  supportEmail: string,
+  feedbacks: Array<{
+    id: string;
+    message: string;
+    userId: string | null;
+    createdAt: Date;
+    user: { name: string | null; username: string; email: string } | null;
+  }>
+): Promise<boolean> {
+  const dateStr = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const rows =
+    feedbacks.length === 0
+      ? `<tr><td colspan="3" style="padding:16px 20px; font-size:14px; color:${EMAIL_STYLE.mutedColor};">No feedback in this period.</td></tr>`
+      : feedbacks
+          .map(
+            (f) => {
+              const from = f.user
+                ? `${escapeHtml(f.user.username)} (${escapeHtml(f.user.email)})`
+                : "Anonymous";
+              const dateCell = escapeHtml(f.createdAt.toISOString().slice(0, 19).replace("T", " "));
+              const msg = escapeHtml(f.message).replace(/\n/g, "<br>");
+              return `<tr>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor}; vertical-align:top;">${from}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.mutedColor}; white-space:nowrap;">${dateCell}</td>
+                <td style="padding:12px 16px; border-top:1px solid ${EMAIL_STYLE.cardBorderSolid}; font-size:13px; color:${EMAIL_STYLE.bodyColor}; max-width:360px;">${msg}</td>
+              </tr>`;
+            }
+          )
+          .join("");
+  const body = `
+    <p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:${EMAIL_STYLE.bodyColor};">Latest <strong>10</strong> feedback entries for <strong>${escapeHtml(dateStr)}</strong>. Total in report: <strong>${feedbacks.length}</strong>.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid ${EMAIL_STYLE.cardBorderSolid}; border-radius:10px; overflow:hidden; border-collapse:collapse;">
+      <tr>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">From</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Date</td>
+        <td style="padding:10px 16px; background:${EMAIL_STYLE.footerBg}; font-size:11px; font-weight:600; color:${EMAIL_STYLE.mutedColor}; text-transform:uppercase; letter-spacing:0.05em;">Message</td>
+      </tr>
+      ${rows}
+    </table>
+  `;
+  const html = buildBrandedEmail({
+    headerSubtitle: "Daily feedback report",
+    body,
+    title: `Daily feedback report · ${dateStr}`,
+  });
+  return sendEmail(
+    supportEmail,
+    `LeadFormHub daily feedback report · ${dateStr} (${feedbacks.length} latest)`,
+    html
+  );
+}
+
 /** User-facing ticket confirmation email. */
 function buildTicketConfirmationEmailHtml(options: {
   ticketNumber: string;
