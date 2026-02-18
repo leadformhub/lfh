@@ -115,6 +115,20 @@ export const BLOG_POSTS: BlogPost[] = [
       "Why workshops need an online registration form builder. What to include, how to keep signups smooth, and how to avoid no-shows and last-minute scrambles.",
     publishedAt: "2025-02-11",
   },
+  {
+    slug: "how-to-generate-leads-for-free",
+    title: "How to Generate Leads for Free: Practical Tips for Small Business",
+    description:
+      "Learn how to generate leads for free using content, social proof, and simple tools. No big budget required—ideal for startups and small businesses.",
+    publishedAt: "2025-02-18",
+  },
+  {
+    slug: "how-to-generate-leads-manually",
+    title: "How to Generate Leads Manually: Tactics That Still Work Today",
+    description:
+      "Manual lead generation tactics that work: networking, referrals, outreach, and events. Step-by-step guide for small teams and solopreneurs.",
+    publishedAt: "2025-02-18",
+  },
 ];
 
 export function getPublishedPosts(): BlogPost[] {

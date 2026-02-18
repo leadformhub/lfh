@@ -2,9 +2,17 @@ import type { Metadata } from "next";
 
 /**
  * SEO configuration — canonical URLs, Open Graph, and metadata.
- * Use www subdomain for production consistency with Search Console.
+ * Uses APP_URL or NEXTAUTH_URL from env so blog and all pages use the app domain (e.g. leadformhub.online or localhost).
  */
-export const SITE_URL = "https://www.leadformhub.com";
+function getSiteUrl(): string {
+  const app = process.env.APP_URL?.trim()?.replace(/\/$/, "");
+  if (app) return app;
+  const auth = process.env.NEXTAUTH_URL?.trim()?.replace(/\/$/, "");
+  if (auth) return auth;
+  return "https://www.leadformhub.com";
+}
+
+export const SITE_URL = getSiteUrl();
 
 type BuildPageMetadataOptions = {
   title: string;
