@@ -139,6 +139,10 @@ function LoginForm() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 403 && data.code === "EMAIL_NOT_VERIFIED") {
+          router.push("/verify-email?email=" + encodeURIComponent(email));
+          return;
+        }
         setError(data.error || "Login failed");
         return;
       }
