@@ -31,7 +31,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog/online-registration-form-builder-for-workshops", priority: 0.8, changeFrequency: "weekly" },
     { path: "/blog/how-to-generate-leads-manually", priority: 0.8, changeFrequency: "weekly" },
     { path: "/blog/how-to-generate-leads-for-free", priority: 0.8, changeFrequency: "weekly" },
-    { path: "/blog/free-online-form-builder-unlimited", priority: 0.8, changeFrequency: "weekly" },
     { path: "/blog/how-to-follow-up-on-leads-quickly", priority: 0.8, changeFrequency: "weekly" },
     { path: "/blog/how-to-increase-form-submissions", priority: 0.8, changeFrequency: "weekly" },
     { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
@@ -42,6 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog/typeform-alternative", priority: 0.8, changeFrequency: "monthly" },
     { path: "/blog/google-forms-alternative", priority: 0.8, changeFrequency: "monthly" },
     { path: "/zoho-forms-alternative", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/free-online-form-builder-unlimited", priority: 0.9, changeFrequency: "weekly" },
   ];
 
   return pages.map(({ path, priority, changeFrequency }) => ({

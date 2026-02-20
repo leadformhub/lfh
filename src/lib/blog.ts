@@ -130,13 +130,6 @@ export const BLOG_POSTS: BlogPost[] = [
     publishedAt: "2025-02-18",
   },
   {
-    slug: "free-online-form-builder-unlimited",
-    title: "Free Online Form Builder With Unlimited Submissions | LeadFormHub",
-    description:
-      "Use a free online form builder with unlimited submissions for lead capture, events, and landing pages. No caps, no surprise paywalls—what to look for and how to get started.",
-    publishedAt: "2025-02-20",
-  },
-  {
     slug: "how-to-follow-up-on-leads-quickly",
     title: "How to Follow Up on Leads Quickly: Why Speed Matters",
     description:
