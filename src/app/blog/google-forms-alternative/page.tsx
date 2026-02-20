@@ -7,6 +7,7 @@ import {
   CTA,
   Footer,
 } from "@/components/landing";
+import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata, SITE_URL } from "@/lib/seo";
 
@@ -261,7 +262,7 @@ export default function GoogleFormsAlternativePage() {
             </Link>
           </Container>
         </section>
-
+        <BlogInternalLinks />
         <CTA />
         <Footer />
       </main>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
+import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -138,6 +139,7 @@ export default function SimpleLeadFormForRealEstateAgentsPage() {
             </div>
           </Container>
         </section>
+        <BlogInternalLinks />
         <CTA />
         <Footer />
       </main>

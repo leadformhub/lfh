@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
-import { Container } from "@/components/ui/Container";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
+import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
 /**
@@ -129,6 +130,7 @@ export default function HowToGenerateLeadsForFreePage() {
             </div>
           </Container>
         </section>
+        <BlogInternalLinks />
         <CTA />
         <Footer />
       </main>

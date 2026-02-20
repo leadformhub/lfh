@@ -47,6 +47,11 @@ export function Hero() {
             <p className="mt-4 text-base text-[var(--foreground-subtle)]">
               No credit card required · Collect Verified Leads · Built for modern businesses
             </p>
+            <p className="mt-3 text-sm text-[var(--foreground-muted)]">
+              <Link href="/blog/how-to-generate-leads-for-free" className="font-medium text-[var(--color-accent)] hover:underline">
+                Learn how to generate leads for free using simple strategies.
+              </Link>
+            </p>
 
             {/* Clickable feature pills */}
             <div className="mt-6 flex flex-wrap gap-3">

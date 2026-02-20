@@ -126,6 +126,11 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 No caps. No surprise paywalls. Create forms for lead capture, events, and landing pages—and collect every submission in one place. Start free, scale when you're ready.
               </p>
+              <p className="hero-content mt-4 text-base text-[var(--foreground-muted)]">
+                <Link href="/blog/how-to-generate-leads-for-free" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Learn how to generate leads for free using simple strategies.
+                </Link>
+              </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/signup"
