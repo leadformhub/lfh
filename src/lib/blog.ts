@@ -129,6 +129,27 @@ export const BLOG_POSTS: BlogPost[] = [
       "Manual lead generation tactics that work: networking, referrals, outreach, and events. Step-by-step guide for small teams and solopreneurs.",
     publishedAt: "2025-02-18",
   },
+  {
+    slug: "free-online-form-builder-unlimited",
+    title: "Free Online Form Builder With Unlimited Submissions | LeadFormHub",
+    description:
+      "Use a free online form builder with unlimited submissions for lead capture, events, and landing pages. No caps, no surprise paywalls—what to look for and how to get started.",
+    publishedAt: "2025-02-20",
+  },
+  {
+    slug: "how-to-follow-up-on-leads-quickly",
+    title: "How to Follow Up on Leads Quickly: Why Speed Matters",
+    description:
+      "Why fast follow-up on leads wins more deals. Practical tips to respond within minutes, use notifications, and never let a hot lead go cold. For small teams and solopreneurs.",
+    publishedAt: "2025-02-20",
+  },
+  {
+    slug: "how-to-increase-form-submissions",
+    title: "How to Increase Form Submissions: Simple Tweaks That Work",
+    description:
+      "Get more people to complete your lead capture form. Simple tweaks: fewer fields, clear value, mobile-friendly design, and where to place your form. No big redesign required.",
+    publishedAt: "2025-02-20",
+  },
 ];
 
 export function getPublishedPosts(): BlogPost[] {

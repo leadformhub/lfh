@@ -72,7 +72,7 @@ export default function HowToGenerateLeadsForFreePage() {
                 <li>Pick one topic you know well and that your audience cares about.</li>
                 <li>Keep it practical—actionable tips beat vague theory.</li>
                 <li>Add a clear next step: &quot;Get the checklist&quot;, &quot;Book a call&quot;, or &quot;Subscribe for more tips&quot;.</li>
-                <li>Use a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you can collect names and emails without hitting limits as traffic grows.</li>
+                <li>Use a <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you can collect names and emails without hitting limits as traffic grows.</li>
               </ul>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -109,7 +109,7 @@ export default function HowToGenerateLeadsForFreePage() {
                 Free lead generation fits almost every small business. Coaches and consultants use blog posts and lead magnets to attract clients. Real estate agents use simple enquiry forms on their site and on listing pages. Digital marketing agencies capture leads for their own services and for clients through landing pages and forms. Freelancers use a single contact or project enquiry form so prospects can reach them without email clutter. In every case, the pattern is the same: offer something useful, make it easy to say &quot;yes&quot; with a form, and follow up quickly.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                A <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> supports this without caps or surprise limits—so whether you get ten leads or a thousand, you can collect them in one place and act on them.
+                A <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> supports this without caps or surprise limits—so whether you get ten leads or a thousand, you can collect them in one place and act on them.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -124,7 +124,7 @@ export default function HowToGenerateLeadsForFreePage() {
                 Conclusion
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                You can generate leads for free by combining useful content, social proof, and a simple way to capture contact details. Use a form builder that stays free or affordable as you scale, keep your ask minimal, and respond fast. If you&apos;re ready to put this into practice, try a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you can collect leads without worrying about limits—and focus on turning those leads into customers.
+                You can generate leads for free by combining useful content, social proof, and a simple way to capture contact details. Use a form builder that stays free or affordable as you scale, keep your ask minimal, and respond fast. If you&apos;re ready to put this into practice, try a <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you can collect leads without worrying about limits—and focus on turning those leads into customers.
               </p>
             </div>
           </Container>

@@ -102,7 +102,7 @@ export default function HowToGenerateLeadsManuallyPage() {
               </h2>
               <BlogImageBlock variant="events" caption="Events and webinars are perfect for registration forms." />
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Webinars, workshops, and live events are strong ways to generate leads manually. You provide value upfront; in return, attendees register with name and email (or phone). Use a simple registration form—the fewer fields, the higher sign-up. After the event, follow up within 24–48 hours while the conversation is still fresh. A <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> lets you run multiple events or campaigns without worrying about submission caps.
+                Webinars, workshops, and live events are strong ways to generate leads manually. You provide value upfront; in return, attendees register with name and email (or phone). Use a simple registration form—the fewer fields, the higher sign-up. After the event, follow up within 24–48 hours while the conversation is still fresh. A <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> lets you run multiple events or campaigns without worrying about submission caps.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -113,7 +113,7 @@ export default function HowToGenerateLeadsManuallyPage() {
                 Manual lead generation and form building work together. You meet someone at an event—they go to your site and fill a contact or demo form. You do outreach—you send them to a short form to book a call or get a resource. You run a webinar—attendees sign up via a registration form and you follow up from one dashboard. In each case, the manual part is the relationship and the message; the form is where you capture the lead so nothing gets lost. Small businesses, coaches, agencies, and freelancers all benefit from having one place to collect and manage these contacts.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                If you need a single place to capture manual leads—from referrals, events, or outreach—a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> keeps everything in one dashboard without caps or clutter.
+                If you need a single place to capture manual leads—from referrals, events, or outreach—a <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> keeps everything in one dashboard without caps or clutter.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
@@ -127,7 +127,7 @@ export default function HowToGenerateLeadsManuallyPage() {
                 Conclusion
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                You can generate leads manually by networking where your audience is, asking for referrals in a clear way, doing targeted outreach, and using events to capture interest. Pair that with a simple way to collect contact details—like a form on your site or a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link>—so every manual touch turns into a lead you can follow up on. Start with one tactic, do it well, and scale from there.
+                You can generate leads manually by networking where your audience is, asking for referrals in a clear way, doing targeted outreach, and using events to capture interest. Pair that with a simple way to collect contact details—like a form on your site or a <Link href="/blog/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link>—so every manual touch turns into a lead you can follow up on. Start with one tactic, do it well, and scale from there.
               </p>
             </div>
           </Container>
