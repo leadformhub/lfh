@@ -64,6 +64,27 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /** Product image for rich results (absolute URL). Must be present for valid Product/SoftwareApplication. */
+  const productImage = `${SITE_URL}/og.png`;
+  /** Return policy for rich results (offers.hasMerchantReturnPolicy). */
+  const merchantReturnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "IN",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: 30,
+    returnFees: "https://schema.org/FreeReturn",
+  };
+  /** Digital delivery for rich results (offers.shippingDetails). */
+  const shippingDetails = {
+    "@type": "OfferShippingDetails",
+    shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "INR" },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+      transitTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 0, unitCode: "DAY" },
+    },
+  };
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -87,7 +108,15 @@ export default function RootLayout({
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",
         description: "Lead capture form builder and form builder SaaS. Create secure lead capture forms with analytics, drag-and-drop builder, and lead management.",
-        offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+        image: productImage,
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "INR",
+          availability: "https://schema.org/InStock",
+          hasMerchantReturnPolicy: merchantReturnPolicy,
+          shippingDetails,
+        },
       },
     ],
   };
