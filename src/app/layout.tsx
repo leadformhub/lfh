@@ -57,6 +57,9 @@ export const metadata: Metadata = {
       "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
   },
   robots: "index, follow",
+  other: {
+    "saashub-verification": "303o4dlr984j",
+  },
 };
 
 export default function RootLayout({
