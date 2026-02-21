@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
+import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
+/**
+ * Blog — SEO: free form builder for coaching institutes.
+ */
 export const metadata: Metadata = buildPageMetadata({
   title: "Free Form Builder for Coaching Institutes: Collect Leads Without the Fuss",
   description:
@@ -35,11 +39,12 @@ export default function FreeFormBuilderForCoachingInstitutesPage() {
                 id="article-heading"
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
-                A Free Form Builder for <span className="hero-highlight">Coaching Institutes</span> That Actually Works
+                Free Form Builder for Coaching Institutes: Collect Leads Without the Fuss
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Coaching centres run on enquiries, trial signups, and batch registrations. You need a form builder that’s free to start, easy to use, and doesn’t get in the way. Here’s what to look for in a free form builder for coaching institutes—and how to use it so parents and students actually fill it.
+                Why coaching centres need a free form builder that&apos;s simple and reliable. How to choose one, what to use it for—enquiries, trial signups, batch registration—and what to avoid.
               </p>
+              <BlogImageBlock variant="lead-capture" layout="featured" caption="A simple form builder keeps enquiries in one place." />
             </div>
           </Container>
         </section>
@@ -48,104 +53,85 @@ export default function FreeFormBuilderForCoachingInstitutesPage() {
           <Container size="narrow" className="px-4 sm:px-6">
             <div className="prose prose-neutral max-w-none">
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                Why coaching institutes need a form builder (and why “free” matters)
+                Why coaching institutes need a form builder
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Most coaching centres aren’t running on huge budgets. You’re paying for faculty, space, and maybe a bit of marketing. The last thing you want is another monthly subscription that adds up. A free form builder for coaching institutes lets you capture leads—enquiry forms, trial class signups, batch registration—without locking you into a paid plan before you’ve seen results.
+                Parents and students reach out via WhatsApp, phone, or walk-in. Without a central place to capture details, enquiries slip through the cracks. A free form builder for coaching institutes gives you one link to share—on your website, in ads, on social, or in your bio—so every enquiry lands in one dashboard. You stop chasing DMs and missed calls, and you never lose a lead because it landed in the wrong inbox.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                The flip side is that “free” can mean different things. Some tools are free forever but limit how many responses you get. Others are free only for 14 days. What you want is a free tier that’s actually usable: enough forms, enough submissions, and no sudden paywall the day your batch opens and enquiries pour in. We’ll come back to that when we talk about what to check before you sign up.
+                The key word is simple. Coaching centres don&apos;t need complex CRM software or paid tools with steep learning curves. They need a form that collects name, phone, email, and maybe one or two fields like &quot;Course of interest&quot; or &quot;Grade&quot;—enough to qualify and follow up. A <Link href="/blog/what-is-a-lead-capture-form" className="font-medium text-[var(--color-accent)] hover:underline">lead capture form</Link> built for this keeps things light and fast.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                What you’ll use it for: enquiries, trials, and batch signups
+                What to use a free form builder for
               </h2>
+              <BlogImageBlock variant="use-cases" caption="Forms for enquiries, trials, and batch registration." />
               <p className="mt-2 text-[var(--foreground-muted)]">
-                In practice, a coaching institute ends up using a form builder for a few clear things. The first is the general enquiry form—someone lands on your site or Facebook page and wants to know about courses, fees, or timings. You need their name, phone, and maybe the class or subject they’re interested in. One simple form on your website or shared via link can do that. No need for them to email you or hunt for a number; they fill it once and you get the lead in one place.
+                <strong>Enquiry forms.</strong> When someone wants to know about your courses, fees, or batches, they fill a short form instead of calling or messaging. You get their details in one place and can call back at a convenient time. Use a single form for general enquiries, or separate forms per course if you want to segment leads.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Then there’s trial class signup. A lot of centres offer a free trial or demo class. Parents and students are more likely to sign up if it’s a quick form: name, phone, email, preferred slot or subject. Again, a free form builder handles this. You can share the link on WhatsApp, put it on your site, or add it to a Facebook ad. All responses land in one dashboard so your team can call back or assign follow-up.
+                <strong>Trial or demo class signups.</strong> Offer a free trial class and collect signups with a form. Fields: name, phone, grade or subject, preferred date or batch. Once they submit, you (or your team) get an instant notification and can confirm the slot. See how <Link href="/blog/how-to-increase-form-submissions" className="font-medium text-[var(--color-accent)] hover:underline">simple tweaks increase form submissions</Link>.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Batch registration is the third big use case. When you open a new batch, you might want to collect names, grades, subjects, and contact details. Some institutes also ask for the school name or previous coaching experience. A form builder that lets you add custom fields (dropdowns, checkboxes, short text) makes this straightforward. You’re not stuck with a fixed template; you design exactly what you need.
+                <strong>Batch registration.</strong> When a new batch opens, share a registration form. Keep it short: name, phone, parent name, grade, subject. Avoid long forms with 15+ fields—parents drop off. You can collect additional details when they come for admission. For workshops and events, a <Link href="/blog/online-registration-form-builder-for-workshops" className="font-medium text-[var(--color-accent)] hover:underline">registration form builder</Link> follows the same principle.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                The same form builder can power all of these. You don’t need three different tools—just three forms (or one form with a “type of enquiry” dropdown). That keeps things simple for you and for the person filling the form.
+                <strong>Parent feedback.</strong> After a term or batch, send a feedback form link. A few short questions help you improve and show parents you care. Low pressure, high signal.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                What to look for when you pick a free form builder
+                How to choose a free form builder for coaching
               </h2>
+              <BlogImageBlock variant="content-leads" caption="Look for ease of use and mobile-friendly forms." />
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Ease of use matters more than fancy features. If it takes an hour to build your first form, you’ll put it off. Look for a form builder where you can add fields by clicking, change labels quickly, and get a shareable link or embed code without reading a manual. Drag-and-drop or a simple “add field” list is usually enough for coaching use cases.
+                <strong>Easy to build.</strong> You should be able to create a form in minutes without coding. Drag-and-drop or simple field selection is ideal. If it takes hours to set up, you won&apos;t use it.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Mobile-friendly forms are non-negotiable. A large share of parents and students will open your link on their phone. If the form is hard to read or the submit button is tiny, you’ll lose submissions. Test the form on your own phone before you share it. Buttons should be easy to tap; fields shouldn’t require horizontal scrolling.
+                <strong>Submission limits.</strong> Some free tiers cap you at 50–100 submissions per month. Others offer unlimited. If you run ads or have multiple batches, check that the cap fits your expected volume. A <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free form builder with unlimited submissions</Link> avoids surprises.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Then there’s the free tier itself. How many forms can you create? How many responses per month? Some tools cap you at 10 or 50 responses; that might be fine for a small centre and useless once you scale. Check whether the free plan is per month or total. Also see if you can use your own branding (logo, colours) on the free plan—it makes the form look more trustworthy when it matches your institute’s look.
+                <strong>Instant notifications.</strong> When someone submits, you need an email alert. Otherwise you&apos;ll miss leads or check too late. Fast follow-up matters—see our guide on <Link href="/blog/how-to-follow-up-on-leads-quickly" className="font-medium text-[var(--color-accent)] hover:underline">how to follow up on leads quickly</Link>.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                One more thing that’s underrated: verification. If you’re calling back leads, wrong or fake phone numbers waste time. A form builder that can send an OTP or verify the phone number before accepting the submission filters out typos and pranks. Not every free tool offers this, but if you’re getting a lot of junk leads, it’s worth looking for one that does. LeadFormHub, for example, includes optional OTP verification so you only get real, reachable contacts—you can see our <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">lead capture features</Link> for how that works.
+                <strong>Mobile-friendly.</strong> Most parents and students fill forms on their phones. If the form is hard to use on a small screen—tiny fields, awkward layout—completion drops. Test it on your own phone.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                <strong>Shareable link and embed.</strong> You need a link to share on WhatsApp, Instagram bio, or ads, and optionally an embed code for your website. Compare <Link href="/blog/free-online-form-builders" className="font-medium text-[var(--color-accent)] hover:underline">free online form builders</Link> to find one that fits.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                Where to put your forms so they get filled
+                What to avoid
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Having a form is one thing; getting people to see it is another. Put your enquiry or trial signup form where your audience already is. If you have a website, add the form on the contact page and on the page for each course or batch. If most of your traffic comes from WhatsApp or social media, use the form link in your bio, in stories, or in replies when someone asks “how do I register?”
+                Don&apos;t use forms with 10+ required fields. Parents and students will abandon them. Collect the essentials first—name, phone, course or grade—and get the rest when they visit or call back.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Keep the ask clear. Above the form or in the message that contains the link, say what happens next: “Fill this to get a callback within 24 hours” or “Sign up for a free trial class—we’ll confirm your slot by phone.” When people know what they’re signing up for, they’re more likely to complete. And keep the form short. Name, phone, and one or two fields (e.g. course interest, preferred time) are often enough. You can always ask more when you call them.
+                Don&apos;t use a form builder that looks spammy or has a confusing URL. People are cautious about sharing phone numbers. Where possible, use a tool that lets you embed forms on your site or use your branding.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Don&apos;t forget to tell people what happens next. Add a line like &quot;We&apos;ll call you within 2 hours&quot; or &quot;You&apos;ll get a confirmation SMS.&quot; Setting expectations builds trust and reduces no-shows.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                Pitfalls to avoid
+                Where to put your form
               </h2>
+              <BlogImageBlock variant="lead-capture" caption="One form, one dashboard—no lost enquiries." />
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Don’t ask for too much in the first form. Long forms with 10 required fields see much lower completion. Parents and students are in a hurry; give them the minimum and collect the rest in a follow-up call or a second step (e.g. after they’ve attended a trial).
-              </p>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                Don’t ignore the form after it’s live. If someone submits at 10 p.m. and nobody looks at it for two days, you’ve lost a lead. Set up email or in-app notifications so the right person is alerted when a new submission comes in. If your form builder has a dashboard, check it at least once a day during admission or batch-opening season.
-              </p>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                Finally, don’t assume “free” means “no limits.” Read the free tier limits (responses, forms, storage) before you depend on the tool. If you’re planning to run a big campaign or open multiple batches, make sure the free form builder for coaching institutes you choose can handle the volume—or that the paid upgrade is something you’re okay with when the time comes.
+                Put the form link everywhere your audience is. Website contact or enquiry page, Instagram and Facebook bio, WhatsApp status, and ad landing pages. If you run Facebook or Google ads for coaching, send clicks to a dedicated landing page with the form—not a generic homepage. Match the ad promise to the form (e.g. &quot;Book a free trial&quot; → form titled &quot;Book Your Free Trial Class&quot;). For more on ads, see <Link href="/blog/lead-capture-form-for-facebook-ads-landing-page" className="font-medium text-[var(--color-accent)] hover:underline">lead capture form for Facebook ads landing page</Link>.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                How LeadFormHub fits in
+                Optional: verify phone numbers
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                LeadFormHub is built for teams that care about lead quality and fast follow-up. You get a free form builder you can use for enquiry forms, trial signups, and batch registration. Forms are mobile-friendly and you can add custom fields to match your process. The free tier gives you a real starting point—and if you want to cut down on fake or wrong numbers, you can turn on optional OTP verification so only verified contacts come through. All submissions show up in one dashboard so your team can act on them quickly. For a full picture of what’s included, see our <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">form builder features</Link> and <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">pricing</Link>. If you’re comparing options, our <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Google Forms alternative</Link> page explains how we focus on lead capture and verification rather than generic surveys.
+                Wrong or fake phone numbers waste time. Some form builders support optional OTP verification: the user enters their number, gets a code, enters it, and the form submits. You only get reachable numbers. Not every institute needs it, but if you&apos;ve had trouble with typos or fake submissions, look for a <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">form builder with OTP verification</Link>.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 Quick recap
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                A free form builder for coaching institutes can handle enquiries, trial signups, and batch registration without extra cost. Choose one that’s easy to use, works well on mobile, and has a free tier that actually fits your volume. Keep forms short, put them where your audience is, and respond to submissions quickly. Avoid long forms, delayed follow-up, and tools that hide limits until you hit them. With the right setup, you’ll collect more leads and spend less time chasing wrong numbers or lost enquiries.
-              </p>
-
-              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
-                Frequently asked questions
-              </h2>
-              <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
-                Is there really a free form builder for coaching institutes?
-              </h3>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                Yes. Many form builders offer a free tier. The catch is that “free” can mean limited forms, limited responses per month, or a short trial. Look for one that lets you create at least one or two forms and collect a reasonable number of responses (e.g. 50–100 per month) so you can run enquiries and trial signups without paying upfront.
-              </p>
-              <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
-                What’s the best use of a form for a coaching centre?
-              </h3>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                The three main uses are: general enquiries (name, phone, course interest), trial or demo class signup, and batch registration. Keep each form short and share the link on your website, WhatsApp, and social media so parents and students can submit without calling or emailing.
-              </p>
-              <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
-                Should the form verify phone numbers?
-              </h3>
-              <p className="mt-2 text-[var(--foreground-muted)]">
-                It’s not mandatory, but if you’re getting wrong numbers or spam, a form builder with optional OTP verification helps. The submitter enters their number, gets a code, and enters it—so you only get leads with working phones. That saves your team time and improves follow-up.
+                A free form builder for coaching institutes should be simple: name, phone, maybe course or grade, and one or two optional fields. Use it for enquiries, trial signups, batch registration, and feedback. Choose one that&apos;s easy to build, sends instant notifications, works on mobile, and gives you a shareable link. Avoid long forms, spammy-looking tools, and unclear next steps. Put the form link on your site, social bio, and ad landing pages so every enquiry lands in one place.
               </p>
             </div>
           </Container>

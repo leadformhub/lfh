@@ -61,6 +61,30 @@
       "permanent": true
     },
     {
+      "source": "/free-form-builder-for-coaching-institutes",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "permanent": true
+    },
+    {
+      "source": "/free-form-builder-for-coaching-institutes/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "permanent": true
+    },
+    {
+      "source": "/blog/free-form-builder-for-coaching-institutes",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "permanent": true
+    },
+    {
+      "source": "/blog/free-form-builder-for-coaching-institutes/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "permanent": true
+    },
+    {
       "source": "/drag-and-drop-form-builder",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
       "destination": "https://www.leadformhub.com/blog/drag-and-drop-form-builder",
