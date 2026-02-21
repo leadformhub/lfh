@@ -69,6 +69,9 @@ export default function HowToGenerateLeadsForFreePage() {
               <p className="mt-2 text-[var(--foreground-muted)]">
                 You don&apos;t need a full blog or a huge audience to start. A single helpful article or video, shared in the right group or feed, can bring in your first leads. The key is to tie the content to a clear next step: a download, a signup, or a contact form. That way, interested readers become leads you can nurture instead of one-time visitors.
               </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Using a <Link href="https://www.leadformhub.com/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> helps you collect leads without worrying about limits.
+              </p>
               <ul className="mt-2 list-disc pl-6 text-[var(--foreground-muted)]">
                 <li>Pick one topic you know well and that your audience cares about.</li>
                 <li>Keep it practical—actionable tips beat vague theory.</li>

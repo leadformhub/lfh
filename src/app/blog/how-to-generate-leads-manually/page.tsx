@@ -82,6 +82,9 @@ export default function HowToGenerateLeadsManuallyPage() {
               <p className="mt-2 text-[var(--foreground-muted)]">
                 Referrals work best when you don&apos;t ask everyone the same way. Tailor the ask to the relationship: a recent happy customer might be willing to post a recommendation or send an intro; a long-term partner might prefer a quiet email intro. Either way, make the next step obvious—a link to a form or your contact page—so the new lead can reach you without friction.
               </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Using a <Link href="https://www.leadformhub.com/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> helps you collect leads without worrying about limits.
+              </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 Do targeted outreach (without spamming)
