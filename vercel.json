@@ -13,6 +13,17 @@
   ],
   "redirects": [
     {
+      "source": "/free-online-form-builder/",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.leadformhub.com"
+        }
+      ],
+      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
