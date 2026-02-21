@@ -68,6 +68,11 @@ const faqItems = [
       "No. There are no hidden caps on form submissions. The free tier is designed so you don't hit a limit and lose leads mid-campaign. If limits apply to other features (e.g. OTP), they're clearly stated in the plan.",
   },
   {
+    question: "Is LeadFormHub free?",
+    answer:
+      "Yes. LeadFormHub offers a free tier with unlimited form submissions. You can create forms, collect leads, and use the dashboard without paying. Upgrade when you need more OTP verification or advanced features. No credit card required to start.",
+  },
+  {
     question: "Can I create multiple forms?",
     answer:
       "Yes. You can create multiple forms—contact, enquiry, event registration, demo request, and more. Each form gets its own link and embed code, and all submissions appear in one dashboard.",
@@ -81,6 +86,11 @@ const faqItems = [
     question: "Do I need coding skills?",
     answer:
       "No. You add fields using a visual editor, get a shareable link and embed code, and publish. No HTML, JavaScript, or technical setup. If you can fill in a form, you can build one.",
+  },
+  {
+    question: "What can I use the free form builder for?",
+    answer:
+      "Lead capture (contact, demo, enquiry forms), event and webinar registration, newsletter signups, and client intake forms. Any use case where you collect contact details. All submissions appear in one dashboard with instant email notification.",
   },
 ];
 
