@@ -143,6 +143,41 @@ export const BLOG_POSTS: BlogPost[] = [
       "Get more people to complete your lead capture form. Simple tweaks: fewer fields, clear value, mobile-friendly design, and where to place your form. No big redesign required.",
     publishedAt: "2025-02-20",
   },
+  {
+    slug: "case-study-of-using-lead-generation-forms",
+    title: "Case Study: Using Lead Generation Forms to Grow a Small Business",
+    description:
+      "A real-world case study on how a small business used lead generation forms to capture enquiries, qualify leads, and grow sales without a big marketing budget.",
+    publishedAt: "2025-02-21",
+  },
+  {
+    slug: "kaizen-vs-kanban",
+    title: "Kaizen vs Kanban: Improving Your Lead Capture and Form Workflow",
+    description:
+      "Kaizen (continuous improvement) vs Kanban (visual workflow): how each approach can improve your lead capture forms, follow-up process, and conversion rates.",
+    publishedAt: "2025-02-21",
+  },
+  {
+    slug: "drag-and-drop-form-builder",
+    title: "Drag and Drop Form Builder: Create Lead Capture Forms Without Coding",
+    description:
+      "What to look for in a drag and drop form builder for lead capture. Build contact, enquiry, and registration forms in minutes—no coding required.",
+    publishedAt: "2025-02-21",
+  },
+  {
+    slug: "online-forms-in-digital-marketing",
+    title: "Online Forms in Digital Marketing: Capture Leads at Every Touchpoint",
+    description:
+      "How online forms fit into digital marketing: landing pages, ads, content, and email. Best practices for lead capture forms that convert.",
+    publishedAt: "2025-02-21",
+  },
+  {
+    slug: "free-online-form-builders",
+    title: "Free Online Form Builders: How to Choose One for Lead Capture",
+    description:
+      "Compare free online form builders for lead capture. What to look for: ease of use, submission limits, instant notifications, and mobile-friendly forms. No coding required.",
+    publishedAt: "2025-02-21",
+  },
 ];
 
 export function getPublishedPosts(): BlogPost[] {

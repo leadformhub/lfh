@@ -13,6 +13,114 @@
   ],
   "redirects": [
     {
+      "source": "/home",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/home/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/free-online-form-builders",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-online-form-builders",
+      "permanent": true
+    },
+    {
+      "source": "/free-online-form-builders/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/free-online-form-builders",
+      "permanent": true
+    },
+    {
+      "source": "/case-study-of-using-lead-generation-forms",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/case-study-of-using-lead-generation-forms",
+      "permanent": true
+    },
+    {
+      "source": "/case-study-of-using-lead-generation-forms/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/case-study-of-using-lead-generation-forms",
+      "permanent": true
+    },
+    {
+      "source": "/kaizen-vs-kanban",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/kaizen-vs-kanban",
+      "permanent": true
+    },
+    {
+      "source": "/kaizen-vs-kanban/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/kaizen-vs-kanban",
+      "permanent": true
+    },
+    {
+      "source": "/drag-and-drop-form-builder",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/drag-and-drop-form-builder",
+      "permanent": true
+    },
+    {
+      "source": "/drag-and-drop-form-builder/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/drag-and-drop-form-builder",
+      "permanent": true
+    },
+    {
+      "source": "/online-forms-in-digital-marketing",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/online-forms-in-digital-marketing",
+      "permanent": true
+    },
+    {
+      "source": "/online-forms-in-digital-marketing/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/online-forms-in-digital-marketing",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-generate-leads-using-free-tools",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/how-to-generate-leads-for-free",
+      "permanent": true
+    },
+    {
+      "source": "/how-to-generate-leads-using-free-tools/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/how-to-generate-leads-for-free",
+      "permanent": true
+    },
+    {
+      "source": "/best-free-lead-generation-form",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
+      "source": "/best-free-lead-generation-form/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
+      "source": "/best-free-online-form-builder",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
+      "source": "/best-free-online-form-builder/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
       "source": "/free-online-form-builder",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
       "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
