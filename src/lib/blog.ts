@@ -181,7 +181,7 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 export function getPublishedPosts(): BlogPost[] {
-  return BLOG_POSTS;
+  return [...BLOG_POSTS].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
 export function formatBlogDate(iso: string): string {
