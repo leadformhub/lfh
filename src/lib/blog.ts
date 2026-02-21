@@ -178,6 +178,13 @@ export const BLOG_POSTS: BlogPost[] = [
       "Compare free online form builders for lead capture. What to look for: ease of use, submission limits, instant notifications, and mobile-friendly forms. No coding required.",
     publishedAt: "2025-02-21",
   },
+  {
+    slug: "unlimited-form-submissions-why-it-matters",
+    title: "Why Unlimited Form Submissions Matter for Growing Businesses",
+    description:
+      "Many form builders restrict submissions with monthly caps and upgrade triggers. For growing businesses, form submission limits can interrupt campaigns and result in lost leads. Here's why unlimited form submissions matter.",
+    publishedAt: "2025-02-21",
+  },
 ];
 
 export function getPublishedPosts(): BlogPost[] {
