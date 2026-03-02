@@ -13,6 +13,72 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "has": [{ "type": "host", "value": "leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog/",
+      "has": [{ "type": "host", "value": "leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:path*",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/login",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/login",
+      "permanent": true
+    },
+    {
+      "source": "/login/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/login",
+      "permanent": true
+    },
+    {
+      "source": "/category/blog",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
+      "source": "/category/blog/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://www.leadformhub.com/blog",
+      "permanent": true
+    },
+    {
       "source": "/home",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
       "destination": "https://www.leadformhub.com/blog",
