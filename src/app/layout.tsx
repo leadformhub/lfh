@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE_URL } from "@/lib/seo";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
+import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { FacebookPixel } from "@/components/FacebookPixel";
 import { ProcessingProvider } from "@/components/ProcessingProvider";
@@ -140,6 +141,7 @@ export default function RootLayout({
         <RecaptchaScript />
         <GoogleAnalytics />
         <FacebookPixel />
+        <Analytics />
         <ProcessingProvider>{children}</ProcessingProvider>
       </body>
     </html>
