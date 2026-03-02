@@ -10,6 +10,9 @@ const PUBLIC_PATHS = ["/", "/login", "/signup", "/forgot-password", "/reset-pass
 const API_PUBLIC = ["/api/auth/", "/api/otp/", "/api/leads/submit"];
 const F_PREFIX = "/f/";
 
+/** Query param names that are tracking/alternate — redirect to clean URL to avoid GSC "Alternate page with proper canonical tag". */
+const TRACKING_PARAMS = new Set(["ref", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"]);
+
 /** First path segment that are not dashboard (no auth required for these). */
 const NON_DASHBOARD_FIRST = new Set(["api", "login", "signup", "forgot-password", "reset-password", "knowledge-base", "blog", "features", "pricing", "zoho-forms-alternative", "accept-invite", "f"]);
 
@@ -27,6 +30,33 @@ function shouldRedirectToCanonical(req: NextRequest): boolean {
   return isProductionDomain && !isCanonical;
 }
 
+/** If on blog subdomain, 301 to www so GSC doesn't report blog URLs as alternates. */
+function redirectBlogSubdomainToWww(req: NextRequest): NextResponse | null {
+  const hostHeader = req.headers.get("host") ?? "";
+  const host = hostHeader.split(":")[0].toLowerCase();
+  if (host !== "blog.leadformhub.com") return null;
+  const path = req.nextUrl.pathname + req.nextUrl.search;
+  const destination = path === "/" ? `${CANONICAL_ORIGIN}/blog` : `${CANONICAL_ORIGIN}${path}`;
+  return NextResponse.redirect(destination, 301);
+}
+
+/** Strip tracking params and return clean search string; if no change, return null. */
+function getCleanSearchRedirect(nextUrl: NextRequest["nextUrl"]): string | null {
+  const search = nextUrl.search;
+  if (!search || search === "?") return null;
+  const params = nextUrl.searchParams;
+  let hasTracking = false;
+  const rest: string[] = [];
+  params.forEach((value, key) => {
+    const lower = key.toLowerCase();
+    if (TRACKING_PARAMS.has(lower) || lower.startsWith("utm_")) hasTracking = true;
+    else rest.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+  });
+  if (!hasTracking) return null;
+  const cleanSearch = rest.length ? "?" + rest.join("&") : "";
+  return cleanSearch;
+}
+
 function isDashboardPath(path: string): boolean {
   const segments = path.split("/").filter(Boolean);
   if (segments.length < 2) return false;
@@ -35,10 +65,20 @@ function isDashboardPath(path: string): boolean {
 }
 
 export async function middleware(req: NextRequest) {
+  const blogRedirect = redirectBlogSubdomainToWww(req);
+  if (blogRedirect) return blogRedirect;
+
   if (shouldRedirectToCanonical(req)) {
     const path = req.nextUrl.pathname + req.nextUrl.search;
     const destination = path === "/" ? CANONICAL_ORIGIN : `${CANONICAL_ORIGIN}${path}`;
     return NextResponse.redirect(destination, 301);
+  }
+
+  const cleanSearch = getCleanSearchRedirect(req.nextUrl);
+  if (cleanSearch !== null) {
+    const path = req.nextUrl.pathname;
+    const base = path === "/" ? `${CANONICAL_ORIGIN}/` : `${CANONICAL_ORIGIN}${path}`;
+    return NextResponse.redirect(base + cleanSearch, 301);
   }
 
   const path = req.nextUrl.pathname;
