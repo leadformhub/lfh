@@ -41,7 +41,7 @@ export default async function FormPage({
     fields: form.schema?.fields ?? [],
     settings: form.schema?.settings,
   };
-  const embedUrl = `${process.env.NEXTAUTH_URL || "https://leadformhub.com"}/f/${form.id}?embed=1`;
+  const embedUrl = `${process.env.NEXTAUTH_URL || "https://www.leadformhub.com"}/f/${form.id}?embed=1`;
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="400" frameborder="0" title="Form"></iframe>
 <script>
 (function(){

@@ -61,7 +61,7 @@ export default async function PublicFormPage({
   const brandingBlock = showBranding ? (
     <div className="mt-4 rounded-xl border border-neutral-200 bg-white px-4 py-3 flex flex-col items-center justify-center gap-0.5 text-center" aria-label="LeadFormHub branding">
       <a
-        href="https://leadformhub.com"
+        href="https://www.leadformhub.com"
         target="_blank"
         rel="noopener noreferrer"
         className="text-neutral-600 hover:text-neutral-800 text-sm font-medium transition-colors inline-flex flex-col items-center gap-0.5"

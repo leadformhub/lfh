@@ -8,5 +8,5 @@ export function getBaseUrlForEmail(): string {
   }
   const appUrl = process.env.APP_URL?.trim();
   if (appUrl) return appUrl.replace(/\/$/, "");
-  return "https://leadformhub.com";
+  return "https://www.leadformhub.com";
 }

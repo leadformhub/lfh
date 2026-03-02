@@ -159,7 +159,7 @@
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://leadformhub.com/blog/:path*",
+      "destination": "https://www.leadformhub.com/blog/:path*",
       "permanent": true
     }
   ]

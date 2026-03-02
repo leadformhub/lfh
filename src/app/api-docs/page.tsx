@@ -11,7 +11,7 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/api-docs",
 });
 
-const BASE_URL = "https://leadformhub.com";
+const BASE_URL = "https://www.leadformhub.com";
 
 export default function ApiDocsPage() {
   return (
