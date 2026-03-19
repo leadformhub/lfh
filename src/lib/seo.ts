@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 /**
  * Canonical host for production — must match middleware CANONICAL_ORIGIN so
- * every page's canonical tag is self-referencing when served on www (avoids
+ * every page's canonical tag is self-referencing when served on apex (avoids
  * "Alternate page with proper canonical tag" and ensures the page is indexed).
  */
-const PRODUCTION_SITE_URL = "https://www.leadformhub.com";
+const PRODUCTION_SITE_URL = "https://leadformhub.com";
 
 /**
  * SEO configuration — canonical URLs, Open Graph, and metadata.

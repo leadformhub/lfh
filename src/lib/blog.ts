@@ -11,6 +11,27 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "best-lead-form-fields-for-high-conversion",
+    title: "Best Lead Form Fields for High Conversion (What to Ask and What to Skip)",
+    description:
+      "Choose the best lead form fields to increase conversions without hurting lead quality. A practical guide on required fields, optional qualifiers, and common mistakes.",
+    publishedAt: "2026-03-19",
+  },
+  {
+    slug: "lead-form-landing-page-checklist-2026",
+    title: "Lead Form Landing Page Checklist for 2026",
+    description:
+      "Use this 2026 lead form landing page checklist to improve conversion rates. Covers headlines, CTA copy, field design, trust signals, speed, and mobile UX.",
+    publishedAt: "2026-03-19",
+  },
+  {
+    slug: "set-up-lead-generation-form-without-coding",
+    title: "How to Set Up a Lead Generation Form Quickly (Without Coding)",
+    description:
+      "Set up a lead generation form in minutes without coding. A practical checklist for choosing fields, publishing fast, and improving conversions from day one.",
+    publishedAt: "2026-03-19",
+  },
+  {
     slug: "what-is-a-lead-capture-form",
     title: "What Is a Lead Capture Form? Definition & Best Practices",
     description:
