@@ -4,7 +4,7 @@ import { verifyToken } from "@/lib/jwt";
 import { getSessionCookieName } from "@/lib/jwt";
 
 /** Canonical origin for SEO — all non-canonical hosts 301 here. */
-const CANONICAL_ORIGIN = "https://www.leadformhub.com";
+const CANONICAL_ORIGIN = "https://leadformhub.com";
 
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/forgot-password", "/reset-password"];
 const API_PUBLIC = ["/api/auth/", "/api/otp/", "/api/leads/submit"];
@@ -25,13 +25,13 @@ function shouldRedirectToCanonical(req: NextRequest): boolean {
   const proto = (req.headers.get("x-forwarded-proto") ?? req.nextUrl.protocol.replace(":", "")).toLowerCase();
 
   const isProductionDomain = host === "leadformhub.com" || host === "www.leadformhub.com";
-  const isCanonical = host === "www.leadformhub.com" && proto === "https";
+  const isCanonical = host === "leadformhub.com" && proto === "https";
 
   return isProductionDomain && !isCanonical;
 }
 
-/** If on blog subdomain, 301 to www so GSC doesn't report blog URLs as alternates. */
-function redirectBlogSubdomainToWww(req: NextRequest): NextResponse | null {
+/** If on blog subdomain, 301 to canonical origin so GSC doesn't report alternates. */
+function redirectBlogSubdomainToCanonical(req: NextRequest): NextResponse | null {
   const hostHeader = req.headers.get("host") ?? "";
   const host = hostHeader.split(":")[0].toLowerCase();
   if (host !== "blog.leadformhub.com") return null;
@@ -65,7 +65,7 @@ function isDashboardPath(path: string): boolean {
 }
 
 export async function middleware(req: NextRequest) {
-  const blogRedirect = redirectBlogSubdomainToWww(req);
+  const blogRedirect = redirectBlogSubdomainToCanonical(req);
   if (blogRedirect) return blogRedirect;
 
   if (shouldRedirectToCanonical(req)) {

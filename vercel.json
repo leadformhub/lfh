@@ -14,26 +14,26 @@
   "redirects": [
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/",
+      "has": [{ "type": "host", "value": "www.leadformhub.com" }],
+      "destination": "https://leadformhub.com/",
       "permanent": true
     },
     {
       "source": "/blog",
-      "has": [{ "type": "host", "value": "leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "has": [{ "type": "host", "value": "www.leadformhub.com" }],
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/blog/",
-      "has": [{ "type": "host", "value": "leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "has": [{ "type": "host", "value": "www.leadformhub.com" }],
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/:path*",
+      "has": [{ "type": "host", "value": "www.leadformhub.com" }],
+      "destination": "https://leadformhub.com/:path*",
       "permanent": true
     },
     {
