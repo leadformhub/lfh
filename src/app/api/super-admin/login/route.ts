@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 import {
   createSuperAdminToken,
   getSuperAdminCookieName,
@@ -51,7 +52,11 @@ export async function POST(req: NextRequest) {
         },
       });
     }
-    if (!superAdmin || superAdmin.password !== password) {
+    if (!superAdmin) {
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+    const passwordOk = await bcrypt.compare(password, superAdmin.password);
+    if (!passwordOk) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
