@@ -7,7 +7,6 @@ import { getVerifiedSessionCached } from "@/lib/auth";
 import { type PlanKey } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { DashboardTopbar } from "@/components/DashboardTopbar";
-import { DashboardFooter } from "@/components/DashboardFooter";
 import { PlanExpiryBanner } from "@/components/PlanExpiryBanner";
 import { DashboardShellSkeleton } from "./DashboardShellSkeleton";
 
@@ -67,7 +66,6 @@ async function DashboardChromeContent({ layoutUsername, razorpayKeyId, children 
           />
           <div className="flex min-h-full min-w-0 shrink-0 flex-col">
             <div className="min-h-0 flex-1">{children}</div>
-            <DashboardFooter />
           </div>
         </main>
       </div>
