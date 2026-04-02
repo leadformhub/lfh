@@ -782,7 +782,7 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                   <div className="mt-3 flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={fetchUsers}
+                      onClick={() => void fetchUsers()}
                       className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black"
                     >
                       Search
