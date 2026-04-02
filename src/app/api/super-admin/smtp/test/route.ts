@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { lookup } from "node:dns/promises";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 import { getSuperAdminSession } from "@/lib/super-admin-auth";
@@ -53,12 +54,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const ipv4ResolvedHost = await lookup(merged.host, { family: 4 }).then((r) => r.address).catch(() => merged.host);
+
     async function sendWithSecureMode(secureMode: boolean) {
       const transporter = nodemailer.createTransport({
-        host: merged.host,
+        host: ipv4ResolvedHost,
         port: merged.port,
         secure: secureMode,
-        family: 4,
+        tls: {
+          servername: merged.host,
+        },
         auth: {
           user: merged.username,
           pass: merged.password,
