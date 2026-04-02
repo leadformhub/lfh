@@ -4,7 +4,7 @@ import { getRazorpayKeyId } from "@/lib/razorpay";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { getPlanLimits, type PlanKey } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
 import { getOtpLimitForPlan } from "@/lib/plan-quotas";
 import { getOtpUsageForUser } from "@/services/otp.service";
 import { UpgradePlanCard } from "@/components/UpgradePlanCard";
@@ -15,7 +15,7 @@ import { DeleteAccountForm } from "@/components/DeleteAccountForm";
 import { SettingsTabNav } from "@/components/SettingsTabNav";
 import { TeamManagement } from "@/components/TeamManagement";
 import { canManageTeam, canAccessBilling, isOwner } from "@/lib/team";
-import { getMaxTeamMembers } from "@/lib/plans";
+import { getEffectivePlanLimits, getMaxTeamMembersEffective } from "@/lib/super-admin-plan-pricing";
 
 export const metadata = {
   title: "Settings | LeadFormHub",
@@ -116,15 +116,16 @@ export default async function SettingsPage({
 
   // Usage data for Usage tab
   const planKey = session.plan as PlanKey;
-  const limits = getPlanLimits(planKey);
   const startOfMonth = new Date();
   startOfMonth.setUTCDate(1);
   startOfMonth.setUTCHours(0, 0, 0, 0);
-  const [formsCount, otpUsage, leadsThisMonth, otpLimit] = await Promise.all([
+  const [limits, formsCount, otpUsage, leadsThisMonth, otpLimit, maxTeamMembers] = await Promise.all([
+    getEffectivePlanLimits(planKey),
     prisma.form.count({ where: { userId: accountOwnerId } }),
     getOtpUsageForUser(accountOwnerId),
     prisma.lead.count({ where: { userId: accountOwnerId, createdAt: { gte: startOfMonth } } }),
     getOtpLimitForPlan(planKey),
+    getMaxTeamMembersEffective(planKey),
   ]);
   const formsLimit = limits.maxForms === Infinity ? null : limits.maxForms;
   const leadsLimit = limits.maxLeadsPerMonth;
@@ -198,7 +199,7 @@ export default async function SettingsPage({
           <TeamManagement
             username={username}
             plan={session.plan}
-            maxMembers={limits.maxTeamMembers === Infinity ? Infinity : limits.maxTeamMembers}
+            maxMembers={maxTeamMembers === Infinity ? Infinity : maxTeamMembers}
           />
         )}
 

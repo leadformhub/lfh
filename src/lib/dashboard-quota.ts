@@ -3,7 +3,8 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getOtpUsageForUser } from "@/services/otp.service";
 import { getOtpLimitForPlan } from "@/lib/plan-quotas";
-import { getPlanLimits, type PlanKey } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
+import { getEffectivePlanLimits } from "@/lib/super-admin-plan-pricing";
 
 export type DashboardPlanQuota = {
   plan: PlanKey;
@@ -42,7 +43,7 @@ async function fetchQuotaCounts(accountOwnerId: string, startOfMonth: Date, star
 
 /** Fetches plan quota for the account (owner). Limits are shared across all team members. Uses single query for counts + parallel OTP. */
 async function fetchDashboardPlanQuota(accountOwnerId: string, planKey: PlanKey): Promise<DashboardPlanQuota> {
-  const limits = getPlanLimits(planKey);
+  const limits = await getEffectivePlanLimits(planKey);
   const startOfMonth = new Date();
   startOfMonth.setUTCDate(1);
   startOfMonth.setUTCHours(0, 0, 0, 0);

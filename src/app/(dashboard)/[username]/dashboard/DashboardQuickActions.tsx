@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { getDashboardPlanQuotaCached } from "@/lib/dashboard-quota";
-import { canCreateForm, type PlanKey } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
 
 const CreateFormButton = dynamic(
   () => import("@/components/CreateFormButton").then((m) => ({ default: m.CreateFormButton })),
@@ -22,7 +22,8 @@ export async function DashboardQuickActions({
   razorpayKeyId,
 }: Props) {
   const planQuota = await getDashboardPlanQuotaCached(accountOwnerId, plan);
-  const canCreate = canCreateForm(plan, planQuota.formsUsed);
+  const canCreate =
+    planQuota.formsLimit == null || planQuota.formsUsed < planQuota.formsLimit;
 
   return (
     <div className="flex flex-wrap gap-3">

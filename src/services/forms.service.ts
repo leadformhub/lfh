@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { canCreateForm } from "@/lib/plans";
+import { canCreateFormWithEffectiveLimits } from "@/lib/super-admin-plan-pricing";
 import type { UserPlan } from "@prisma/client";
 import {
   type FormSchema,
@@ -23,7 +23,7 @@ export async function createForm(input: CreateFormInput) {
   }
   const count = await prisma.form.count({ where: { userId: input.userId } });
   const plan = (user.plan ?? "free") as UserPlan;
-  if (!canCreateForm(plan, count)) {
+  if (!(await canCreateFormWithEffectiveLimits(plan, count))) {
     throw new Error("Form limit reached for your plan. Please upgrade.");
   }
 

@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 import { getFormsByUserIdCached } from "@/services/forms.service";
 import { getViewCountsForUserForms } from "@/services/analytics.service";
 import { FormsList } from "@/components/FormsList";
-import { canCreateForm, getPlanLimits, type PlanKey } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
+import { canCreateFormWithEffectiveLimits, getEffectivePlanLimits } from "@/lib/super-admin-plan-pricing";
 import { canUseAutomation } from "@/lib/plan-features";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { SITE_URL } from "@/lib/seo";
@@ -49,15 +50,15 @@ async function FormsContent({
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const plan = (session.plan ?? "free") as PlanKey;
   const razorpayKeyId = getRazorpayKeyId();
-  const limits = getPlanLimits(plan);
 
-  const [{ forms, total, page: currentPage, perPage }, viewCounts] = await Promise.all([
+  const [{ forms, total, page: currentPage, perPage }, viewCounts, limits] = await Promise.all([
     getFormsByUserIdCached(accountOwnerId, pageNum, 25),
     getViewCountsForUserForms(accountOwnerId),
+    getEffectivePlanLimits(plan),
   ]);
 
   const formsCount = total;
-  const canCreate = canCreateForm(plan, formsCount);
+  const canCreate = await canCreateFormWithEffectiveLimits(plan, formsCount);
 
   return (
     <>
@@ -79,7 +80,7 @@ async function FormsContent({
           currentPlan={session.plan ?? "free"}
           razorpayKeyId={razorpayKeyId}
           formsCount={formsCount}
-          formsLimit={limits?.maxForms}
+          formsLimit={limits.maxForms === Infinity ? undefined : limits.maxForms}
         />
       </div>
       <FormsList

@@ -1,18 +1,18 @@
 import { prisma } from "@/lib/db";
 import { createRazorpayOrder, verifyRazorpaySignature } from "@/lib/razorpay";
 import type { UserPlan } from "@prisma/client";
+import { getCheckoutAmountPaise, getPlanValidityDaysResolved } from "@/lib/super-admin-plan-pricing";
 
-const PLAN_VALIDITY_DAYS = Math.max(1, parseInt(process.env.PLAN_VALIDITY_DAYS ?? "30", 10) || 30);
-
-// Amount in paise (INR)
+/** Default checkout amounts (paise). Super-admin config overrides at runtime via {@link createOrder}. */
 export const PLAN_AMOUNTS: Record<string, number> = {
   pro: 29900,      // ₹299
   business: 99900, // ₹999
 };
 
 export async function createOrder(userId: string, plan: string): Promise<{ orderId: string; amount: number; currency: string } | null> {
-  const amount = PLAN_AMOUNTS[plan];
-  if (!amount || plan === "free") return null;
+  if (plan !== "pro" && plan !== "business") return null;
+  const amount = await getCheckoutAmountPaise(plan);
+  if (!amount) return null;
   const order = await createRazorpayOrder({
     amount,
     currency: "INR",
@@ -45,7 +45,8 @@ export async function verifyAndFulfill(
   if (payment.status === "captured") return { success: true, plan: payment.plan as UserPlan };
   const valid = verifyRazorpaySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
   if (!valid) return { success: false, error: "Invalid signature" };
-  const planValidUntil = new Date(Date.now() + PLAN_VALIDITY_DAYS * 24 * 60 * 60 * 1000);
+  const validityDays = await getPlanValidityDaysResolved();
+  const planValidUntil = new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000);
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: payment.id },
@@ -90,7 +91,8 @@ export async function syncPlanFromCapturedPayment(userId: string, currentPlan?: 
   if (paidRank <= currentRank) return user.plan as UserPlan;
 
   const paidPlan = latest!.plan as UserPlan;
-  const planValidUntil = new Date(Date.now() + PLAN_VALIDITY_DAYS * 24 * 60 * 60 * 1000);
+  const validityDays = await getPlanValidityDaysResolved();
+  const planValidUntil = new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000);
   await prisma.$transaction([
     prisma.payment.update({
       where: { id: latest!.id },

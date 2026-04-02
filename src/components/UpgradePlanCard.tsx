@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getPlanFeatureBullets } from "@/lib/plan-features";
 
@@ -22,10 +22,32 @@ declare global {
   }
 }
 
-const PLANS = [
-  { plan: "pro" as const, name: "Pro", actualPrice: "₹2,999", price: "₹299/month" },
-  { plan: "business" as const, name: "Business", actualPrice: "₹9,999", price: "₹999/month" },
+const FALLBACK_PLANS = [
+  {
+    plan: "pro" as const,
+    name: "Pro",
+    actualPrice: "₹2,999",
+    price: "₹299/month",
+    bullets: getPlanFeatureBullets("pro"),
+  },
+  {
+    plan: "business" as const,
+    name: "Business",
+    actualPrice: "₹9,999",
+    price: "₹999/month",
+    bullets: getPlanFeatureBullets("business"),
+  },
 ];
+
+type PlanDisplay = (typeof FALLBACK_PLANS)[number];
+
+type MarketingCardApi = {
+  name: string;
+  priceLabel: string;
+  strikethroughLabel: string | null;
+  period: string;
+  bullets: string[];
+};
 
 export function UpgradePlanCard({
   currentPlan,
@@ -38,6 +60,42 @@ export function UpgradePlanCard({
   const username = pathname?.split("/")[1] ?? "";
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [plans, setPlans] = useState<PlanDisplay[]>(FALLBACK_PLANS);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/public/plan-pricing", { cache: "no-store" });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.marketingCards) return;
+        const mc = data.marketingCards as { pro: MarketingCardApi; business: MarketingCardApi };
+        const bullets = data.upgradeBullets as { pro?: string[]; business?: string[] } | undefined;
+        const next: PlanDisplay[] = [
+          {
+            plan: "pro",
+            name: mc.pro.name,
+            actualPrice: mc.pro.strikethroughLabel ?? "",
+            price: `${mc.pro.priceLabel}${mc.pro.period}`,
+            bullets: bullets?.pro?.length ? bullets.pro : mc.pro.bullets,
+          },
+          {
+            plan: "business",
+            name: mc.business.name,
+            actualPrice: mc.business.strikethroughLabel ?? "",
+            price: `${mc.business.priceLabel}${mc.business.period}`,
+            bullets: bullets?.business?.length ? bullets.business : mc.business.bullets,
+          },
+        ];
+        if (!cancelled) setPlans(next);
+      } catch {
+        /* keep fallback */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function loadRazorpayScript(): Promise<boolean> {
     if (typeof window !== "undefined" && window.Razorpay) return true;
@@ -125,7 +183,7 @@ export function UpgradePlanCard({
       <h2 className="text-lg font-semibold text-[var(--foreground-heading)]">Upgrade Plan</h2>
       {error && <p className="text-base text-[var(--color-danger)]">{error}</p>}
       <div className="grid gap-4 sm:grid-cols-2">
-        {PLANS.map((p) => {
+        {plans.map((p) => {
           const isCurrent = currentPlan === p.plan;
           const isHigher =
             (p.plan === "pro" && currentPlan === "free") ||
@@ -137,11 +195,15 @@ export function UpgradePlanCard({
             >
               <div className="font-semibold text-[var(--foreground-heading)]">{p.name}</div>
               <div className="mt-1 flex flex-wrap items-baseline gap-2">
-                <span className="text-lg font-medium text-[var(--foreground-muted)] line-through">{p.actualPrice}</span>
+                {p.actualPrice ? (
+                  <span className="text-lg font-medium text-[var(--foreground-muted)] line-through">
+                    {p.actualPrice}
+                  </span>
+                ) : null}
                 <span className="text-2xl font-bold text-[var(--foreground-heading)]">{p.price}</span>
               </div>
               <ul className="mt-2 space-y-1 text-sm text-[var(--foreground-muted)]">
-                {getPlanFeatureBullets(p.plan).map((f) => (
+                {(p.bullets.length ? p.bullets : []).map((f) => (
                   <li key={f} className="flex items-center gap-1.5">
                     <span className="text-[var(--color-success)]">✓</span>
                     {f}

@@ -3,8 +3,9 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DashboardDetailType, SuperAdminDashboardStats } from "@/lib/super-admin-dashboard";
+import { SuperAdminPlansPricingPanel } from "@/components/super-admin/SuperAdminPlansPricingPanel";
 
-type NavItem = "dashboard" | "users" | "tickets" | "setting";
+type NavItem = "dashboard" | "users" | "tickets" | "plans-pricing" | "setting";
 
 type ManagedUser = {
   id: string;
@@ -745,6 +746,17 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
           </button>
           <button
             type="button"
+            onClick={() => setActiveItem("plans-pricing")}
+            className={`mt-2 w-full rounded-md px-3 py-2 text-left text-sm font-medium transition ${
+              activeItem === "plans-pricing"
+                ? "bg-gray-900 text-white"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            Plans and Pricing
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveItem("setting")}
             className={`mt-2 w-full rounded-md px-3 py-2 text-left text-sm font-medium transition ${
               activeItem === "setting"
@@ -765,6 +777,8 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                 ? "Users"
                 : activeItem === "tickets"
                 ? "Tickets"
+                : activeItem === "plans-pricing"
+                ? "Plans and Pricing"
                 : "Setting"}
             </p>
             <button
@@ -1046,6 +1060,7 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                 ) : null}
               </>
             ) : null}
+            {activeItem === "plans-pricing" ? <SuperAdminPlansPricingPanel /> : null}
             {activeItem === "setting" ? (
               <div className="space-y-4">
                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

@@ -1,48 +1,26 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-
-import { getPlanFeatureBullets } from "@/lib/plan-features";
-import type { PlanKey } from "@/lib/plans";
+import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
 
 /** 11. Pricing Teaser — 3 cards (Free, Pro, Business). Price + one-line value + CTA Start Free. */
-const planMeta = [
-  {
-    key: "free" as PlanKey,
-    name: "Free",
-    price: "₹0",
-    actualPrice: null as string | null,
-    period: "(Forever)",
-    description: "Ideal for testing and early use",
-    cta: "Start Free",
-    href: "/signup",
-    highlighted: false,
-  },
-  {
-    key: "pro" as PlanKey,
-    name: "Pro",
-    price: "₹299",
-    actualPrice: "₹2,999",
-    period: "/month",
-    description: "For growing teams",
-    cta: "Start Free, Upgrade Later",
-    href: "/signup",
-    highlighted: true,
-  },
-  {
-    key: "business" as PlanKey,
-    name: "Business",
-    price: "₹999",
-    actualPrice: "₹9,999",
-    period: "/month",
-    description: "For agencies & scale",
-    cta: "Start Free, Upgrade Later",
-    href: "/signup",
-    highlighted: false,
-  },
-];
-const plans = planMeta.map((p) => ({ ...p, features: getPlanFeatureBullets(p.key) }));
+export async function PricingPreview() {
+  const { marketingCards } = await getPublicPlanPricingPayload();
+  const planMeta = (["free", "pro", "business"] as const).map((key) => {
+    const card = marketingCards[key];
+    return {
+      key,
+      name: card.name,
+      price: card.priceLabel,
+      actualPrice: card.strikethroughLabel,
+      period: card.period,
+      description: card.description,
+      cta: card.cta,
+      href: "/signup" as const,
+      highlighted: card.highlighted,
+      features: card.bullets,
+    };
+  });
 
-export function PricingPreview() {
   return (
     <section id="pricing" className="section-padding border-t border-[var(--border-default)] bg-white">
       <Container>
@@ -55,7 +33,7 @@ export function PricingPreview() {
           </p>
         </div>
         <div className="mx-auto mt-16 grid gap-8 lg:grid-cols-3">
-          {plans.map((plan) => (
+          {planMeta.map((plan) => (
             <div
               key={plan.name}
               className={`flex flex-col rounded-xl border p-8 ${

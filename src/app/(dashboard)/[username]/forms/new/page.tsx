@@ -2,7 +2,8 @@ import { getVerifiedSessionCached } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { NewFormClient } from "@/components/NewFormClient";
-import { canCreateForm, type PlanKey } from "@/lib/plans";
+import type { PlanKey } from "@/lib/plans";
+import { canCreateFormWithEffectiveLimits } from "@/lib/super-admin-plan-pricing";
 import { prisma } from "@/lib/db";
 
 export default async function NewFormPage({
@@ -20,7 +21,7 @@ export default async function NewFormPage({
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const formsCount = await prisma.form.count({ where: { userId: accountOwnerId } });
   const plan = (session.plan ?? "free") as PlanKey;
-  if (!canCreateForm(plan, formsCount)) {
+  if (!(await canCreateFormWithEffectiveLimits(plan, formsCount))) {
     redirect(`/${username}/pricing?reason=form_limit`);
   }
 

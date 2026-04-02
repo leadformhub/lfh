@@ -513,3 +513,12 @@ model SuperAdminSmsSetting {
 
   @@map("super_admin_sms_settings")
 }
+
+/// Single-row JSON config for plans, limits, and marketing copy (super admin). Merged with code defaults when empty.
+model SuperAdminPlanPricingSetting {
+  id         Int      @id @db.TinyInt
+  configJson String   @map("config_json") @db.Text
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_plan_pricing_settings")
+}

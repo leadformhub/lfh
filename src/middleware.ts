@@ -89,6 +89,7 @@ export async function middleware(req: NextRequest) {
   if (path.startsWith(F_PREFIX)) return NextResponse.next();
   if (PUBLIC_PATHS.some((p) => path === p)) return NextResponse.next();
   if (path.startsWith("/api/") && API_PUBLIC.some((p) => path.startsWith(p))) return NextResponse.next();
+  if (path.startsWith("/api/public/")) return NextResponse.next();
 
   if (isDashboardPath(path)) {
     const token = req.cookies.get(getSessionCookieName())?.value;

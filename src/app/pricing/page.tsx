@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar, PricingPreview, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata, SITE_URL } from "@/lib/seo";
+import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Lead Capture Software Pricing – Start Free | LeadFormHub",
@@ -51,76 +52,6 @@ const shippingDetails = {
   },
 };
 
-const pricingSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name: "LeadFormHub",
-  description: "Lead capture software with OTP verification. Flexible pricing.",
-  image: PRODUCT_IMAGE_URL,
-  brand: { "@type": "Brand", name: "LeadFormHub" },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    reviewCount: "3",
-    bestRating: "5",
-  },
-  review: [
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "Priya Sharma" },
-      reviewBody: "OTP verification removed fake and mistyped numbers completely. Our sales team now works only on real prospects, and conversions improved immediately.",
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-    },
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "Rahul Mehta" },
-      reviewBody: "Managing multiple client campaigns from one branded hub changed our workflow. Clean URLs, verified leads, and simple payments made this an easy choice.",
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-    },
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "Anitha Krishnan" },
-      reviewBody: "We replaced spreadsheets and scattered tools with one dashboard. Setup was fast, and we had a professional form live the same day.",
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-    },
-  ],
-  offers: [
-    {
-      "@type": "Offer",
-      name: "Free",
-      price: "0",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: PRICE_VALID_UNTIL,
-      hasMerchantReturnPolicy: merchantReturnPolicy,
-      shippingDetails,
-      description: "3 forms, 50 leads/month, branded subdomain",
-    },
-    {
-      "@type": "Offer",
-      name: "Pro",
-      price: "299",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: PRICE_VALID_UNTIL,
-      hasMerchantReturnPolicy: merchantReturnPolicy,
-      shippingDetails,
-      description: "Unlimited forms, 100 OTP/month, OTP verification",
-    },
-    {
-      "@type": "Offer",
-      name: "Business",
-      price: "999",
-      priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: PRICE_VALID_UNTIL,
-      hasMerchantReturnPolicy: merchantReturnPolicy,
-      shippingDetails,
-      description: "1,000 OTP/month, CRM integrations, API",
-    },
-  ],
-};
-
 const trustBullets = [
   {
     title: "Transparent monthly billing",
@@ -151,7 +82,81 @@ const trustBullets = [
   },
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const { marketingCards, schemaOfferPricesInr } = await getPublicPlanPricingPayload();
+  const pricingSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "LeadFormHub",
+    description: "Lead capture software with OTP verification. Flexible pricing.",
+    image: PRODUCT_IMAGE_URL,
+    brand: { "@type": "Brand", name: "LeadFormHub" },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      reviewCount: "3",
+      bestRating: "5",
+    },
+    review: [
+      {
+        "@type": "Review",
+        author: { "@type": "Person", name: "Priya Sharma" },
+        reviewBody:
+          "OTP verification removed fake and mistyped numbers completely. Our sales team now works only on real prospects, and conversions improved immediately.",
+        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      },
+      {
+        "@type": "Review",
+        author: { "@type": "Person", name: "Rahul Mehta" },
+        reviewBody:
+          "Managing multiple client campaigns from one branded hub changed our workflow. Clean URLs, verified leads, and simple payments made this an easy choice.",
+        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      },
+      {
+        "@type": "Review",
+        author: { "@type": "Person", name: "Anitha Krishnan" },
+        reviewBody:
+          "We replaced spreadsheets and scattered tools with one dashboard. Setup was fast, and we had a professional form live the same day.",
+        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      },
+    ],
+    offers: [
+      {
+        "@type": "Offer",
+        name: marketingCards.free.name,
+        price: "0",
+        priceCurrency: "INR",
+        availability: "https://schema.org/InStock",
+        priceValidUntil: PRICE_VALID_UNTIL,
+        hasMerchantReturnPolicy: merchantReturnPolicy,
+        shippingDetails,
+        description: marketingCards.free.description,
+      },
+      {
+        "@type": "Offer",
+        name: marketingCards.pro.name,
+        price: String(schemaOfferPricesInr.pro),
+        priceCurrency: "INR",
+        availability: "https://schema.org/InStock",
+        priceValidUntil: PRICE_VALID_UNTIL,
+        hasMerchantReturnPolicy: merchantReturnPolicy,
+        shippingDetails,
+        description: marketingCards.pro.description,
+      },
+      {
+        "@type": "Offer",
+        name: marketingCards.business.name,
+        price: String(schemaOfferPricesInr.business),
+        priceCurrency: "INR",
+        availability: "https://schema.org/InStock",
+        priceValidUntil: PRICE_VALID_UNTIL,
+        hasMerchantReturnPolicy: merchantReturnPolicy,
+        shippingDetails,
+        description: marketingCards.business.description,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <script

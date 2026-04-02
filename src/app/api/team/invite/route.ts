@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
 import { canManageTeam } from "@/lib/team";
-import { getMaxTeamMembers } from "@/lib/plans";
 import type { PlanKey } from "@/lib/plans";
+import { getMaxTeamMembersEffective } from "@/lib/super-admin-plan-pricing";
 import { inviteMember } from "@/services/team.service";
 import { countMembers } from "@/services/team.service";
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const planKey = (session.plan ?? "free") as PlanKey;
-  const maxMembers = getMaxTeamMembers(planKey);
+  const maxMembers = await getMaxTeamMembersEffective(planKey);
 
   if (maxMembers === 0) {
     return NextResponse.json(

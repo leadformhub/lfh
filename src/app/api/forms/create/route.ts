@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
 import { canUseEmailAlertOnLead } from "@/lib/plan-features";
-import { canUseOtp, canCreateForm, type PlanKey } from "@/lib/plans";
+import { canUseOtp, type PlanKey } from "@/lib/plans";
+import { canCreateFormWithEffectiveLimits } from "@/lib/super-admin-plan-pricing";
 import { createForm } from "@/services/forms.service";
 import { DEFAULT_FORM_SCHEMA } from "@/lib/form-schema";
 import { prisma } from "@/lib/db";
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     const formsCount = await prisma.form.count({ where: { userId: accountOwnerId } });
     const user = await prisma.user.findUnique({ where: { id: accountOwnerId }, select: { plan: true } });
     const plan = (user?.plan ?? "free") as PlanKey;
-    if (!canCreateForm(plan, formsCount)) {
+    if (!(await canCreateFormWithEffectiveLimits(plan, formsCount))) {
       return NextResponse.json(
         { error: "Form limit reached for your plan. Please upgrade to create more forms." },
         { status: 403 }

@@ -3,11 +3,8 @@ import { getSession } from "@/lib/auth";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { redirect } from "next/navigation";
 import { UpgradePlanCard } from "@/components/UpgradePlanCard";
-import {
-  PLAN_FEATURES,
-  PLAN_FEATURE_CATEGORIES,
-  formatFeatureValue,
-} from "@/lib/plan-features";
+import { PLAN_FEATURE_CATEGORIES, formatFeatureValue, type PlanFeatureRow } from "@/lib/plan-features";
+import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
 
 export const metadata = {
   title: "Upgrade plan | LeadFormHub",
@@ -23,6 +20,7 @@ export default async function DashboardPricingPage({
 
   const razorpayKeyId = getRazorpayKeyId();
   const planLabel = session.plan.charAt(0).toUpperCase() + session.plan.slice(1);
+  const { featureComparison } = await getPublicPlanPricingPayload();
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl">
@@ -65,7 +63,7 @@ export default async function DashboardPricingPage({
               </thead>
               <tbody>
                 {PLAN_FEATURE_CATEGORIES.map((category) => {
-                  const rows = PLAN_FEATURES.filter((r) => r.category === category);
+                  const rows = featureComparison.filter((r: PlanFeatureRow) => r.category === category);
                   if (rows.length === 0) return null;
                   return (
                     <Fragment key={category}>
@@ -77,7 +75,7 @@ export default async function DashboardPricingPage({
                           {category}
                         </td>
                       </tr>
-                      {rows.map((row) => (
+                      {rows.map((row: PlanFeatureRow) => (
                         <tr
                           key={row.label}
                           className="border-b border-[var(--border-default)] last:border-b-0 hover:bg-[var(--neutral-50)]/50"
