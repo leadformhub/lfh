@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
     const { email, password, recaptchaToken, invite } = parsed.data;
 
-    if (isRecaptchaConfigured()) {
+    if (await isRecaptchaConfigured()) {
       const token = typeof recaptchaToken === "string" ? recaptchaToken.trim() : "";
       if (!token) {
         return NextResponse.json(

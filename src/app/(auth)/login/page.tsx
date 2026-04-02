@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
 
 const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
   `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
@@ -23,10 +24,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const recaptchaSiteKey =
-    typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
-      ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
-      : null;
+  const recaptchaSiteKey = useRecaptchaSiteKey();
   const recaptchaEnabled = Boolean(recaptchaSiteKey);
 
   useEffect(() => {

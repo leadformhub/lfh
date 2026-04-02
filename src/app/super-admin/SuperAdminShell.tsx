@@ -62,6 +62,9 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [smtpFromName, setSmtpFromName] = useState("");
   const [smtpSupportEmail, setSmtpSupportEmail] = useState("");
   const [smtpSecure, setSmtpSecure] = useState(false);
+  const [recaptchaSiteKey, setRecaptchaSiteKey] = useState("");
+  const [recaptchaSecretKey, setRecaptchaSecretKey] = useState("");
+  const [recaptchaEnabled, setRecaptchaEnabled] = useState(true);
   const [smtpTestToEmail, setSmtpTestToEmail] = useState("");
   const [smtpTestLoading, setSmtpTestLoading] = useState(false);
   const [smtpTestMessage, setSmtpTestMessage] = useState<{
@@ -70,6 +73,11 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   } | null>(null);
   const [smtpSaveLoading, setSmtpSaveLoading] = useState(false);
   const [smtpSaveMessage, setSmtpSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [recaptchaSaveLoading, setRecaptchaSaveLoading] = useState(false);
+  const [recaptchaSaveMessage, setRecaptchaSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -116,25 +124,36 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
     if (activeItem !== "setting") return;
     let cancelled = false;
 
-    async function loadSmtpSettings() {
+    async function loadSettings() {
       try {
-        const res = await fetch("/api/super-admin/smtp", { method: "GET" });
-        const data = await res.json();
-        if (!res.ok || !data.smtp || cancelled) return;
-        setSmtpHost(data.smtp.host || "");
-        setSmtpPort(String(data.smtp.port || "587"));
-        setSmtpUsername(data.smtp.username || "");
-        setSmtpPassword(data.smtp.password || "");
-        setSmtpFromEmail(data.smtp.fromEmail || "");
-        setSmtpFromName(data.smtp.fromName || "");
-        setSmtpSupportEmail(data.smtp.supportEmail || "");
-        setSmtpSecure(Boolean(data.smtp.secure));
+        const [smtpRes, recaptchaRes] = await Promise.all([
+          fetch("/api/super-admin/smtp", { method: "GET" }),
+          fetch("/api/super-admin/recaptcha", { method: "GET" }),
+        ]);
+        const smtpData = await smtpRes.json().catch(() => ({}));
+        const recaptchaData = await recaptchaRes.json().catch(() => ({}));
+        if (cancelled) return;
+        if (smtpRes.ok && smtpData.smtp) {
+          setSmtpHost(smtpData.smtp.host || "");
+          setSmtpPort(String(smtpData.smtp.port || "587"));
+          setSmtpUsername(smtpData.smtp.username || "");
+          setSmtpPassword(smtpData.smtp.password || "");
+          setSmtpFromEmail(smtpData.smtp.fromEmail || "");
+          setSmtpFromName(smtpData.smtp.fromName || "");
+          setSmtpSupportEmail(smtpData.smtp.supportEmail || "");
+          setSmtpSecure(Boolean(smtpData.smtp.secure));
+        }
+        if (recaptchaRes.ok && recaptchaData.recaptcha) {
+          setRecaptchaSiteKey(recaptchaData.recaptcha.siteKey || "");
+          setRecaptchaSecretKey(recaptchaData.recaptcha.secretKey || "");
+          setRecaptchaEnabled(recaptchaData.recaptcha.enabled !== false);
+        }
       } catch {
         // Keep UI usable even if saved settings fail to load.
       }
     }
 
-    void loadSmtpSettings();
+    void loadSettings();
     return () => {
       cancelled = true;
     };
@@ -487,6 +506,40 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
     }
   }
 
+  async function handleSaveRecaptchaSettings() {
+    setRecaptchaSaveMessage(null);
+    if (!recaptchaSiteKey.trim() || !recaptchaSecretKey.trim()) {
+      setRecaptchaSaveMessage({
+        type: "error",
+        text: "Please fill both site key and secret key before saving.",
+      });
+      return;
+    }
+
+    setRecaptchaSaveLoading(true);
+    try {
+      const res = await fetch("/api/super-admin/recaptcha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siteKey: recaptchaSiteKey.trim(),
+          secretKey: recaptchaSecretKey.trim(),
+          enabled: recaptchaEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setRecaptchaSaveMessage({ type: "error", text: data.error || "Failed to save reCAPTCHA settings." });
+        return;
+      }
+      setRecaptchaSaveMessage({ type: "success", text: data.message || "reCAPTCHA settings saved." });
+    } catch {
+      setRecaptchaSaveMessage({ type: "error", text: "Something went wrong while saving reCAPTCHA settings." });
+    } finally {
+      setRecaptchaSaveLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl">
@@ -742,6 +795,79 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                         }`}
                       >
                         {smtpTestMessage.text}
+                      </div>
+                    ) : null}
+                  </form>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Settings Item 2</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    reCAPTCHA Configuration
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Save Google reCAPTCHA site/secret keys for the full application.
+                  </p>
+
+                  <form className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Site Key
+                      </label>
+                      <input
+                        type="text"
+                        value={recaptchaSiteKey}
+                        onChange={(e) => setRecaptchaSiteKey(e.target.value)}
+                        placeholder="6Lc... (public site key)"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Secret Key
+                      </label>
+                      <input
+                        type="password"
+                        value={recaptchaSecretKey}
+                        onChange={(e) => setRecaptchaSecretKey(e.target.value)}
+                        placeholder="6Lc... (secret key)"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-800">
+                        <input
+                          type="checkbox"
+                          checked={recaptchaEnabled}
+                          onChange={(e) => setRecaptchaEnabled(e.target.checked)}
+                          className="size-4 rounded border-gray-300"
+                        />
+                        Enable reCAPTCHA checks globally
+                      </label>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveRecaptchaSettings}
+                        disabled={recaptchaSaveLoading}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                      >
+                        {recaptchaSaveLoading ? "Saving..." : "Save reCAPTCHA Settings"}
+                      </button>
+                    </div>
+
+                    {recaptchaSaveMessage ? (
+                      <div
+                        className={`md:col-span-2 rounded-md px-3 py-2 text-sm ${
+                          recaptchaSaveMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {recaptchaSaveMessage.text}
                       </div>
                     ) : null}
                   </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
 
 const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
   `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
@@ -11,12 +12,10 @@ const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
  * Other components only use grecaptcha.execute(); they don't inject the script again.
  */
 export function RecaptchaScript() {
+  const siteKey = useRecaptchaSiteKey();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const siteKey =
-      typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
-        ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
-        : null;
     if (!siteKey) return;
     if (document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) return;
     const script = document.createElement("script");
@@ -24,7 +23,7 @@ export function RecaptchaScript() {
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-  }, []);
+  }, [siteKey]);
 
   return null;
 }

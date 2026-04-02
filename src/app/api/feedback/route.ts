@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (isRecaptchaConfigured()) {
+    if (await isRecaptchaConfigured()) {
       const token = typeof parsed.data.recaptchaToken === "string" ? parsed.data.recaptchaToken.trim() : "";
       if (!token) {
         return NextResponse.json(

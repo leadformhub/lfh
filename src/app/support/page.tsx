@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import Link from "next/link";
+import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
 
 const SUBJECT_CATEGORIES = [
   "General Inquiry",
@@ -26,9 +27,7 @@ export default function SupportPage() {
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", subjectOther: "", message: "" });
 
-  const recaptchaSiteKey = typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
-    ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
-    : null;
+  const recaptchaSiteKey = useRecaptchaSiteKey();
   const recaptchaEnabled = Boolean(recaptchaSiteKey);
 
   useEffect(() => {

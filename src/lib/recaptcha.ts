@@ -1,3 +1,5 @@
+import { getSuperAdminRecaptchaSettings } from "@/lib/super-admin-recaptcha-store";
+
 /**
  * Server-side reCAPTCHA v3 (score-based) verification.
  * Verify the token with Google's siteverify API and check score threshold.
@@ -10,7 +12,9 @@ const DEFAULT_V3_THRESHOLD = 0.3;
 export type VerifyRecaptchaResult = { success: boolean; score?: number; hostname?: string };
 
 export async function verifyRecaptcha(responseToken: string): Promise<VerifyRecaptchaResult> {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  const settings = await getSuperAdminRecaptchaSettings();
+  if (!settings?.enabled) return { success: true };
+  const secret = settings.secretKey?.trim();
   if (!secret?.trim()) {
     return { success: false };
   }
@@ -44,14 +48,14 @@ export async function verifyRecaptcha(responseToken: string): Promise<VerifyReca
   }
 }
 
-export function getRecaptchaSiteKey(): string | null {
-  return process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() || null;
+export async function getRecaptchaSiteKey(): Promise<string | null> {
+  const settings = await getSuperAdminRecaptchaSettings();
+  if (!settings?.enabled) return null;
+  return settings.siteKey?.trim() || null;
 }
 
-/** True when reCAPTCHA is fully configured (site + secret keys) so we can show the widget and verify tokens. */
-export function isRecaptchaConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY?.trim() &&
-    process.env.RECAPTCHA_SECRET_KEY?.trim()
-  );
+/** True when reCAPTCHA is fully configured in Super Admin settings. */
+export async function isRecaptchaConfigured(): Promise<boolean> {
+  const settings = await getSuperAdminRecaptchaSettings();
+  return Boolean(settings?.enabled && settings.siteKey?.trim() && settings.secretKey?.trim());
 }

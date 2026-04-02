@@ -564,8 +564,7 @@ export function FormBuilder({
                     <p className="font-medium text-[var(--foreground)]">reCAPTCHA v3 (score-based)</p>
                     <p className="mt-1">
                       The public form uses reCAPTCHA v3: no checkbox — verification runs on submit. Set{" "}
-                      <code className="rounded bg-[var(--neutral-200)] px-1 py-0.5 text-xs">NEXT_PUBLIC_RECAPTCHA_SITE_KEY</code> and{" "}
-                      <code className="rounded bg-[var(--neutral-200)] px-1 py-0.5 text-xs">RECAPTCHA_SECRET_KEY</code> (v3 keys) in your .env.
+                      Google reCAPTCHA site/secret keys in Super Admin settings.
                     </p>
                   </div>
                 )}

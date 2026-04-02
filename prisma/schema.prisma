@@ -484,3 +484,13 @@ model SuperAdminSmtpSetting {
 
   @@map("super_admin_smtp_settings")
 }
+
+model SuperAdminRecaptchaSetting {
+  id        Int      @id @db.TinyInt
+  siteKey   String   @map("site_key") @db.VarChar(255)
+  secretKey String   @map("secret_key") @db.VarChar(255)
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_recaptcha_settings")
+}

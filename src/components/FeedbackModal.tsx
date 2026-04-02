@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Modal, ModalCloseButton } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
 
 /** reCAPTCHA v3 script URL for execute() */
 function getRecaptchaScriptUrl(siteKey: string): string {
@@ -21,9 +22,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const recaptchaSiteKey = typeof process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY === "string"
-    ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY.trim() || null
-    : null;
+  const recaptchaSiteKey = useRecaptchaSiteKey();
   const recaptchaEnabled = Boolean(recaptchaSiteKey);
 
   useEffect(() => {

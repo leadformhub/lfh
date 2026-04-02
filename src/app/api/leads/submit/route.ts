@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
     const err = validateSubmission(formData, schema);
     if (err) return NextResponse.json({ error: err }, { status: 400 });
 
-    const recaptchaConfigured = isRecaptchaConfigured();
+    const recaptchaConfigured = await isRecaptchaConfigured();
     const formRecaptchaEnabled = schema.settings?.recaptchaEnabled !== false;
     if (recaptchaConfigured && formRecaptchaEnabled) {
       const token = typeof recaptchaToken === "string" ? recaptchaToken.trim() : "";

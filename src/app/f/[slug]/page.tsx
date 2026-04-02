@@ -55,7 +55,7 @@ export default async function PublicFormPage({
   const showBranding = ownerPlan !== "pro" && ownerPlan !== "business";
   const settings = form.schema?.settings ?? {};
   const recaptchaEnabled = settings.recaptchaEnabled !== false;
-  const recaptchaSiteKey = recaptchaEnabled ? getRecaptchaSiteKey() : null;
+  const recaptchaSiteKey = recaptchaEnabled ? await getRecaptchaSiteKey() : null;
   const fields = form.schema?.fields ?? [];
 
   const brandingBlock = showBranding ? (
