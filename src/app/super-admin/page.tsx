@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSuperAdminSession } from "@/lib/super-admin-auth";
-import { prisma } from "@/lib/db";
+import { getSuperAdminDashboardStats } from "@/lib/super-admin-dashboard";
 import { SuperAdminShell } from "./SuperAdminShell";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function SuperAdminPage() {
   const session = await getSuperAdminSession();
   if (!session) redirect("/super-admin/login");
-  const usersCount = await prisma.user.count();
+  const dashboardStats = await getSuperAdminDashboardStats();
 
-  return <SuperAdminShell usersCount={usersCount} />;
+  return <SuperAdminShell dashboardStats={dashboardStats} />;
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { DashboardDetailType, SuperAdminDashboardStats } from "@/lib/super-admin-dashboard";
 
 type NavItem = "dashboard" | "users" | "tickets" | "setting";
 
@@ -50,7 +51,34 @@ type TicketThread = {
   replies: TicketReply[];
 };
 
-export function SuperAdminShell({ usersCount }: { usersCount: number }) {
+type DashboardDetailsPayload =
+  | {
+      type: "today_forms";
+      totalCount: number;
+      items: Array<{
+        id: string;
+        name: string;
+        createdAt: string;
+        ownerUsername: string;
+        ownerEmail: string;
+        ownerName: string;
+      }>;
+    }
+  | {
+      type: "today_users" | "free_users" | "premium_users";
+      totalCount: number;
+      items: Array<{
+        id: string;
+        name: string;
+        username: string;
+        email: string;
+        plan: "free" | "pro" | "business";
+        status: "active" | "banned";
+        createdAt: string;
+      }>;
+    };
+
+export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdminDashboardStats }) {
   const router = useRouter();
   const [activeItem, setActiveItem] = useState<NavItem>("dashboard");
   const [loggingOut, setLoggingOut] = useState(false);
@@ -123,6 +151,50 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [editingUserEmail, setEditingUserEmail] = useState("");
   const [editingUserPlan, setEditingUserPlan] = useState<ManagedUser["plan"]>("free");
   const [editingUserStatus, setEditingUserStatus] = useState<ManagedUser["status"]>("active");
+  const [dashboardDetailOpen, setDashboardDetailOpen] = useState(false);
+  const [dashboardDetailType, setDashboardDetailType] = useState<DashboardDetailType | null>(null);
+  const [dashboardDetailLoading, setDashboardDetailLoading] = useState(false);
+  const [dashboardDetailError, setDashboardDetailError] = useState<string | null>(null);
+  const [dashboardDetailPayload, setDashboardDetailPayload] = useState<DashboardDetailsPayload | null>(
+    null,
+  );
+
+  async function openDashboardDetail(type: DashboardDetailType) {
+    setDashboardDetailType(type);
+    setDashboardDetailOpen(true);
+    setDashboardDetailLoading(true);
+    setDashboardDetailError(null);
+    setDashboardDetailPayload(null);
+    try {
+      const res = await fetch(`/api/super-admin/dashboard-details?type=${encodeURIComponent(type)}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setDashboardDetailError(typeof data.error === "string" ? data.error : "Failed to load details.");
+        return;
+      }
+      setDashboardDetailPayload(data as DashboardDetailsPayload);
+    } catch {
+      setDashboardDetailError("Something went wrong while loading details.");
+    } finally {
+      setDashboardDetailLoading(false);
+    }
+  }
+
+  const closeDashboardDetail = useCallback(() => {
+    setDashboardDetailOpen(false);
+    setDashboardDetailType(null);
+    setDashboardDetailPayload(null);
+    setDashboardDetailError(null);
+  }, []);
+
+  useEffect(() => {
+    if (!dashboardDetailOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") closeDashboardDetail();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [dashboardDetailOpen, closeDashboardDetail]);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -707,10 +779,272 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
 
           <div className="p-6">
             {activeItem === "dashboard" ? (
-              <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <p className="text-sm text-gray-500">Users Count</p>
-                <p className="mt-2 text-3xl font-semibold text-gray-900">{usersCount}</p>
-              </div>
+              <>
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold tracking-tight text-gray-900">
+                    Platform overview
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Today is based on UTC. Click a card for a detailed list.
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                  <button
+                    type="button"
+                    onClick={() => void openDashboardDetail("today_forms")}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white p-6 text-left shadow-sm ring-1 ring-black/[0.03] transition hover:border-teal-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-teal-500 to-emerald-500" aria-hidden />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-xl bg-teal-50 p-2.5 text-teal-700">
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.75}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-teal-600 opacity-0 transition group-hover:opacity-100">
+                        View →
+                      </span>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Forms created today
+                    </p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-gray-900">
+                      {dashboardStats.todayFormsCreated}
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void openDashboardDetail("today_users")}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white p-6 text-left shadow-sm ring-1 ring-black/[0.03] transition hover:border-sky-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600" aria-hidden />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-xl bg-sky-50 p-2.5 text-sky-700">
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.75}
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-sky-600 opacity-0 transition group-hover:opacity-100">
+                        View →
+                      </span>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Users registered today
+                    </p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-gray-900">
+                      {dashboardStats.todayUsersCreated}
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void openDashboardDetail("free_users")}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white p-6 text-left shadow-sm ring-1 ring-black/[0.03] transition hover:border-slate-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-slate-400 to-slate-600" aria-hidden />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-xl bg-slate-100 p-2.5 text-slate-700">
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.75}
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-slate-600 opacity-0 transition group-hover:opacity-100">
+                        View →
+                      </span>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Total free users
+                    </p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-gray-900">
+                      {dashboardStats.totalFreeUsers}
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void openDashboardDetail("premium_users")}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white p-6 text-left shadow-sm ring-1 ring-black/[0.03] transition hover:border-violet-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 to-violet-600" aria-hidden />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-xl bg-violet-50 p-2.5 text-violet-700">
+                        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.75}
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-violet-600 opacity-0 transition group-hover:opacity-100">
+                        View →
+                      </span>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Total premium users
+                    </p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-gray-900">
+                      {dashboardStats.totalPremiumUsers}
+                    </p>
+                    <p className="mt-2 text-xs text-gray-400">Pro &amp; Business plans</p>
+                  </button>
+                </div>
+
+                {dashboardDetailOpen ? (
+                  <div
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-gray-900/40 p-4 sm:items-center"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="dashboard-detail-title"
+                  >
+                    <button
+                      type="button"
+                      className="absolute inset-0 cursor-default"
+                      aria-label="Close"
+                      onClick={closeDashboardDetail}
+                    />
+                    <div className="relative z-10 flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+                      <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-4">
+                        <div>
+                          <h3 id="dashboard-detail-title" className="text-lg font-semibold text-gray-900">
+                            {dashboardDetailType === "today_forms"
+                              ? "Forms created today"
+                              : dashboardDetailType === "today_users"
+                                ? "Users registered today"
+                                : dashboardDetailType === "free_users"
+                                  ? "Free plan users"
+                                  : dashboardDetailType === "premium_users"
+                                    ? "Premium users (Pro & Business)"
+                                    : "Details"}
+                          </h3>
+                          {dashboardDetailPayload ? (
+                            <p className="mt-1 text-sm tabular-nums text-gray-500">
+                              {dashboardDetailPayload.totalCount} total
+                              {dashboardDetailPayload.items.length < dashboardDetailPayload.totalCount
+                                ? ` — showing latest ${dashboardDetailPayload.items.length}`
+                                : ""}
+                            </p>
+                          ) : null}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={closeDashboardDetail}
+                          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                        >
+                          <span className="sr-only">Close</span>
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+                        {dashboardDetailLoading ? (
+                          <p className="text-sm text-gray-500">Loading…</p>
+                        ) : dashboardDetailError ? (
+                          <p className="text-sm text-red-600">{dashboardDetailError}</p>
+                        ) : dashboardDetailPayload?.type === "today_forms" ? (
+                          <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                  <th className="px-3 py-2">Form</th>
+                                  <th className="px-3 py-2">Owner</th>
+                                  <th className="px-3 py-2">Email</th>
+                                  <th className="px-3 py-2">Created</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100">
+                                {dashboardDetailPayload.items.length === 0 ? (
+                                  <tr>
+                                    <td colSpan={4} className="px-3 py-8 text-center text-gray-500">
+                                      No forms created today.
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  dashboardDetailPayload.items.map((row) => (
+                                    <tr key={row.id} className="hover:bg-gray-50">
+                                      <td className="px-3 py-2.5 font-medium text-gray-900">{row.name}</td>
+                                      <td className="px-3 py-2.5 text-gray-700">{row.ownerUsername}</td>
+                                      <td className="px-3 py-2.5 text-gray-600">{row.ownerEmail}</td>
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-gray-600">
+                                        {new Date(row.createdAt).toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : dashboardDetailPayload &&
+                          (dashboardDetailPayload.type === "today_users" ||
+                            dashboardDetailPayload.type === "free_users" ||
+                            dashboardDetailPayload.type === "premium_users") ? (
+                          <div className="overflow-x-auto">
+                            <table className="min-w-full text-left text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                  <th className="px-3 py-2">Name</th>
+                                  <th className="px-3 py-2">Username</th>
+                                  <th className="px-3 py-2">Email</th>
+                                  <th className="px-3 py-2">Plan</th>
+                                  <th className="px-3 py-2">Status</th>
+                                  <th className="px-3 py-2">Joined</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100">
+                                {dashboardDetailPayload.items.length === 0 ? (
+                                  <tr>
+                                    <td colSpan={6} className="px-3 py-8 text-center text-gray-500">
+                                      No records to show.
+                                    </td>
+                                  </tr>
+                                ) : (
+                                  dashboardDetailPayload.items.map((row) => (
+                                    <tr key={row.id} className="hover:bg-gray-50">
+                                      <td className="px-3 py-2.5 font-medium text-gray-900">{row.name}</td>
+                                      <td className="px-3 py-2.5 text-gray-700">{row.username}</td>
+                                      <td className="px-3 py-2.5 text-gray-600">{row.email}</td>
+                                      <td className="px-3 py-2.5 capitalize text-gray-700">{row.plan}</td>
+                                      <td className="px-3 py-2.5 capitalize text-gray-700">{row.status}</td>
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-gray-600">
+                                        {new Date(row.createdAt).toLocaleString()}
+                                      </td>
+                                    </tr>
+                                  ))
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500">No data.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </>
             ) : null}
             {activeItem === "setting" ? (
               <div className="space-y-4">
