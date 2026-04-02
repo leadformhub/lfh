@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type NavItem = "dashboard" | "tickets" | "setting";
@@ -14,7 +14,7 @@ type TicketRow = {
   createdAt: string;
   lastActivityAt: string | null;
   replyCount: number;
-  user: { name: string | null; email: string; username: string };
+  user: { name: string | null; email: string; username: string; plan: "free" | "pro" | "business" };
 };
 
 type TicketReply = {
@@ -246,6 +246,10 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   function getStatusLabel(status: TicketRow["status"]) {
     if (status === "in_progress") return "In progress";
     return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  function getPlanLabel(plan: TicketRow["user"]["plan"]) {
+    return plan.charAt(0).toUpperCase() + plan.slice(1);
   }
 
   const filteredTickets = tickets.filter((ticket) => {
@@ -667,41 +671,50 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                   ) : filteredTickets.length === 0 ? (
                     <div className="p-8 text-sm text-gray-600">No tickets found for the selected status.</div>
                   ) : (
-                    <div className="divide-y divide-gray-100">
-                      {filteredTickets.map((ticket) => (
-                        <div key={ticket.id} className="p-5 transition hover:bg-gray-50/70">
-                          <button
-                            type="button"
-                            onClick={() => handleSelectTicket(ticket.id)}
-                            className="flex w-full flex-wrap items-start gap-3 text-left"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-mono text-xs font-semibold tracking-wide text-gray-900">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Ticket Number</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Category</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">User</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">User Plan</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">View</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 bg-white">
+                          {filteredTickets.map((ticket) => (
+                            <Fragment key={ticket.id}>
+                              <tr className="hover:bg-gray-50/70">
+                                <td className="px-4 py-3 text-sm font-mono font-semibold text-gray-900">
                                   {ticket.ticketNumber ? `#${ticket.ticketNumber}` : `#REF-${ticket.id.slice(-6)}`}
-                                </span>
-                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(ticket.status)}`}>
-                                  {getStatusLabel(ticket.status)}
-                                </span>
-                                <span className="text-xs text-gray-500">{ticket.category.toUpperCase()}</span>
-                              </div>
-                              <p className="mt-2 truncate text-sm font-semibold text-gray-900">{ticket.subject}</p>
-                              <p className="mt-1 text-xs text-gray-500">
-                                {ticket.user.name || ticket.user.username} · {ticket.user.email}
-                              </p>
-                            </div>
-                            <div className="ml-auto text-right">
-                              <p className="text-xs font-medium text-gray-500">
-                                {ticket.replyCount} {ticket.replyCount === 1 ? "reply" : "replies"}
-                              </p>
-                              <p className="mt-1 text-xs text-gray-500">
-                                Updated {formatDate(ticket.lastActivityAt)}
-                              </p>
-                            </div>
-                          </button>
-
-                          {activeTicketId === ticket.id ? (
-                            <div className="mt-4 rounded-xl border border-gray-200 bg-gradient-to-b from-gray-50 to-white p-4 sm:p-5">
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{ticket.category.toUpperCase()}</td>
+                                <td className="px-4 py-3">
+                                  <p className="text-sm font-medium text-gray-900">{ticket.user.name || ticket.user.username}</p>
+                                  <p className="text-xs text-gray-500">{ticket.user.email}</p>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{getPlanLabel(ticket.user.plan)}</td>
+                                <td className="px-4 py-3">
+                                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(ticket.status)}`}>
+                                    {getStatusLabel(ticket.status)}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSelectTicket(ticket.id)}
+                                    className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100"
+                                  >
+                                    {activeTicketId === ticket.id ? "Hide" : "View"}
+                                  </button>
+                                </td>
+                              </tr>
+                              {activeTicketId === ticket.id ? (
+                                <tr>
+                                  <td colSpan={6} className="px-4 py-4">
+                                    <div className="rounded-xl border border-gray-200 bg-gradient-to-b from-gray-50 to-white p-4 sm:p-5">
                               {threadLoading ? (
                                 <p className="text-sm text-gray-600">Loading thread...</p>
                               ) : ticketThread ? (
@@ -727,6 +740,9 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                                     </select>
                                     <span className="text-xs text-gray-500">
                                       Last activity: {formatDate(ticket.lastActivityAt)}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      Replies: {ticket.replyCount}
                                     </span>
                                   </div>
 
@@ -782,10 +798,14 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                               ) : (
                                 <p className="text-sm text-gray-600">Could not load ticket thread.</p>
                               )}
-                            </div>
-                          ) : null}
-                        </div>
-                      ))}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </Fragment>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>

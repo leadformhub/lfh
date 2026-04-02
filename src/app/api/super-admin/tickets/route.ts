@@ -22,6 +22,7 @@ export async function GET() {
             name: true,
             email: true,
             username: true,
+            plan: true,
           },
         },
         _count: { select: { replies: true } },
