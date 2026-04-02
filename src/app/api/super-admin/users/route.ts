@@ -16,19 +16,20 @@ export async function GET(req: NextRequest) {
     const plan =
       planRaw === "free" || planRaw === "pro" || planRaw === "business" ? planRaw : "all";
 
-    const whereClause = {
-      ...(q
-        ? {
-            OR: [
-              { name: { contains: q } },
-              { email: { contains: q } },
-              { username: { contains: q } },
-            ],
-          }
-        : {}),
-      ...(status !== "all" ? { status: status === "banned" ? "banned" : "active" } : {}),
-      ...(plan !== "all" ? { plan: plan as "free" | "pro" | "business" } : {}),
-    };
+    const whereClause: Prisma.UserWhereInput = {};
+    if (q) {
+      whereClause.OR = [
+        { name: { contains: q } },
+        { email: { contains: q } },
+        { username: { contains: q } },
+      ];
+    }
+    if (status !== "all") {
+      whereClause.status = status;
+    }
+    if (plan !== "all") {
+      whereClause.plan = plan;
+    }
 
     let usersWithRole: Array<{
       id: string;
