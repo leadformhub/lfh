@@ -465,14 +465,14 @@ model WebhookLog {
 }
 
 model SuperAdminSmtpSetting {
-  id           Int      @id
-  host         String
+  id           Int      @id @db.TinyInt
+  host         String   @db.VarChar(255)
   port         Int
-  username     String
-  password     String
-  fromEmail    String   @map("from_email")
-  fromName     String?  @map("from_name")
-  supportEmail String?  @map("support_email")
+  username     String   @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  fromEmail    String   @map("from_email") @db.VarChar(255)
+  fromName     String?  @map("from_name") @db.VarChar(255)
+  supportEmail String?  @map("support_email") @db.VarChar(255)
   secure       Boolean  @default(false)
   updatedAt    DateTime @updatedAt @map("updated_at")
 
