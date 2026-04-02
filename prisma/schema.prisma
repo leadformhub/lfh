@@ -463,3 +463,18 @@ model WebhookLog {
   @@index([webhookId, status])
   @@map("webhook_logs")
 }
+
+model SuperAdminSmtpSetting {
+  id           Int      @id
+  host         String
+  port         Int
+  username     String
+  password     String
+  fromEmail    String   @map("from_email")
+  fromName     String?  @map("from_name")
+  supportEmail String?  @map("support_email")
+  secure       Boolean  @default(false)
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_smtp_settings")
+}
