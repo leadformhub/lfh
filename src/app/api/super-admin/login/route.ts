@@ -22,18 +22,35 @@ export async function POST(req: NextRequest) {
 
     const email = parsed.data.email.trim().toLowerCase();
     const password = parsed.data.password;
-    const superAdmin = await prisma.user.findFirst({
-      where: {
-        email,
-        username: "superadmin",
-        authProvider: "email",
-        status: "active",
-      },
-      select: {
-        email: true,
-        password: true,
-      },
-    });
+    let superAdmin: { email: string; password: string } | null = null;
+    try {
+      superAdmin = await prisma.user.findFirst({
+        where: {
+          email,
+          role: "super_admin",
+          authProvider: "email",
+          status: "active",
+        },
+        select: {
+          email: true,
+          password: true,
+        },
+      });
+    } catch {
+      // Backward compatibility before role migration is applied.
+      superAdmin = await prisma.user.findFirst({
+        where: {
+          email,
+          username: "superadmin",
+          authProvider: "email",
+          status: "active",
+        },
+        select: {
+          email: true,
+          password: true,
+        },
+      });
+    }
     if (!superAdmin || superAdmin.password !== password) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }

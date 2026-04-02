@@ -3,7 +3,19 @@
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type NavItem = "dashboard" | "tickets" | "setting";
+type NavItem = "dashboard" | "users" | "tickets" | "setting";
+
+type ManagedUser = {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  plan: "free" | "pro" | "business";
+  status: "active" | "banned";
+  createdAt: string;
+  updatedAt: string;
+  isProtectedSuperAdmin?: boolean;
+};
 
 type TicketRow = {
   id: string;
@@ -74,6 +86,20 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [ticketStatusFilter, setTicketStatusFilter] = useState<
     "all" | "open" | "in_progress" | "resolved"
   >("all");
+  const [users, setUsers] = useState<ManagedUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
+  const [usersSuccess, setUsersSuccess] = useState<string | null>(null);
+  const [userSearch, setUserSearch] = useState("");
+  const [userStatusFilter, setUserStatusFilter] = useState<"all" | "active" | "banned">("all");
+  const [userPlanFilter, setUserPlanFilter] = useState<"all" | "free" | "pro" | "business">("all");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [savingUser, setSavingUser] = useState(false);
+  const [editingUserName, setEditingUserName] = useState("");
+  const [editingUserUsername, setEditingUserUsername] = useState("");
+  const [editingUserEmail, setEditingUserEmail] = useState("");
+  const [editingUserPlan, setEditingUserPlan] = useState<ManagedUser["plan"]>("free");
+  const [editingUserStatus, setEditingUserStatus] = useState<ManagedUser["status"]>("active");
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -119,6 +145,12 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
     void fetchTickets();
   }, [activeItem]);
 
+  useEffect(() => {
+    if (activeItem !== "users") return;
+    void fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeItem, userStatusFilter, userPlanFilter]);
+
   async function fetchTickets() {
     setTicketsLoading(true);
     setTicketsError(null);
@@ -134,6 +166,108 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
       setTicketsError("Something went wrong while loading tickets.");
     } finally {
       setTicketsLoading(false);
+    }
+  }
+
+  async function fetchUsers(
+    searchValue = userSearch,
+    statusValue = userStatusFilter,
+    planValue = userPlanFilter
+  ) {
+    setUsersLoading(true);
+    setUsersError(null);
+    try {
+      const params = new URLSearchParams();
+      if (searchValue.trim()) params.set("q", searchValue.trim());
+      params.set("status", statusValue);
+      params.set("plan", planValue);
+
+      const res = await fetch(`/api/super-admin/users?${params.toString()}`, { method: "GET" });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsersError(data.error || "Failed to load users.");
+        return;
+      }
+      setUsers(data.users || []);
+    } catch {
+      setUsersError("Something went wrong while loading users.");
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  function startEditingUser(user: ManagedUser) {
+    if (user.isProtectedSuperAdmin) {
+      setUsersError("Super admin account is protected and cannot be edited here.");
+      setUsersSuccess(null);
+      return;
+    }
+    setSelectedUserId(user.id);
+    setEditingUserName(user.name);
+    setEditingUserUsername(user.username);
+    setEditingUserEmail(user.email);
+    setEditingUserPlan(user.plan);
+    setEditingUserStatus(user.status);
+    setUsersError(null);
+    setUsersSuccess(null);
+  }
+
+  async function saveUserChanges() {
+    if (!selectedUserId) return;
+    setSavingUser(true);
+    setUsersError(null);
+    setUsersSuccess(null);
+    try {
+      const res = await fetch(`/api/super-admin/users/${selectedUserId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editingUserName.trim(),
+          username: editingUserUsername.trim(),
+          email: editingUserEmail.trim(),
+          plan: editingUserPlan,
+          status: editingUserStatus,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsersError(data.error || "Failed to update user.");
+        return;
+      }
+      setUsersSuccess(data.message || "User updated.");
+      setSelectedUserId(null);
+      await fetchUsers();
+    } catch {
+      setUsersError("Something went wrong while updating user.");
+    } finally {
+      setSavingUser(false);
+    }
+  }
+
+  async function toggleBanUser(user: ManagedUser) {
+    if (user.isProtectedSuperAdmin) {
+      setUsersError("Super admin account is protected and cannot be banned.");
+      setUsersSuccess(null);
+      return;
+    }
+    setUsersError(null);
+    setUsersSuccess(null);
+    try {
+      const nextStatus: ManagedUser["status"] = user.status === "active" ? "banned" : "active";
+      const res = await fetch(`/api/super-admin/users/${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsersError(data.error || "Failed to update user status.");
+        return;
+      }
+      setUsersSuccess(`User ${nextStatus === "banned" ? "banned" : "unbanned"} successfully.`);
+      await fetchUsers();
+    } catch {
+      setUsersError("Something went wrong while updating user status.");
     }
   }
 
@@ -371,6 +505,15 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
           </button>
           <button
             type="button"
+            onClick={() => setActiveItem("users")}
+            className={`mt-2 w-full rounded-md px-3 py-2 text-left text-sm font-medium transition ${
+              activeItem === "users" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            Users
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveItem("tickets")}
             className={`mt-2 w-full rounded-md px-3 py-2 text-left text-sm font-medium transition ${
               activeItem === "tickets"
@@ -398,6 +541,8 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
             <p className="text-base font-semibold text-gray-900">
               {activeItem === "dashboard"
                 ? "Dashboard"
+                : activeItem === "users"
+                ? "Users"
                 : activeItem === "tickets"
                 ? "Tickets"
                 : "Setting"}
@@ -601,6 +746,206 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                     ) : null}
                   </form>
                 </div>
+              </div>
+            ) : null}
+            {activeItem === "users" ? (
+              <div className="space-y-5">
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                    <input
+                      type="text"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      placeholder="Search by name, email, username"
+                      className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none md:col-span-2"
+                    />
+                    <select
+                      value={userStatusFilter}
+                      onChange={(e) => setUserStatusFilter(e.target.value as "all" | "active" | "banned")}
+                      className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="banned">Banned</option>
+                    </select>
+                    <select
+                      value={userPlanFilter}
+                      onChange={(e) => setUserPlanFilter(e.target.value as "all" | "free" | "pro" | "business")}
+                      className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                    >
+                      <option value="all">All Plans</option>
+                      <option value="free">Free</option>
+                      <option value="pro">Pro</option>
+                      <option value="business">Business</option>
+                    </select>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={fetchUsers}
+                      className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black"
+                    >
+                      Search
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserSearch("");
+                        setUserStatusFilter("all");
+                        setUserPlanFilter("all");
+                        void fetchUsers("", "all", "all");
+                      }}
+                      className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                {usersError ? (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{usersError}</div>
+                ) : null}
+                {usersSuccess ? (
+                  <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">{usersSuccess}</div>
+                ) : null}
+
+                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                  {usersLoading ? (
+                    <div className="p-8 text-sm text-gray-600">Loading users...</div>
+                  ) : users.length === 0 ? (
+                    <div className="p-8 text-sm text-gray-600">No users found.</div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Name</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Username</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Email</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Plan</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Created</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 bg-white">
+                          {users.map((user) => (
+                            <tr key={user.id} className="hover:bg-gray-50/80">
+                              <td className="px-4 py-3 text-sm text-gray-900">{user.name}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{user.username}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{user.email}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">
+                                {user.isProtectedSuperAdmin ? "N/A (Super Admin)" : user.plan}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                    user.status === "active"
+                                      ? "border border-green-200 bg-green-50 text-green-700"
+                                      : "border border-red-200 bg-red-50 text-red-700"
+                                  }`}
+                                >
+                                  {user.status}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{formatDate(user.createdAt)}</td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => startEditingUser(user)}
+                                    disabled={Boolean(user.isProtectedSuperAdmin)}
+                                    className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleBanUser(user)}
+                                    disabled={Boolean(user.isProtectedSuperAdmin)}
+                                    className={`rounded-md px-3 py-1.5 text-xs font-medium text-white ${
+                                      user.status === "active" ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"
+                                    }`}
+                                  >
+                                    {user.status === "active" ? "Ban" : "Unban"}
+                                  </button>
+                                  {user.isProtectedSuperAdmin ? (
+                                    <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[11px] font-medium text-indigo-700">
+                                      Protected
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+
+                {selectedUserId ? (
+                  <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <h3 className="text-base font-semibold text-gray-900">Edit User</h3>
+                    <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                      <input
+                        type="text"
+                        value={editingUserName}
+                        onChange={(e) => setEditingUserName(e.target.value)}
+                        placeholder="Full name"
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                      <input
+                        type="text"
+                        value={editingUserUsername}
+                        onChange={(e) => setEditingUserUsername(e.target.value)}
+                        placeholder="Username"
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                      <input
+                        type="email"
+                        value={editingUserEmail}
+                        onChange={(e) => setEditingUserEmail(e.target.value)}
+                        placeholder="Email address"
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                      <select
+                        value={editingUserPlan}
+                        onChange={(e) => setEditingUserPlan(e.target.value as ManagedUser["plan"])}
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      >
+                        <option value="free">Free</option>
+                        <option value="pro">Pro</option>
+                        <option value="business">Business</option>
+                      </select>
+                      <select
+                        value={editingUserStatus}
+                        onChange={(e) => setEditingUserStatus(e.target.value as ManagedUser["status"])}
+                        className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      >
+                        <option value="active">Active</option>
+                        <option value="banned">Banned</option>
+                      </select>
+                    </div>
+                    <div className="mt-4 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={saveUserChanges}
+                        disabled={savingUser}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {savingUser ? "Saving..." : "Save User"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedUserId(null)}
+                        className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ) : null}
             {activeItem === "tickets" ? (

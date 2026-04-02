@@ -21,6 +21,11 @@ enum UserStatus {
   banned
 }
 
+enum UserRole {
+  user
+  super_admin
+}
+
 enum TeamMemberRole {
   admin
   sales
@@ -41,6 +46,7 @@ model User {
   email             String    @unique
   password          String
   authProvider      String?   @map("auth_provider") // 'google' | 'email'; null for legacy
+  role              UserRole  @default(user)
   plan              UserPlan  @default(free)
   planValidUntil    DateTime? @map("plan_valid_until")
   status            UserStatus @default(active)
