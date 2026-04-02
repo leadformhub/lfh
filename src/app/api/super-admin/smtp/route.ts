@@ -13,6 +13,7 @@ const saveSchema = z.object({
   password: z.string().min(1),
   fromEmail: z.string().email(),
   fromName: z.string().optional(),
+  supportEmail: z.union([z.string().email(), z.literal("")]).optional(),
   secure: z.boolean().optional(),
 });
 

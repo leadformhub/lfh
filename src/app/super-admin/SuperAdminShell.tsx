@@ -15,6 +15,7 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [smtpPassword, setSmtpPassword] = useState("");
   const [smtpFromEmail, setSmtpFromEmail] = useState("");
   const [smtpFromName, setSmtpFromName] = useState("");
+  const [smtpSupportEmail, setSmtpSupportEmail] = useState("");
   const [smtpSecure, setSmtpSecure] = useState(false);
   const [smtpTestToEmail, setSmtpTestToEmail] = useState("");
   const [smtpTestLoading, setSmtpTestLoading] = useState(false);
@@ -54,6 +55,7 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
         setSmtpPassword(data.smtp.password || "");
         setSmtpFromEmail(data.smtp.fromEmail || "");
         setSmtpFromName(data.smtp.fromName || "");
+        setSmtpSupportEmail(data.smtp.supportEmail || "");
         setSmtpSecure(Boolean(data.smtp.secure));
       } catch {
         // Keep UI usable even if saved settings fail to load.
@@ -94,6 +96,7 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
           password: smtpPassword,
           fromEmail: smtpFromEmail.trim(),
           fromName: smtpFromName.trim() || "",
+          supportEmail: smtpSupportEmail.trim() || "",
           secure: smtpSecure,
         }),
       });
@@ -295,6 +298,19 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                         value={smtpFromName}
                         onChange={(e) => setSmtpFromName(e.target.value)}
                         placeholder="LeadFormHub"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Support Email
+                      </label>
+                      <input
+                        type="email"
+                        value={smtpSupportEmail}
+                        onChange={(e) => setSmtpSupportEmail(e.target.value)}
+                        placeholder="support@example.com"
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
                       />
                     </div>
