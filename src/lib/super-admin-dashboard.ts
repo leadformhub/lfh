@@ -1,5 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, UserPlan } from "@prisma/client";
 import { prisma } from "@/lib/db";
+
+/** Typed for Prisma `plan: { in: ... }` (plain string[] is inferred as string[] and fails `tsc`). */
+const PREMIUM_PLANS: UserPlan[] = [UserPlan.pro, UserPlan.business];
 
 export type DashboardDetailType =
   | "today_forms"
@@ -61,7 +64,7 @@ export async function getSuperAdminDashboardStats(): Promise<SuperAdminDashboard
       where: { ...tenant, plan: "free" },
     }),
     prisma.user.count({
-      where: { ...tenant, plan: { in: ["pro", "business"] } },
+      where: { ...tenant, plan: { in: PREMIUM_PLANS } },
     }),
   ]);
 
@@ -185,7 +188,7 @@ export async function getSuperAdminDashboardDetails(type: DashboardDetailType): 
     };
   }
 
-  const where = { ...tenant, plan: { in: ["pro", "business"] } };
+  const where = { ...tenant, plan: { in: PREMIUM_PLANS } };
   const [totalCount, users] = await Promise.all([
     prisma.user.count({ where }),
     prisma.user.findMany({
