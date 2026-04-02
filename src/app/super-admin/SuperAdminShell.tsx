@@ -65,6 +65,9 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [recaptchaSiteKey, setRecaptchaSiteKey] = useState("");
   const [recaptchaSecretKey, setRecaptchaSecretKey] = useState("");
   const [recaptchaEnabled, setRecaptchaEnabled] = useState(true);
+  const [googleClientId, setGoogleClientId] = useState("");
+  const [googleClientSecret, setGoogleClientSecret] = useState("");
+  const [googleEnabled, setGoogleEnabled] = useState(true);
   const [smtpTestToEmail, setSmtpTestToEmail] = useState("");
   const [smtpTestLoading, setSmtpTestLoading] = useState(false);
   const [smtpTestMessage, setSmtpTestMessage] = useState<{
@@ -78,6 +81,11 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   } | null>(null);
   const [recaptchaSaveLoading, setRecaptchaSaveLoading] = useState(false);
   const [recaptchaSaveMessage, setRecaptchaSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [googleSaveLoading, setGoogleSaveLoading] = useState(false);
+  const [googleSaveMessage, setGoogleSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -126,12 +134,14 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
 
     async function loadSettings() {
       try {
-        const [smtpRes, recaptchaRes] = await Promise.all([
+        const [smtpRes, recaptchaRes, googleRes] = await Promise.all([
           fetch("/api/super-admin/smtp", { method: "GET" }),
           fetch("/api/super-admin/recaptcha", { method: "GET" }),
+          fetch("/api/super-admin/google", { method: "GET" }),
         ]);
         const smtpData = await smtpRes.json().catch(() => ({}));
         const recaptchaData = await recaptchaRes.json().catch(() => ({}));
+        const googleData = await googleRes.json().catch(() => ({}));
         if (cancelled) return;
         if (smtpRes.ok && smtpData.smtp) {
           setSmtpHost(smtpData.smtp.host || "");
@@ -147,6 +157,11 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
           setRecaptchaSiteKey(recaptchaData.recaptcha.siteKey || "");
           setRecaptchaSecretKey(recaptchaData.recaptcha.secretKey || "");
           setRecaptchaEnabled(recaptchaData.recaptcha.enabled !== false);
+        }
+        if (googleRes.ok && googleData.google) {
+          setGoogleClientId(googleData.google.clientId || "");
+          setGoogleClientSecret(googleData.google.clientSecret || "");
+          setGoogleEnabled(googleData.google.enabled !== false);
         }
       } catch {
         // Keep UI usable even if saved settings fail to load.
@@ -540,6 +555,40 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
     }
   }
 
+  async function handleSaveGoogleSettings() {
+    setGoogleSaveMessage(null);
+    if (!googleClientId.trim() || !googleClientSecret.trim()) {
+      setGoogleSaveMessage({
+        type: "error",
+        text: "Please fill both client ID and client secret before saving.",
+      });
+      return;
+    }
+
+    setGoogleSaveLoading(true);
+    try {
+      const res = await fetch("/api/super-admin/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: googleClientId.trim(),
+          clientSecret: googleClientSecret.trim(),
+          enabled: googleEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setGoogleSaveMessage({ type: "error", text: data.error || "Failed to save Google OAuth settings." });
+        return;
+      }
+      setGoogleSaveMessage({ type: "success", text: data.message || "Google OAuth settings saved." });
+    } catch {
+      setGoogleSaveMessage({ type: "error", text: "Something went wrong while saving Google OAuth settings." });
+    } finally {
+      setGoogleSaveLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl">
@@ -868,6 +917,79 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                         }`}
                       >
                         {recaptchaSaveMessage.text}
+                      </div>
+                    ) : null}
+                  </form>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Settings Item 3</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    Google OAuth Configuration
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Save Google OAuth client credentials for Login/Signup with Google.
+                  </p>
+
+                  <form className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Client ID
+                      </label>
+                      <input
+                        type="text"
+                        value={googleClientId}
+                        onChange={(e) => setGoogleClientId(e.target.value)}
+                        placeholder="Google OAuth Client ID"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Client Secret
+                      </label>
+                      <input
+                        type="password"
+                        value={googleClientSecret}
+                        onChange={(e) => setGoogleClientSecret(e.target.value)}
+                        placeholder="Google OAuth Client Secret"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-800">
+                        <input
+                          type="checkbox"
+                          checked={googleEnabled}
+                          onChange={(e) => setGoogleEnabled(e.target.checked)}
+                          className="size-4 rounded border-gray-300"
+                        />
+                        Enable Google sign-in globally
+                      </label>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveGoogleSettings}
+                        disabled={googleSaveLoading}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                      >
+                        {googleSaveLoading ? "Saving..." : "Save Google OAuth Settings"}
+                      </button>
+                    </div>
+
+                    {googleSaveMessage ? (
+                      <div
+                        className={`md:col-span-2 rounded-md px-3 py-2 text-sm ${
+                          googleSaveMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {googleSaveMessage.text}
                       </div>
                     ) : null}
                   </form>

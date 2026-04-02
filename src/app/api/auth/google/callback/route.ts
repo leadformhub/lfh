@@ -5,6 +5,7 @@ import { sendWelcomeEmail } from "@/lib/email";
 import { createToken } from "@/lib/jwt";
 import { getSessionCookieName, getSessionMaxAge } from "@/lib/jwt";
 import { prisma } from "@/lib/db";
+import { getSuperAdminGoogleSettings } from "@/lib/super-admin-google-store";
 
 const STATE_COOKIE = "leadformhub_google_state";
 const FROM_COOKIE = "leadformhub_google_from";
@@ -16,16 +17,17 @@ function getBaseUrl(req: NextRequest): string {
 }
 
 export async function GET(req: NextRequest) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const googleSettings = await getSuperAdminGoogleSettings();
   const baseUrl = getBaseUrl(req);
   const cookieStore = await cookies();
   const fromSignup = cookieStore.get(FROM_COOKIE)?.value === "signup";
   const errorPath = fromSignup ? "/signup" : "/login";
 
-  if (!clientId || !clientSecret) {
+  if (!googleSettings?.enabled || !googleSettings.clientId || !googleSettings.clientSecret) {
     return NextResponse.redirect(new URL(`${errorPath}?error=google_not_configured`, baseUrl));
   }
+  const clientId = googleSettings.clientId;
+  const clientSecret = googleSettings.clientSecret;
 
   const { searchParams } = req.nextUrl;
   const code = searchParams.get("code");

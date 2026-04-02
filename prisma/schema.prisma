@@ -494,3 +494,13 @@ model SuperAdminRecaptchaSetting {
 
   @@map("super_admin_recaptcha_settings")
 }
+
+model SuperAdminGoogleSetting {
+  id           Int      @id @db.TinyInt
+  clientId     String   @map("client_id") @db.VarChar(255)
+  clientSecret String   @map("client_secret") @db.VarChar(255)
+  enabled      Boolean  @default(true)
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_google_settings")
+}

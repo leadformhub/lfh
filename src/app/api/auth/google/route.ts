@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
+import { getSuperAdminGoogleSettings } from "@/lib/super-admin-google-store";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const SCOPES = ["openid", "email", "profile"].join(" ");
@@ -13,10 +14,11 @@ function getBaseUrl(req: NextRequest): string {
 }
 
 export async function GET(req: NextRequest) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) {
+  const googleSettings = await getSuperAdminGoogleSettings();
+  if (!googleSettings?.enabled || !googleSettings.clientId || !googleSettings.clientSecret) {
     return NextResponse.json({ error: "Google sign-in is not configured" }, { status: 503 });
   }
+  const clientId = googleSettings.clientId;
   const baseUrl = getBaseUrl(req);
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
   const state = nanoid(32);
