@@ -272,7 +272,17 @@ export async function findOrCreateUserByGoogle(profile: GoogleProfile): Promise<
   const existing = await prisma.user.findUnique({
     where: { email, status: "active" },
   });
-  if (existing) return { user: existing, isNewUser: false };
+  if (existing) {
+    // Google identity proves mailbox ownership, so ensure existing account is verified.
+    if (!existing.emailVerifiedAt) {
+      const updated = await prisma.user.update({
+        where: { id: existing.id },
+        data: { emailVerifiedAt: new Date() },
+      });
+      return { user: updated, isNewUser: false };
+    }
+    return { user: existing, isNewUser: false };
+  }
 
   const baseUsername = (email.replace(/@.*/, "").replace(/[^a-z0-9_-]/gi, "") || "user").toLowerCase().slice(0, 25);
   let username = baseUsername;
