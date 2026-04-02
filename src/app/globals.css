@@ -837,3 +837,10 @@ p + p {
   z-index: 2147483647 !important;
   visibility: visible !important;
 }
+
+/* Dashboard pages: hide reCAPTCHA badge to avoid overlap with app UI */
+body.hide-recaptcha-badge .grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

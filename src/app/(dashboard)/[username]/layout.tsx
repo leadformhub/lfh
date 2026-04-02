@@ -6,6 +6,7 @@ import { DashboardLayoutChrome } from "./DashboardLayoutChrome";
 import { DashboardSidebarProvider } from "@/components/DashboardSidebarContext";
 import { UpgradeModalProvider } from "@/components/UpgradeModalProvider";
 import { ToastProvider } from "@/components/ui/Toast";
+import { DashboardRecaptchaVisibility } from "@/components/DashboardRecaptchaVisibility";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -31,6 +32,7 @@ export default async function DashboardLayout({
   const currentPlan = minimal.plan ?? "free";
   return (
     <UpgradeModalProvider currentPlan={currentPlan} razorpayKeyId={razorpayKeyId}>
+      <DashboardRecaptchaVisibility />
       <DashboardSidebarProvider>
         <ToastProvider>
           <DashboardLayoutChrome layoutUsername={username} razorpayKeyId={razorpayKeyId}>
