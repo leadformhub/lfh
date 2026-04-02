@@ -35,6 +35,7 @@ export default function RaiseRequestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [lastTicketNumber, setLastTicketNumber] = useState<string | null>(null);
+  const [deliveryWarning, setDeliveryWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [thread, setThread] = useState<ThreadData | null>(null);
@@ -139,6 +140,7 @@ export default function RaiseRequestPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setDeliveryWarning(null);
     setSubmitting(true);
     try {
       const res = await fetch("/api/support-requests", {
@@ -154,6 +156,9 @@ export default function RaiseRequestPage() {
       if (!res.ok) throw new Error(data.error ?? "Failed to submit request");
       setSubmitted(true);
       setLastTicketNumber(data.request?.ticketNumber ?? null);
+      if (data?.email?.supportNotified === false) {
+        setDeliveryWarning("Your ticket was saved, but support notification email failed. Our team may not see this immediately.");
+      }
       setFormData({ category: "general", subject: "", message: "" });
       await fetchRequests();
       router.refresh();
@@ -217,6 +222,11 @@ export default function RaiseRequestPage() {
               )}
               <p className="mt-1 text-emerald-700">Please quote this ticket number when contacting support. Replies from our team will be sent to your account email—check that inbox (and spam folder).</p>
               <p className="mt-1 text-emerald-700">You can submit another below or check the list.</p>
+              {deliveryWarning && (
+                <p className="mt-2 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
+                  {deliveryWarning}
+                </p>
+              )}
             </div>
           )}
           {error && (
