@@ -52,12 +52,13 @@ export async function POST(req: NextRequest) {
 
         // Notify support staff by email (if SUPPORT_EMAIL is set). Reply-To is set to user's email so support's reply goes to the user.
         const supportEmail = process.env.SUPPORT_EMAIL || process.env.MAIL_SUPPORT_TO;
+        let supportNotificationSent = false;
         if (supportEmail && supportEmail.trim()) {
           const user = await prisma.user.findUnique({
             where: { id: session.userId },
             select: { name: true },
           });
-          await sendSupportRequestNotification(supportEmail.trim(), {
+          supportNotificationSent = await sendSupportRequestNotification(supportEmail.trim(), {
             ticketNumber: ticketDisplay,
             userName: user?.name ?? session.username,
             userEmail: session.email,
@@ -67,14 +68,28 @@ export async function POST(req: NextRequest) {
             message,
             requestId: supportRequest.id,
           });
+          if (!supportNotificationSent) {
+            console.error("[api/support-requests] Failed to notify support inbox for ticket", {
+              ticketNumber: ticketDisplay,
+              supportEmail: supportEmail.trim(),
+              requestId: supportRequest.id,
+            });
+          }
         }
 
         // Confirm to the user: ticket number + where to see replies (their inbox). Reply-To support so user can reply to add more info.
-        await sendTicketConfirmationToUser(session.email, {
+        const userConfirmationSent = await sendTicketConfirmationToUser(session.email, {
           ticketNumber: ticketDisplay,
           subject,
           categoryLabel,
         });
+        if (!userConfirmationSent) {
+          console.error("[api/support-requests] Failed to send user confirmation email for ticket", {
+            ticketNumber: ticketDisplay,
+            userEmail: session.email,
+            requestId: supportRequest.id,
+          });
+        }
 
         return NextResponse.json({
           request: {
@@ -84,6 +99,10 @@ export async function POST(req: NextRequest) {
             subject: supportRequest.subject,
             status: supportRequest.status,
             createdAt: supportRequest.createdAt,
+          },
+          email: {
+            supportNotified: supportNotificationSent,
+            userConfirmationSent,
           },
         });
       } catch (createErr: unknown) {

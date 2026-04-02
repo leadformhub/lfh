@@ -893,27 +893,55 @@ async function sendEmail(
   html: string,
   options?: { replyTo?: string }
 ): Promise<boolean> {
-  const transport = getTransport();
-  if (!transport) {
-    if (process.env.NODE_ENV === "development") {
-      console.log("[DEV] Email would be sent to", to, subject, options?.replyTo ? `replyTo=${options.replyTo}` : "");
-      return true;
-    }
-    console.error("[email] SMTP not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD). Email not sent.");
-    return false;
-  }
   const { address, name } = getFrom();
-  try {
-    await transport.sendMail({
-      from: `${name} <${address}>`,
-      to,
-      subject,
-      html,
-      ...(options?.replyTo ? { replyTo: options.replyTo } : {}),
-    });
-    return true;
-  } catch (e) {
-    console.error("Email send error:", e);
-    return false;
+  const maxAttempts = 2;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const transport = getTransport();
+    if (!transport) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[DEV] Email would be sent to", to, subject, options?.replyTo ? `replyTo=${options.replyTo}` : "");
+        return true;
+      }
+      console.error("[email] SMTP not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD). Email not sent.", {
+        to,
+        subject,
+      });
+      return false;
+    }
+
+    try {
+      await transport.sendMail({
+        from: `${name} <${address}>`,
+        to,
+        subject,
+        html,
+        ...(options?.replyTo ? { replyTo: options.replyTo } : {}),
+      });
+      return true;
+    } catch (e: unknown) {
+      const maybeError = e as { code?: string; responseCode?: number; response?: string; command?: string; message?: string };
+      const isTransientTls =
+        maybeError?.code === "ETLS" ||
+        maybeError?.code === "ECONNECTION" ||
+        maybeError?.code === "ETIMEDOUT" ||
+        (maybeError?.command === "STARTTLS" && maybeError?.responseCode === 454);
+
+      console.error(`[email] Send failed (attempt ${attempt}/${maxAttempts})`, {
+        to,
+        subject,
+        replyTo: options?.replyTo ?? null,
+        code: maybeError?.code ?? null,
+        responseCode: maybeError?.responseCode ?? null,
+        command: maybeError?.command ?? null,
+        response: maybeError?.response ?? null,
+        message: maybeError?.message ?? String(e),
+      });
+
+      if (!isTransientTls || attempt >= maxAttempts) {
+        return false;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 750));
+    }
   }
+  return false;
 }
