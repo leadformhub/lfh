@@ -29,18 +29,8 @@ export async function PATCH(
   if (!userId) return NextResponse.json({ error: "Missing user id." }, { status: 400 });
 
   try {
-    let existingUser:
-      | {
-          email: string;
-          username: string;
-          role: "user" | "super_admin";
-        }
-      | {
-          email: string;
-          username: string;
-          role: "user";
-        }
-      | null = null;
+    let existingUser: { email: string; username: string; role: "user" | "super_admin" } | null =
+      null;
     try {
       existingUser = await prisma.user.findUnique({
         where: { id: userId },
@@ -50,11 +40,11 @@ export async function PATCH(
       if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2022") {
         throw error;
       }
-      existingUser = await prisma.user.findUnique({
+      const fallbackUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { email: true, username: true },
       });
-      existingUser = existingUser ? { ...existingUser, role: "user" } : null;
+      existingUser = fallbackUser ? { ...fallbackUser, role: "user" } : null;
     }
     if (!existingUser) return NextResponse.json({ error: "User not found." }, { status: 404 });
 
