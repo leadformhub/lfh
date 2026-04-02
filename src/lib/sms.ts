@@ -3,9 +3,11 @@
  * Docs: https://docs.fast2sms.com/reference (Quick SMS API)
  * Project doc: docs/FAST2SMS-INTEGRATION.md
  *
- * Env: FAST2SMS_QUICK_API_KEY (required for mobile OTP).
+ * Key source: Super Admin -> SMS settings.
  * If Fast2SMS returns a verification error, complete website verification in their Quick SMS section.
  */
+
+import { getSuperAdminSmsSettings } from "@/lib/super-admin-sms-store";
 
 const FAST2SMS_URL = "https://www.fast2sms.com/dev/bulkV2";
 
@@ -32,9 +34,20 @@ function getNormalizedPhone(phone: string): string | null {
  * Send OTP via Fast2SMS Quick SMS (route "q"). No DLT; custom message.
  */
 export async function sendOtpViaFast2SMS(phone: string, otp: string): Promise<SendOtpResult> {
-  const apiKey = process.env.FAST2SMS_QUICK_API_KEY?.trim();
+  let smsSettings: Awaited<ReturnType<typeof getSuperAdminSmsSettings>>;
+  try {
+    smsSettings = await getSuperAdminSmsSettings();
+  } catch (error) {
+    console.error("[Fast2SMS] Failed to load super admin SMS settings", error);
+    return { success: false, message: "SMS not configured" };
+  }
+  const apiKey = smsSettings?.fast2smsQuickApiKey?.trim();
+  const smsEnabled = smsSettings?.enabled !== false;
+  if (!smsEnabled) {
+    return { success: false, message: "SMS service is disabled by super admin" };
+  }
   if (!apiKey) {
-    console.error("[Fast2SMS] FAST2SMS_QUICK_API_KEY not configured");
+    console.error("[Fast2SMS] FAST2SMS_QUICK_API_KEY not configured in super admin settings");
     return { success: false, message: "SMS not configured" };
   }
 

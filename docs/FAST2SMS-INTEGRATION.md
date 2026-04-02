@@ -14,9 +14,10 @@ LeadFormHub sends mobile OTP via [Fast2SMS](https://www.fast2sms.com) **Quick SM
 - **Headers:** `Content-Type: application/json`, `Authorization: <API_KEY>`  
 - **Body:** `{ route: "q", message: "...", numbers: "9876543210", flash: "0" }`
 
-## Env variable
+## Credentials source
 
-- **`FAST2SMS_QUICK_API_KEY`** – Get this from Fast2SMS dashboard → Quick SMS section.
+- Configure in **Super Admin -> Setting -> Fast2SMS Configuration**.
+- Field: **Fast2SMS Quick API Key** (from Fast2SMS dashboard -> Quick SMS section).
 
 ## If you see a verification error
 

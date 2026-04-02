@@ -504,3 +504,12 @@ model SuperAdminGoogleSetting {
 
   @@map("super_admin_google_settings")
 }
+
+model SuperAdminSmsSetting {
+  id                  Int      @id @db.TinyInt
+  fast2smsQuickApiKey String   @map("fast2sms_quick_api_key") @db.VarChar(255)
+  enabled             Boolean  @default(true)
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_sms_settings")
+}

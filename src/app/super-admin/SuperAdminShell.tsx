@@ -68,6 +68,8 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   const [googleClientId, setGoogleClientId] = useState("");
   const [googleClientSecret, setGoogleClientSecret] = useState("");
   const [googleEnabled, setGoogleEnabled] = useState(true);
+  const [fast2smsQuickApiKey, setFast2smsQuickApiKey] = useState("");
+  const [smsEnabled, setSmsEnabled] = useState(true);
   const [smtpTestToEmail, setSmtpTestToEmail] = useState("");
   const [smtpTestLoading, setSmtpTestLoading] = useState(false);
   const [smtpTestMessage, setSmtpTestMessage] = useState<{
@@ -86,6 +88,11 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
   } | null>(null);
   const [googleSaveLoading, setGoogleSaveLoading] = useState(false);
   const [googleSaveMessage, setGoogleSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [smsSaveLoading, setSmsSaveLoading] = useState(false);
+  const [smsSaveMessage, setSmsSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -134,14 +141,16 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
 
     async function loadSettings() {
       try {
-        const [smtpRes, recaptchaRes, googleRes] = await Promise.all([
+        const [smtpRes, recaptchaRes, googleRes, smsRes] = await Promise.all([
           fetch("/api/super-admin/smtp", { method: "GET" }),
           fetch("/api/super-admin/recaptcha", { method: "GET" }),
           fetch("/api/super-admin/google", { method: "GET" }),
+          fetch("/api/super-admin/sms", { method: "GET" }),
         ]);
         const smtpData = await smtpRes.json().catch(() => ({}));
         const recaptchaData = await recaptchaRes.json().catch(() => ({}));
         const googleData = await googleRes.json().catch(() => ({}));
+        const smsData = await smsRes.json().catch(() => ({}));
         if (cancelled) return;
         if (smtpRes.ok && smtpData.smtp) {
           setSmtpHost(smtpData.smtp.host || "");
@@ -162,6 +171,10 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
           setGoogleClientId(googleData.google.clientId || "");
           setGoogleClientSecret(googleData.google.clientSecret || "");
           setGoogleEnabled(googleData.google.enabled !== false);
+        }
+        if (smsRes.ok && smsData.sms) {
+          setFast2smsQuickApiKey(smsData.sms.fast2smsQuickApiKey || "");
+          setSmsEnabled(smsData.sms.enabled !== false);
         }
       } catch {
         // Keep UI usable even if saved settings fail to load.
@@ -589,6 +602,39 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
     }
   }
 
+  async function handleSaveSmsSettings() {
+    setSmsSaveMessage(null);
+    if (!fast2smsQuickApiKey.trim()) {
+      setSmsSaveMessage({
+        type: "error",
+        text: "Please enter Fast2SMS Quick API key before saving.",
+      });
+      return;
+    }
+
+    setSmsSaveLoading(true);
+    try {
+      const res = await fetch("/api/super-admin/sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fast2smsQuickApiKey: fast2smsQuickApiKey.trim(),
+          enabled: smsEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSmsSaveMessage({ type: "error", text: data.error || "Failed to save SMS settings." });
+        return;
+      }
+      setSmsSaveMessage({ type: "success", text: data.message || "SMS settings saved." });
+    } catch {
+      setSmsSaveMessage({ type: "error", text: "Something went wrong while saving SMS settings." });
+    } finally {
+      setSmsSaveLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl">
@@ -990,6 +1036,66 @@ export function SuperAdminShell({ usersCount }: { usersCount: number }) {
                         }`}
                       >
                         {googleSaveMessage.text}
+                      </div>
+                    ) : null}
+                  </form>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Settings Item 4</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    Fast2SMS Configuration
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Save Fast2SMS Quick API key for mobile OTP delivery across all forms.
+                  </p>
+
+                  <form className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="md:col-span-2">
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Fast2SMS Quick API Key
+                      </label>
+                      <input
+                        type="password"
+                        value={fast2smsQuickApiKey}
+                        onChange={(e) => setFast2smsQuickApiKey(e.target.value)}
+                        placeholder="Paste Fast2SMS Quick API key"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-800">
+                        <input
+                          type="checkbox"
+                          checked={smsEnabled}
+                          onChange={(e) => setSmsEnabled(e.target.checked)}
+                          className="size-4 rounded border-gray-300"
+                        />
+                        Enable mobile OTP SMS globally
+                      </label>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveSmsSettings}
+                        disabled={smsSaveLoading}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                      >
+                        {smsSaveLoading ? "Saving..." : "Save Fast2SMS Settings"}
+                      </button>
+                    </div>
+
+                    {smsSaveMessage ? (
+                      <div
+                        className={`md:col-span-2 rounded-md px-3 py-2 text-sm ${
+                          smsSaveMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {smsSaveMessage.text}
                       </div>
                     ) : null}
                   </form>
