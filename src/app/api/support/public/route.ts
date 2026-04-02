@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { isEmailConfigured, sendPublicSupportFormNotification } from "@/lib/email";
+import {
+  getConfiguredSupportEmail,
+  isEmailConfigured,
+  sendPublicSupportFormNotification,
+} from "@/lib/email";
 import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
 
 const bodySchema = z.object({
@@ -39,7 +43,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const supportEmail = process.env.SUPPORT_EMAIL?.trim();
+    const supportEmail = await getConfiguredSupportEmail();
     if (!supportEmail) {
       return NextResponse.json(
         { error: "Support is not configured. Please try again later." },
@@ -47,8 +51,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!isEmailConfigured()) {
-      console.error("[api/support/public] SUPPORT_EMAIL is set but SMTP is not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD).");
+    if (!(await isEmailConfigured())) {
+      console.error("[api/support/public] Support email is set but SMTP is not configured in Super Admin settings.");
       return NextResponse.json(
         { error: "Support email delivery is not configured. Please try again later." },
         { status: 503 }

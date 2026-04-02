@@ -1,11 +1,11 @@
 /**
  * Email sending via SMTP (Nodemailer).
- * Uses Laravel-style env: MAIL_MAILER, MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD,
- * MAIL_ENCRYPTION (tls|ssl), MAIL_FROM_ADDRESS, MAIL_FROM_NAME.
+ * SMTP/from/support settings are loaded from Super Admin saved configuration.
  */
 
 import nodemailer from "nodemailer";
 import { getBaseUrlForEmail } from "@/lib/app-url";
+import { getSuperAdminSmtpSettings } from "@/lib/super-admin-smtp-store";
 
 /** Shared email style: neutral gray palette, white card, no gradient bar, consistent footer. */
 const EMAIL_STYLE = {
@@ -25,32 +25,31 @@ const EMAIL_STYLE = {
   cardShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)",
 } as const;
 
-function getFrom() {
-  const address = process.env.MAIL_FROM_ADDRESS || "noreply@leadformhub.com";
-  const name = process.env.MAIL_FROM_NAME || "LeadFormHub";
-  return { address, name };
+async function getSavedEmailConfig() {
+  const settings = await getSuperAdminSmtpSettings();
+  if (!settings) return null;
+  if (!settings.host || !settings.username || !settings.password || !settings.fromEmail) return null;
+  return {
+    host: settings.host,
+    port: settings.port || 587,
+    secure: Boolean(settings.secure),
+    username: settings.username,
+    password: settings.password,
+    fromAddress: settings.fromEmail,
+    fromName: settings.fromName?.trim() || "LeadFormHub",
+    supportEmail: settings.supportEmail?.trim() || "",
+  };
 }
 
-function getTransport() {
-  if (process.env.MAIL_MAILER !== "smtp") return null;
-  const host = process.env.MAIL_HOST;
-  const username = process.env.MAIL_USERNAME;
-  const password = process.env.MAIL_PASSWORD;
-  if (!host || !username || !password) return null;
-  const port = process.env.MAIL_PORT;
-  const encryption = (process.env.MAIL_ENCRYPTION || "tls").toLowerCase();
-  const secure = encryption === "ssl";
-  return nodemailer.createTransport({
-    host,
-    port: port ? parseInt(port, 10) : 587,
-    secure,
-    auth: { user: username, pass: password.trim() },
-  });
+/** True if SMTP is configured from Super Admin settings. */
+export async function isEmailConfigured(): Promise<boolean> {
+  return (await getSavedEmailConfig()) !== null;
 }
 
-/** True if SMTP is configured (MAIL_MAILER=smtp and MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD set). */
-export function isEmailConfigured(): boolean {
-  return getTransport() !== null;
+/** Support email configured in Super Admin settings; empty when missing. */
+export async function getConfiguredSupportEmail(): Promise<string> {
+  const cfg = await getSavedEmailConfig();
+  return cfg?.supportEmail || "";
 }
 
 /**
@@ -583,7 +582,7 @@ export async function sendTicketConfirmationToUser(
   payload: { ticketNumber: string; subject: string; categoryLabel: string }
 ): Promise<boolean> {
   const subject = getTicketThreadSubject(payload.ticketNumber, payload.subject);
-  const supportEmail = process.env.SUPPORT_EMAIL || process.env.MAIL_SUPPORT_TO;
+  const supportEmail = await getConfiguredSupportEmail();
   const html = buildTicketConfirmationEmailHtml({
     ticketNumber: payload.ticketNumber,
     subject: payload.subject,
@@ -893,25 +892,30 @@ async function sendEmail(
   html: string,
   options?: { replyTo?: string }
 ): Promise<boolean> {
-  const { address, name } = getFrom();
+  const config = await getSavedEmailConfig();
   const maxAttempts = 2;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const transport = getTransport();
-    if (!transport) {
+    if (!config) {
       if (process.env.NODE_ENV === "development") {
         console.log("[DEV] Email would be sent to", to, subject, options?.replyTo ? `replyTo=${options.replyTo}` : "");
         return true;
       }
-      console.error("[email] SMTP not configured (MAIL_MAILER, MAIL_HOST, MAIL_USERNAME, MAIL_PASSWORD). Email not sent.", {
+      console.error("[email] SMTP not configured in Super Admin settings. Email not sent.", {
         to,
         subject,
       });
       return false;
     }
+    const transport = nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.secure,
+      auth: { user: config.username, pass: config.password.trim() },
+    });
 
     try {
       await transport.sendMail({
-        from: `${name} <${address}>`,
+        from: `${config.fromName} <${config.fromAddress}>`,
         to,
         subject,
         html,
