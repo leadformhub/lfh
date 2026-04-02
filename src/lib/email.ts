@@ -906,14 +906,16 @@ async function sendEmail(
       });
       return false;
     }
-    const transport = nodemailer.createTransport({
-      host: config.host,
-      port: config.port,
-      secure: config.secure,
-      auth: { user: config.username, pass: config.password.trim() },
-    });
+    const makeTransport = (secure: boolean) =>
+      nodemailer.createTransport({
+        host: config.host,
+        port: config.port,
+        secure,
+        auth: { user: config.username, pass: config.password.trim() },
+      });
 
     try {
+      const transport = makeTransport(config.secure);
       await transport.sendMail({
         from: `${config.fromName} <${config.fromAddress}>`,
         to,
@@ -924,6 +926,29 @@ async function sendEmail(
       return true;
     } catch (e: unknown) {
       const maybeError = e as { code?: string; responseCode?: number; response?: string; command?: string; message?: string };
+      const msg = (maybeError?.message || "").toLowerCase();
+      const isTlsVersionMismatch =
+        msg.includes("wrong version number") ||
+        msg.includes("ssl3_get_record") ||
+        msg.includes("tls_validate_record_header") ||
+        msg.includes("ssl routines");
+
+      if (isTlsVersionMismatch) {
+        try {
+          const fallbackTransport = makeTransport(!config.secure);
+          await fallbackTransport.sendMail({
+            from: `${config.fromName} <${config.fromAddress}>`,
+            to,
+            subject,
+            html,
+            ...(options?.replyTo ? { replyTo: options.replyTo } : {}),
+          });
+          return true;
+        } catch {
+          // Fall through to standard error logging below.
+        }
+      }
+
       const isTransientTls =
         maybeError?.code === "ETLS" ||
         maybeError?.code === "ECONNECTION" ||
