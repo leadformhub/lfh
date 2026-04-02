@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { sendSupportReplyToUser, sendUserReplyNotificationToSupport } from "@/lib/email";
+import {
+  getConfiguredSupportEmail,
+  sendSupportReplyToUser,
+  sendUserReplyNotificationToSupport,
+} from "@/lib/email";
 
 const postBodySchema = z.object({
   message: z.string().min(1).max(10000),
@@ -104,7 +108,7 @@ export async function POST(
     data: { lastActivityAt: new Date() },
   });
 
-  const supportEmail = process.env.SUPPORT_EMAIL || process.env.MAIL_SUPPORT_TO;
+  const supportEmail = await getConfiguredSupportEmail();
   if (supportEmail?.trim()) {
     const ticketDisplay = supportRequest.ticketNumber
       ? `#${supportRequest.ticketNumber}`

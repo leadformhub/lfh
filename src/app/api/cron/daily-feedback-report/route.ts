@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { sendDailyFeedbackReport } from "@/lib/email";
+import { getConfiguredSupportEmail, sendDailyFeedbackReport } from "@/lib/email";
 
 /**
- * Send daily feedback report (latest 10 entries) to SUPPORT_EMAIL.
+ * Send daily feedback report (latest 10 entries) to the configured Support Email.
  * Call via cron (e.g. once per day): GET or POST with header x-cron-secret: CRON_SECRET
  */
 export async function GET(req: NextRequest) {
@@ -23,10 +23,10 @@ async function runDailyFeedbackReport(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supportEmail = process.env.SUPPORT_EMAIL?.trim();
+  const supportEmail = (await getConfiguredSupportEmail()).trim();
   if (!supportEmail) {
     return NextResponse.json(
-      { error: "SUPPORT_EMAIL not configured" },
+      { error: "Support email is not configured in Super Admin settings." },
       { status: 500 }
     );
   }

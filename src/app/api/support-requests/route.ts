@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getVerifiedSessionOrResponse } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { sendSupportRequestNotification, sendTicketConfirmationToUser } from "@/lib/email";
+import {
+  getConfiguredSupportEmail,
+  sendSupportRequestNotification,
+  sendTicketConfirmationToUser,
+} from "@/lib/email";
 
 const CATEGORY_LABELS: Record<string, string> = {
   billing: "Billing",
@@ -50,8 +54,8 @@ export async function POST(req: NextRequest) {
         const ticketDisplay = `#${ticketNumber}`;
         const categoryLabel = CATEGORY_LABELS[category] ?? category;
 
-        // Notify support staff by email (if SUPPORT_EMAIL is set). Reply-To is set to user's email so support's reply goes to the user.
-        const supportEmail = process.env.SUPPORT_EMAIL || process.env.MAIL_SUPPORT_TO;
+        // Notify support staff by email (from Super Admin saved Support Email).
+        const supportEmail = await getConfiguredSupportEmail();
         let supportNotificationSent = false;
         if (supportEmail && supportEmail.trim()) {
           const user = await prisma.user.findUnique({

@@ -4,6 +4,7 @@
  */
 
 import nodemailer from "nodemailer";
+import { lookup } from "node:dns/promises";
 import { getBaseUrlForEmail } from "@/lib/app-url";
 import { getSuperAdminSmtpSettings } from "@/lib/super-admin-smtp-store";
 
@@ -906,11 +907,15 @@ async function sendEmail(
       });
       return false;
     }
+    const resolvedHost = await lookup(config.host, { family: 4 })
+      .then((r) => r.address)
+      .catch(() => config.host);
     const makeTransport = (secure: boolean) =>
       nodemailer.createTransport({
-        host: config.host,
+        host: resolvedHost,
         port: config.port,
         secure,
+        tls: { servername: config.host },
         auth: { user: config.username, pass: config.password.trim() },
       });
 

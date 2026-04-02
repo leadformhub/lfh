@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getConfiguredSupportEmail } from "@/lib/email";
 
 /**
  * Inbound email webhook: record replies so they show in the dashboard thread.
@@ -107,12 +108,8 @@ export async function POST(req: NextRequest) {
 
   const normalizedFrom = normalizeEmail(from);
   const userEmail = normalizeEmail(supportRequest.user.email);
-  const supportEmails = [
-    process.env.SUPPORT_EMAIL,
-    process.env.MAIL_SUPPORT_TO,
-  ]
-    .filter(Boolean)
-    .map((e) => normalizeEmail(String(e)));
+  const supportEmail = (await getConfiguredSupportEmail()).trim();
+  const supportEmails = supportEmail ? [normalizeEmail(supportEmail)] : [];
 
   const isFromStaff = supportEmails.includes(normalizedFrom);
   const replyBody = stripQuotedReply(bodyText).slice(0, 10000);
