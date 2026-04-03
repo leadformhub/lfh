@@ -78,6 +78,31 @@ export default function TermsAndConditionsPage() {
                 <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">support</Link>
                 {" "}form on our website.
               </p>
+
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">11. Communication and SMS Usage</h2>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                By using LeadFormHub, you agree to receive communications from us via email, phone, or SMS.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                These communications may include:
+              </p>
+              <ul className="mt-2 list-disc pl-6 text-[var(--foreground-muted)]">
+                <li>OTP (One-Time Password) verification</li>
+                <li>Account-related alerts</li>
+                <li>Form submission notifications</li>
+                <li>Service-related updates</li>
+              </ul>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                All SMS communications are transactional in nature and are sent only to users who have registered or interacted with the platform.
+              </p>
+
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">12. User Consent</h2>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                By providing your contact information, including your mobile number, you consent to receive transactional communications from LeadFormHub.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Users are responsible for ensuring that they have obtained proper consent from their end users before collecting and using their contact information through forms created on the platform.
+              </p>
             </div>
           </Container>
         </section>

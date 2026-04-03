@@ -242,6 +242,15 @@ export function Footer() {
           className="-mx-4 mt-8 flex min-h-[44px] flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t py-6 text-center text-base leading-6 text-[var(--footer-text)] sm:-mx-6 lg:-mx-8"
           style={{ borderColor: "var(--footer-divider)", backgroundColor: "var(--footer-bottom-bg)" }}
         >
+          <span>Powered by DigitalXBrand</span>
+          <span aria-hidden>|</span>
+          <Link href="/privacy-policy" className="hover:text-[var(--footer-heading)] transition-colors">
+            Privacy Policy
+          </Link>
+          <span aria-hidden>|</span>
+          <Link href="/terms-and-conditions" className="hover:text-[var(--footer-heading)] transition-colors">
+            Terms
+          </Link>
           <span>© {new Date().getFullYear()} LeadFormHub. All rights reserved.</span>
         </div>
       </Container>

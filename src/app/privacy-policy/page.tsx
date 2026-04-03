@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">2. Information We Collect</h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                We collect information you provide when you create an account (name, email, username, password), use our forms and dashboard, and submit or view leads. We also collect usage data such as form views and submissions to operate and improve our service.
+                We collect information you provide when you create an account (name, email, mobile number, username, password), use our forms and dashboard, and submit or view leads. We also collect usage data such as form views and submissions to operate and improve our service.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">3. How We Use Your Information</h2>
@@ -67,6 +67,31 @@ export default function PrivacyPolicyPage() {
                 {" "}or{" "}
                 <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">support</Link>
                 {" "}form on our website.
+              </p>
+
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">9. Communication and SMS Usage</h2>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                We may use your contact information, including your mobile number, to send transactional communications via SMS, email, or other channels.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                These communications may include:
+              </p>
+              <ul className="mt-2 list-disc pl-6 text-[var(--foreground-muted)]">
+                <li>OTP (One-Time Password) verification</li>
+                <li>Account-related alerts</li>
+                <li>Form submission notifications</li>
+                <li>Service-related updates</li>
+              </ul>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                All SMS communications are transactional in nature and are sent only to users who have registered or interacted with our platform.
+              </p>
+
+              <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">10. Consent</h2>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                By using LeadFormHub and providing your contact information, you consent to receive transactional communications from us, including SMS messages.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                You may opt out of non-essential communications at any time by contacting support.
               </p>
             </div>
           </Container>
