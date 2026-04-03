@@ -28,7 +28,7 @@ export default async function DashboardLayout({
   const minimal = await getMinimalSessionFromJwt();
   if (!minimal) redirect("/login");
   const { username } = await params;
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
   const currentPlan = minimal.plan ?? "free";
   return (
     <UpgradeModalProvider currentPlan={currentPlan} razorpayKeyId={razorpayKeyId}>

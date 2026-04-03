@@ -25,7 +25,7 @@ export default async function NewFormPage({
     redirect(`/${username}/pricing?reason=form_limit`);
   }
 
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
 
   return (
     <NewFormClient plan={session.plan} razorpayKeyId={razorpayKeyId ?? null} />

@@ -37,7 +37,7 @@ export default async function DashboardPage({
   const assignedToUserId = role === "sales" ? session.userId : undefined;
   const plan = (session.plan ?? "free") as PlanKey;
   const showAnalytics = canUseAnalytics(plan);
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
 
   return (
     <div className="p-4 lg:p-8">

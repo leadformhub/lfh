@@ -61,7 +61,7 @@ async function LeadsContent({
   const assignedToUserId = role === "sales" ? session.userId : undefined;
   const plan = (session.plan ?? "free") as PlanKey;
   const allowBoard = canUseBoard(plan);
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
 
   const pageNum = Math.max(1, parseInt(String(searchParams.page || "1"), 10) || 1);
   const searchClean = typeof searchParams.search === "string" && searchParams.search.trim() ? searchParams.search.trim() : undefined;

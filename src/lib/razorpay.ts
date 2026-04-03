@@ -5,24 +5,37 @@
 
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { getSuperAdminRazorpaySettings } from "@/lib/super-admin-razorpay-store";
 
-const keyId = process.env.RAZORPAY_KEY_ID;
-const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-export function getRazorpayKeyId(): string | null {
-  return keyId || null;
+async function getRazorpayCredentials(): Promise<{ keyId: string; keySecret: string } | null> {
+  const settings = await getSuperAdminRazorpaySettings();
+  if (!settings?.enabled) return null;
+  const keyId = settings.keyId?.trim();
+  const keySecret = settings.keySecret?.trim();
+  if (!keyId || !keySecret) return null;
+  return { keyId, keySecret };
 }
 
-export function isRazorpayConfigured(): boolean {
-  return !!(keyId && keySecret);
+export async function getRazorpayKeyId(): Promise<string | null> {
+  const credentials = await getRazorpayCredentials();
+  return credentials?.keyId ?? null;
+}
+
+export async function isRazorpayConfigured(): Promise<boolean> {
+  return Boolean(await getRazorpayCredentials());
 }
 
 let instance: Razorpay | null = null;
+let instanceKeyId: string | null = null;
+let instanceKeySecret: string | null = null;
 
-function getRazorpay(): Razorpay | null {
-  if (!keyId || !keySecret) return null;
-  if (!instance) {
-    instance = new Razorpay({ key_id: keyId, key_secret: keySecret });
+async function getRazorpay(): Promise<Razorpay | null> {
+  const credentials = await getRazorpayCredentials();
+  if (!credentials) return null;
+  if (!instance || instanceKeyId !== credentials.keyId || instanceKeySecret !== credentials.keySecret) {
+    instance = new Razorpay({ key_id: credentials.keyId, key_secret: credentials.keySecret });
+    instanceKeyId = credentials.keyId;
+    instanceKeySecret = credentials.keySecret;
   }
   return instance;
 }
@@ -34,7 +47,7 @@ export interface CreateOrderParams {
 }
 
 export async function createRazorpayOrder(params: CreateOrderParams): Promise<{ id: string; amount: number; currency: string } | null> {
-  const rz = getRazorpay();
+  const rz = await getRazorpay();
   if (!rz) return null;
   const order = await rz.orders.create({
     amount: params.amount,
@@ -52,11 +65,20 @@ export function verifyRazorpaySignature(
   orderId: string,
   paymentId: string,
   signature: string
-): boolean {
-  if (!keySecret) return false;
+): Promise<boolean> {
+  return verifyRazorpaySignatureInternal(orderId, paymentId, signature);
+}
+
+async function verifyRazorpaySignatureInternal(
+  orderId: string,
+  paymentId: string,
+  signature: string
+): Promise<boolean> {
+  const credentials = await getRazorpayCredentials();
+  if (!credentials?.keySecret) return false;
   const body = `${orderId}|${paymentId}`;
   const expected = crypto
-    .createHmac("sha256", keySecret)
+    .createHmac("sha256", credentials.keySecret)
     .update(body)
     .digest("hex");
   return expected === signature;

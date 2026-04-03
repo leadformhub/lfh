@@ -49,7 +49,7 @@ async function FormsContent({
 }) {
   const accountOwnerId = session.accountOwnerId ?? session.userId;
   const plan = (session.plan ?? "free") as PlanKey;
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
 
   const [{ forms, total, page: currentPage, perPage }, viewCounts, limits] = await Promise.all([
     getFormsByUserIdCached(accountOwnerId, pageNum, 25),

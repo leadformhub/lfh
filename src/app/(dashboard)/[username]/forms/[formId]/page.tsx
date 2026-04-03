@@ -59,6 +59,8 @@ export default async function FormPage({
 })();
 </script>`;
 
+  const razorpayKeyId = await getRazorpayKeyId();
+
   return (
     <FormPageTabs
       username={username}
@@ -69,7 +71,7 @@ export default async function FormPage({
       automationRules={rules}
       canUseAutomation={canUseAutomation(plan)}
       plan={plan}
-      razorpayKeyId={getRazorpayKeyId()}
+      razorpayKeyId={razorpayKeyId}
       embedUrl={embedUrl}
       iframeCode={iframeCode}
     />

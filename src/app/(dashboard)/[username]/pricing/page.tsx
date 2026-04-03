@@ -18,7 +18,7 @@ export default async function DashboardPricingPage({
   const { username } = await params;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) redirect("/login");
 
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
   const planLabel = session.plan.charAt(0).toUpperCase() + session.plan.slice(1);
   const { featureComparison } = await getPublicPlanPricingPayload();
 

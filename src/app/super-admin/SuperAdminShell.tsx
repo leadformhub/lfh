@@ -97,6 +97,9 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   const [googleClientId, setGoogleClientId] = useState("");
   const [googleClientSecret, setGoogleClientSecret] = useState("");
   const [googleEnabled, setGoogleEnabled] = useState(true);
+  const [razorpayKeyId, setRazorpayKeyId] = useState("");
+  const [razorpayKeySecret, setRazorpayKeySecret] = useState("");
+  const [razorpayEnabled, setRazorpayEnabled] = useState(true);
   const [fast2smsQuickApiKey, setFast2smsQuickApiKey] = useState("");
   const [smsEnabled, setSmsEnabled] = useState(true);
   const [smtpTestToEmail, setSmtpTestToEmail] = useState("");
@@ -117,6 +120,11 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   } | null>(null);
   const [googleSaveLoading, setGoogleSaveLoading] = useState(false);
   const [googleSaveMessage, setGoogleSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [razorpaySaveLoading, setRazorpaySaveLoading] = useState(false);
+  const [razorpaySaveMessage, setRazorpaySaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -214,15 +222,17 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
 
     async function loadSettings() {
       try {
-        const [smtpRes, recaptchaRes, googleRes, smsRes] = await Promise.all([
+        const [smtpRes, recaptchaRes, googleRes, razorpayRes, smsRes] = await Promise.all([
           fetch("/api/super-admin/smtp", { method: "GET" }),
           fetch("/api/super-admin/recaptcha", { method: "GET" }),
           fetch("/api/super-admin/google", { method: "GET" }),
+          fetch("/api/super-admin/razorpay", { method: "GET" }),
           fetch("/api/super-admin/sms", { method: "GET" }),
         ]);
         const smtpData = await smtpRes.json().catch(() => ({}));
         const recaptchaData = await recaptchaRes.json().catch(() => ({}));
         const googleData = await googleRes.json().catch(() => ({}));
+        const razorpayData = await razorpayRes.json().catch(() => ({}));
         const smsData = await smsRes.json().catch(() => ({}));
         if (cancelled) return;
         if (smtpRes.ok && smtpData.smtp) {
@@ -244,6 +254,11 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
           setGoogleClientId(googleData.google.clientId || "");
           setGoogleClientSecret(googleData.google.clientSecret || "");
           setGoogleEnabled(googleData.google.enabled !== false);
+        }
+        if (razorpayRes.ok && razorpayData.razorpay) {
+          setRazorpayKeyId(razorpayData.razorpay.keyId || "");
+          setRazorpayKeySecret(razorpayData.razorpay.keySecret || "");
+          setRazorpayEnabled(razorpayData.razorpay.enabled !== false);
         }
         if (smsRes.ok && smsData.sms) {
           setFast2smsQuickApiKey(smsData.sms.fast2smsQuickApiKey || "");
@@ -672,6 +687,40 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
       setGoogleSaveMessage({ type: "error", text: "Something went wrong while saving Google OAuth settings." });
     } finally {
       setGoogleSaveLoading(false);
+    }
+  }
+
+  async function handleSaveRazorpaySettings() {
+    setRazorpaySaveMessage(null);
+    if (!razorpayKeyId.trim() || !razorpayKeySecret.trim()) {
+      setRazorpaySaveMessage({
+        type: "error",
+        text: "Please fill both Razorpay Key ID and Key Secret before saving.",
+      });
+      return;
+    }
+
+    setRazorpaySaveLoading(true);
+    try {
+      const res = await fetch("/api/super-admin/razorpay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          keyId: razorpayKeyId.trim(),
+          keySecret: razorpayKeySecret.trim(),
+          enabled: razorpayEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setRazorpaySaveMessage({ type: "error", text: data.error || "Failed to save Razorpay settings." });
+        return;
+      }
+      setRazorpaySaveMessage({ type: "success", text: data.message || "Razorpay settings saved." });
+    } catch {
+      setRazorpaySaveMessage({ type: "error", text: "Something went wrong while saving Razorpay settings." });
+    } finally {
+      setRazorpaySaveLoading(false);
     }
   }
 
@@ -1392,6 +1441,79 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
 
                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">Settings Item 4</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    Razorpay Configuration
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Save Razorpay key ID/secret used for checkout and payment verification.
+                  </p>
+
+                  <form className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Razorpay Key ID
+                      </label>
+                      <input
+                        type="text"
+                        value={razorpayKeyId}
+                        onChange={(e) => setRazorpayKeyId(e.target.value)}
+                        placeholder="rzp_live_xxxxxxxxxx"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Razorpay Key Secret
+                      </label>
+                      <input
+                        type="password"
+                        value={razorpayKeySecret}
+                        onChange={(e) => setRazorpayKeySecret(e.target.value)}
+                        placeholder="Paste Razorpay secret key"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-800">
+                        <input
+                          type="checkbox"
+                          checked={razorpayEnabled}
+                          onChange={(e) => setRazorpayEnabled(e.target.checked)}
+                          className="size-4 rounded border-gray-300"
+                        />
+                        Enable Razorpay checkout globally
+                      </label>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveRazorpaySettings}
+                        disabled={razorpaySaveLoading}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                      >
+                        {razorpaySaveLoading ? "Saving..." : "Save Razorpay Settings"}
+                      </button>
+                    </div>
+
+                    {razorpaySaveMessage ? (
+                      <div
+                        className={`md:col-span-2 rounded-md px-3 py-2 text-sm ${
+                          razorpaySaveMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {razorpaySaveMessage.text}
+                      </div>
+                    ) : null}
+                  </form>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Settings Item 5</p>
                   <h2 className="mt-1 text-lg font-semibold text-gray-900">
                     Fast2SMS Configuration
                   </h2>

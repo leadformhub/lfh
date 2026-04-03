@@ -106,7 +106,7 @@ export default async function SettingsPage({
           ? "team"
           : "account";
   const planLabel = session.plan.charAt(0).toUpperCase() + session.plan.slice(1);
-  const razorpayKeyId = getRazorpayKeyId();
+  const razorpayKeyId = await getRazorpayKeyId();
   const base = `/${username}`;
   const settingsPath = `/${username}/settings`;
   const accountOwnerId = session.accountOwnerId ?? session.userId;

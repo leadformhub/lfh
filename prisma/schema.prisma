@@ -514,6 +514,16 @@ model SuperAdminSmsSetting {
   @@map("super_admin_sms_settings")
 }
 
+model SuperAdminRazorpaySetting {
+  id        Int      @id @db.TinyInt
+  keyId     String   @map("key_id") @db.VarChar(255)
+  keySecret String   @map("key_secret") @db.VarChar(255)
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_razorpay_settings")
+}
+
 /// Single-row JSON config for plans, limits, and marketing copy (super admin). Merged with code defaults when empty.
 model SuperAdminPlanPricingSetting {
   id         Int      @id @db.TinyInt

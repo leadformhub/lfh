@@ -43,7 +43,7 @@ export async function verifyAndFulfill(
   });
   if (!payment) return { success: false, error: "Order not found" };
   if (payment.status === "captured") return { success: true, plan: payment.plan as UserPlan };
-  const valid = verifyRazorpaySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+  const valid = await verifyRazorpaySignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
   if (!valid) return { success: false, error: "Invalid signature" };
   const validityDays = await getPlanValidityDaysResolved();
   const planValidUntil = new Date(Date.now() + validityDays * 24 * 60 * 60 * 1000);
