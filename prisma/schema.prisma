@@ -505,6 +505,16 @@ model SuperAdminGoogleSetting {
   @@map("super_admin_google_settings")
 }
 
+model SuperAdminTrackingSetting {
+  id              Int      @id @db.TinyInt
+  gaMeasurementId String?  @map("ga_measurement_id") @db.VarChar(64)
+  fbPixelId       String?  @map("fb_pixel_id") @db.VarChar(64)
+  enabled         Boolean  @default(true)
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("super_admin_tracking_settings")
+}
+
 model SuperAdminSmsSetting {
   id                  Int      @id @db.TinyInt
   fast2smsQuickApiKey String   @map("fast2sms_quick_api_key") @db.VarChar(255)

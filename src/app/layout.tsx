@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { FacebookPixel } from "@/components/FacebookPixel";
 import { ProcessingProvider } from "@/components/ProcessingProvider";
+import { getPublicTrackingIds } from "@/lib/super-admin-tracking-store";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -63,11 +64,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const trackingIds = await getPublicTrackingIds();
   /** Product image for rich results (absolute URL). Must be present for valid Product/SoftwareApplication. */
   const productImage = `${SITE_URL}/og.png`;
   /** Return policy for rich results (offers.hasMerchantReturnPolicy). */
@@ -139,8 +141,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <RecaptchaScript />
-        <GoogleAnalytics />
-        <FacebookPixel />
+        <GoogleAnalytics measurementId={trackingIds.gaMeasurementId} />
+        <FacebookPixel pixelId={trackingIds.fbPixelId} />
         <Analytics />
         <ProcessingProvider>{children}</ProcessingProvider>
       </body>

@@ -97,6 +97,9 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   const [googleClientId, setGoogleClientId] = useState("");
   const [googleClientSecret, setGoogleClientSecret] = useState("");
   const [googleEnabled, setGoogleEnabled] = useState(true);
+  const [trackingGaMeasurementId, setTrackingGaMeasurementId] = useState("");
+  const [trackingFbPixelId, setTrackingFbPixelId] = useState("");
+  const [trackingEnabled, setTrackingEnabled] = useState(true);
   const [razorpayKeyId, setRazorpayKeyId] = useState("");
   const [razorpayKeySecret, setRazorpayKeySecret] = useState("");
   const [razorpayEnabled, setRazorpayEnabled] = useState(true);
@@ -120,6 +123,11 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   } | null>(null);
   const [googleSaveLoading, setGoogleSaveLoading] = useState(false);
   const [googleSaveMessage, setGoogleSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [trackingSaveLoading, setTrackingSaveLoading] = useState(false);
+  const [trackingSaveMessage, setTrackingSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
@@ -222,16 +230,18 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
 
     async function loadSettings() {
       try {
-        const [smtpRes, recaptchaRes, googleRes, razorpayRes, smsRes] = await Promise.all([
+        const [smtpRes, recaptchaRes, googleRes, trackingRes, razorpayRes, smsRes] = await Promise.all([
           fetch("/api/super-admin/smtp", { method: "GET" }),
           fetch("/api/super-admin/recaptcha", { method: "GET" }),
           fetch("/api/super-admin/google", { method: "GET" }),
+          fetch("/api/super-admin/tracking", { method: "GET" }),
           fetch("/api/super-admin/razorpay", { method: "GET" }),
           fetch("/api/super-admin/sms", { method: "GET" }),
         ]);
         const smtpData = await smtpRes.json().catch(() => ({}));
         const recaptchaData = await recaptchaRes.json().catch(() => ({}));
         const googleData = await googleRes.json().catch(() => ({}));
+        const trackingData = await trackingRes.json().catch(() => ({}));
         const razorpayData = await razorpayRes.json().catch(() => ({}));
         const smsData = await smsRes.json().catch(() => ({}));
         if (cancelled) return;
@@ -254,6 +264,11 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
           setGoogleClientId(googleData.google.clientId || "");
           setGoogleClientSecret(googleData.google.clientSecret || "");
           setGoogleEnabled(googleData.google.enabled !== false);
+        }
+        if (trackingRes.ok && trackingData.tracking) {
+          setTrackingGaMeasurementId(trackingData.tracking.gaMeasurementId || "");
+          setTrackingFbPixelId(trackingData.tracking.fbPixelId || "");
+          setTrackingEnabled(trackingData.tracking.enabled !== false);
         }
         if (razorpayRes.ok && razorpayData.razorpay) {
           setRazorpayKeyId(razorpayData.razorpay.keyId || "");
@@ -721,6 +736,40 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
       setRazorpaySaveMessage({ type: "error", text: "Something went wrong while saving Razorpay settings." });
     } finally {
       setRazorpaySaveLoading(false);
+    }
+  }
+
+  async function handleSaveTrackingSettings() {
+    setTrackingSaveMessage(null);
+    if (!trackingGaMeasurementId.trim() || !trackingFbPixelId.trim()) {
+      setTrackingSaveMessage({
+        type: "error",
+        text: "Please fill both GA Measurement ID and Facebook Pixel ID before saving.",
+      });
+      return;
+    }
+
+    setTrackingSaveLoading(true);
+    try {
+      const res = await fetch("/api/super-admin/tracking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gaMeasurementId: trackingGaMeasurementId.trim(),
+          fbPixelId: trackingFbPixelId.trim(),
+          enabled: trackingEnabled,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTrackingSaveMessage({ type: "error", text: data.error || "Failed to save tracking settings." });
+        return;
+      }
+      setTrackingSaveMessage({ type: "success", text: data.message || "Tracking settings saved." });
+    } catch {
+      setTrackingSaveMessage({ type: "error", text: "Something went wrong while saving tracking settings." });
+    } finally {
+      setTrackingSaveLoading(false);
     }
   }
 
@@ -1567,6 +1616,79 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                         }`}
                       >
                         {smsSaveMessage.text}
+                      </div>
+                    ) : null}
+                  </form>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Settings Item 6</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">
+                    Analytics and Pixel Configuration
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Save GA4 Measurement ID and Facebook Pixel ID for global website tracking scripts.
+                  </p>
+
+                  <form className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        GA4 Measurement ID
+                      </label>
+                      <input
+                        type="text"
+                        value={trackingGaMeasurementId}
+                        onChange={(e) => setTrackingGaMeasurementId(e.target.value)}
+                        placeholder="G-XXXXXXXXXX"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-gray-800">
+                        Facebook Pixel ID
+                      </label>
+                      <input
+                        type="text"
+                        value={trackingFbPixelId}
+                        onChange={(e) => setTrackingFbPixelId(e.target.value)}
+                        placeholder="123456789012345"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-800">
+                        <input
+                          type="checkbox"
+                          checked={trackingEnabled}
+                          onChange={(e) => setTrackingEnabled(e.target.checked)}
+                          className="size-4 rounded border-gray-300"
+                        />
+                        Enable GA and Pixel globally
+                      </label>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveTrackingSettings}
+                        disabled={trackingSaveLoading}
+                        className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+                      >
+                        {trackingSaveLoading ? "Saving..." : "Save Tracking Settings"}
+                      </button>
+                    </div>
+
+                    {trackingSaveMessage ? (
+                      <div
+                        className={`md:col-span-2 rounded-md px-3 py-2 text-sm ${
+                          trackingSaveMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {trackingSaveMessage.text}
                       </div>
                     ) : null}
                   </form>

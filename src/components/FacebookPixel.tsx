@@ -4,11 +4,10 @@ import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, Suspense } from "react";
 
-const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
-
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
+    __LFH_FB_PIXEL_ID?: string;
   }
 }
 
@@ -16,15 +15,15 @@ declare global {
  * Sends a PageView to Facebook Pixel when the route changes (client-side navigation).
  * Only runs when fbq is available and pixel ID is set.
  */
-function PageViewTracker() {
+function PageViewTracker({ pixelId }: { pixelId: string }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!FB_PIXEL_ID || typeof window === "undefined") return;
+    if (!pixelId || typeof window === "undefined") return;
     const fbq = window.fbq;
     if (typeof fbq !== "function") return;
     fbq("track", "PageView");
-  }, [pathname]);
+  }, [pixelId, pathname]);
 
   return null;
 }
@@ -35,8 +34,9 @@ function PageViewTracker() {
  *
  * To track custom events (e.g. Lead), use the trackFacebookEvent helper from @/lib/facebook-pixel.
  */
-export function FacebookPixel() {
-  if (!FB_PIXEL_ID || typeof FB_PIXEL_ID !== "string" || !FB_PIXEL_ID.trim()) {
+export function FacebookPixel({ pixelId }: { pixelId?: string }) {
+  const effectivePixelId = pixelId?.trim() || process.env.NEXT_PUBLIC_FB_PIXEL_ID?.trim() || "";
+  if (!effectivePixelId) {
     return null;
   }
 
@@ -51,7 +51,8 @@ export function FacebookPixel() {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${FB_PIXEL_ID}');
+          window.__LFH_FB_PIXEL_ID = '${effectivePixelId}';
+          fbq('init', '${effectivePixelId}');
           fbq('track', 'PageView');
         `}
       </Script>
@@ -60,12 +61,12 @@ export function FacebookPixel() {
           height="1"
           width="1"
           style={{ display: "none" }}
-          src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
+          src={`https://www.facebook.com/tr?id=${effectivePixelId}&ev=PageView&noscript=1`}
           alt=""
         />
       </noscript>
       <Suspense fallback={null}>
-        <PageViewTracker />
+        <PageViewTracker pixelId={effectivePixelId} />
       </Suspense>
     </>
   );
