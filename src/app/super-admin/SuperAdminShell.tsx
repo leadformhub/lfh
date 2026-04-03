@@ -158,6 +158,7 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
   const [usersSuccess, setUsersSuccess] = useState<string | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [userSearch, setUserSearch] = useState("");
   const [userStatusFilter, setUserStatusFilter] = useState<"all" | "active" | "banned">("all");
   const [userPlanFilter, setUserPlanFilter] = useState<"all" | "free" | "pro" | "business">("all");
@@ -418,6 +419,40 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
       await fetchUsers();
     } catch {
       setUsersError("Something went wrong while updating user status.");
+    }
+  }
+
+  async function deleteUser(user: ManagedUser) {
+    if (user.isProtectedSuperAdmin) {
+      setUsersError("Super admin account is protected and cannot be deleted.");
+      setUsersSuccess(null);
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete user "${user.username}"? This action is permanent and cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeletingUserId(user.id);
+    setUsersError(null);
+    setUsersSuccess(null);
+    try {
+      const res = await fetch(`/api/super-admin/users/${user.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsersError(data.error || "Failed to delete user.");
+        return;
+      }
+      setUsersSuccess(data.message || "User deleted.");
+      if (selectedUserId === user.id) {
+        setSelectedUserId(null);
+      }
+      await fetchUsers();
+    } catch {
+      setUsersError("Something went wrong while deleting user.");
+    } finally {
+      setDeletingUserId(null);
     }
   }
 
@@ -1801,7 +1836,7 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                                   <button
                                     type="button"
                                     onClick={() => startEditingUser(user)}
-                                    disabled={Boolean(user.isProtectedSuperAdmin)}
+                                    disabled={Boolean(user.isProtectedSuperAdmin || deletingUserId === user.id)}
                                     className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100"
                                   >
                                     Edit
@@ -1809,12 +1844,20 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                                   <button
                                     type="button"
                                     onClick={() => toggleBanUser(user)}
-                                    disabled={Boolean(user.isProtectedSuperAdmin)}
+                                    disabled={Boolean(user.isProtectedSuperAdmin || deletingUserId === user.id)}
                                     className={`rounded-md px-3 py-1.5 text-xs font-medium text-white ${
                                       user.status === "active" ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"
                                     }`}
                                   >
                                     {user.status === "active" ? "Ban" : "Unban"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteUser(user)}
+                                    disabled={Boolean(user.isProtectedSuperAdmin || deletingUserId === user.id)}
+                                    className="rounded-md bg-rose-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                  >
+                                    {deletingUserId === user.id ? "Deleting..." : "Delete"}
                                   </button>
                                   {user.isProtectedSuperAdmin ? (
                                     <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[11px] font-medium text-indigo-700">

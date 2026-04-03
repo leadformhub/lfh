@@ -102,3 +102,53 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update user." }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  const session = await getSuperAdminSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { userId } = await params;
+  if (!userId) return NextResponse.json({ error: "Missing user id." }, { status: 400 });
+
+  try {
+    let existingUser: { email: string; username: string; role: "user" | "super_admin" } | null =
+      null;
+    try {
+      existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, username: true, role: true },
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2022") {
+        throw error;
+      }
+      const fallbackUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, username: true },
+      });
+      existingUser = fallbackUser ? { ...fallbackUser, role: "user" } : null;
+    }
+    if (!existingUser) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+    const superAdminEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase() || "";
+    const isProtectedSuperAdminByRole = existingUser.role === "super_admin";
+    const isProtectedSuperAdmin =
+      isProtectedSuperAdminByRole ||
+      existingUser.username.toLowerCase() === "superadmin" ||
+      Boolean(superAdminEmail && existingUser.email.toLowerCase() === superAdminEmail);
+    if (isProtectedSuperAdmin) {
+      return NextResponse.json(
+        { error: "Super admin account is protected and cannot be deleted here." },
+        { status: 403 }
+      );
+    }
+
+    await prisma.user.delete({ where: { id: userId } });
+    return NextResponse.json({ message: "User deleted successfully." });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete user." }, { status: 500 });
+  }
+}
