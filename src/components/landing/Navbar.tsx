@@ -42,9 +42,9 @@ export function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
+            <Link href="/" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Home</Link>
             <Link href="/features" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Features</Link>
             <Link href="/pricing" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Pricing</Link>
-            <Link href="/integrations" className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4">Integrations</Link>
             <FeedbackTrigger className="text-base text-[var(--header-nav)] transition-colors hover:text-[var(--header-logo)] hover:underline underline-offset-4 cursor-pointer bg-transparent border-0 p-0 font-inherit">
               Feedback
             </FeedbackTrigger>
@@ -106,6 +106,16 @@ export function Navbar() {
         {/* Nav links */}
         <div className="flex flex-col gap-1">
           <Link
+            href="/"
+            className="flex min-h-[48px] items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-[var(--header-nav)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--header-logo)] active:bg-[var(--neutral-200)]"
+            onClick={() => setMobileOpen(false)}
+          >
+            <svg className="size-5 shrink-0 text-[var(--foreground-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9.75L12 3l9 6.75V21a1 1 0 01-1 1h-5.25a1 1 0 01-1-1v-5h-3.5v5a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z" />
+            </svg>
+            Home
+          </Link>
+          <Link
             href="/features"
             className="flex min-h-[48px] items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-[var(--header-nav)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--header-logo)] active:bg-[var(--neutral-200)]"
             onClick={() => setMobileOpen(false)}
@@ -124,16 +134,6 @@ export function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Pricing
-          </Link>
-          <Link
-            href="/integrations"
-            className="flex min-h-[48px] items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium text-[var(--header-nav)] transition-colors hover:bg-[var(--neutral-100)] hover:text-[var(--header-logo)] active:bg-[var(--neutral-200)]"
-            onClick={() => setMobileOpen(false)}
-          >
-            <svg className="size-5 shrink-0 text-[var(--foreground-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
-            </svg>
-            Integrations
           </Link>
           <FeedbackTrigger
             onOpen={() => setMobileOpen(false)}

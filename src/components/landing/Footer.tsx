@@ -38,10 +38,7 @@ const compareLinks = [
 ];
 
 const resourcesLinks = [
-  { label: "Webhooks", href: "/api-docs#webhooks" },
-  { label: "Integrations", href: "/integrations" },
   { label: "Knowledge Base", href: "/knowledge-base" },
-  { label: "API Docs", href: "/api-docs" },
 ];
 
 const companyLinks = [

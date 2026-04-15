@@ -9,6 +9,7 @@ export const metadata: Metadata = buildPageMetadata({
   description:
     "Connect LeadFormHub with CRM, email tools, Zapier, and APIs to sync verified leads from your lead capture forms.",
   path: "/integrations",
+  noIndex: true,
 });
 
 const integrationCards = [
