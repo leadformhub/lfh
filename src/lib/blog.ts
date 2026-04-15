@@ -11,6 +11,13 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "best-form-builder-tools-for-lead-generation-forms",
+    title: "10 Best Form Builder Tools for Lead Generation Forms (2026)",
+    description:
+      "Compare the best form builder tools for lead generation forms. See features, pricing, integrations, and how to choose the right lead capture form builder for your campaigns.",
+    publishedAt: "2026-04-15",
+  },
+  {
     slug: "best-lead-form-fields-for-high-conversion",
     title: "Best Lead Form Fields for High Conversion (What to Ask and What to Skip)",
     description:
