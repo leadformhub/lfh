@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Lead Capture Features",
+  title: "Lead Capture Form Features: OTP Verification, Analytics & More | LeadFormHub",
   description:
     "Explore LeadFormHub features: drag and drop form builder, branded forms, OTP verification, form analytics, and a unified lead management dashboard.",
   path: "/features",
