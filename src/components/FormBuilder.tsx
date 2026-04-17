@@ -7,6 +7,7 @@ import type { FormSchema } from "@/lib/form-schema";
 import { canUseOtp } from "@/lib/plans";
 import { canUseEmailAlertOnLead } from "@/lib/plan-features";
 import { UpgradeModal } from "@/components/UpgradeModal";
+import { useToast } from "@/components/ui/Toast";
 import type { PlanKey } from "@/lib/plans";
 
 const FIELD_TYPES = [
@@ -105,6 +106,7 @@ export function FormBuilder({
   razorpayKeyId?: string | null;
 }) {
   const router = useRouter();
+  const { addToast } = useToast();
   const [fields, setFields] = useState<FormFieldEditor[]>(() =>
     schemaFieldsToEditor(initialSchema.fields ?? [])
   );
@@ -203,20 +205,25 @@ export function FormBuilder({
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setSaveMessage({ type: "success", text: "Form design saved." });
+        const successMessage = "Form design saved.";
+        setSaveMessage({ type: "success", text: successMessage });
+        addToast({ title: successMessage, variant: "success" });
         router.refresh();
         router.replace(`/${username}/forms`);
       } else {
-        setSaveMessage({ type: "error", text: (data.error as string) || "Failed to save." });
+        const errorMessage = (data.error as string) || "Failed to save.";
+        setSaveMessage({ type: "error", text: errorMessage });
+        addToast({ title: "Could not save form", description: errorMessage, variant: "danger" });
       }
     } catch {
-      setSaveMessage({ type: "error", text: "Failed to save. Please try again." });
+      const errorMessage = "Failed to save. Please try again.";
+      setSaveMessage({ type: "error", text: errorMessage });
+      addToast({ title: "Could not save form", description: errorMessage, variant: "danger" });
     } finally {
       setSaving(false);
     }
-  }, [formId, fields, initialSchema.settings, showFormName, recaptchaEnabled, emailAlertEnabled, mobileOtpEnabled, emailOtpEnabled, canUseOtpFeature, canUseEmailAlert, router, username]);
+  }, [formId, fields, initialSchema.settings, showFormName, recaptchaEnabled, emailAlertEnabled, mobileOtpEnabled, emailOtpEnabled, canUseOtpFeature, canUseEmailAlert, router, username, addToast]);
 
-  const selected = fields.find((f) => f.id === selectedId);
   const fieldIcon = (type: string) => FIELD_TYPES.find((t) => t.type === type)?.icon ?? "•";
 
   return (
@@ -422,153 +429,154 @@ export function FormBuilder({
           ) : (
             <div className="space-y-3">
               {fields.map((f, index) => (
-                <div
-                  key={f.id}
-                  onClick={() => setSelectedId(f.id)}
-                  className={`flex cursor-pointer flex-col gap-3 rounded-xl border p-4 transition-all sm:flex-row sm:items-center sm:gap-4 ${
-                    selectedId === f.id
-                      ? "border-[var(--color-accent)] bg-[var(--color-accent-subtle)] ring-2 ring-[var(--color-accent)]/20"
-                      : "border-[var(--border-default)] bg-[var(--background-elevated)] hover:border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]"
-                  }`}
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3 sm:order-2">
-                    <div className="flex shrink-0 items-center gap-2 text-[var(--foreground-muted)]">
-                      <span className="flex size-8 items-center justify-center rounded-lg bg-[var(--neutral-100)] text-sm font-medium">
-                        {fieldIcon(f.type)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); moveField(index, -1); }}
-                        disabled={index === 0}
-                        className="flex size-10 min-w-[44px] items-center justify-center rounded-lg text-[var(--foreground-muted)] hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)] disabled:opacity-30"
-                        aria-label="Move up"
-                      >
-                        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); moveField(index, 1); }}
-                        disabled={index === fields.length - 1}
-                        className="flex size-10 min-w-[44px] items-center justify-center rounded-lg text-[var(--foreground-muted)] hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)] disabled:opacity-30"
-                        aria-label="Move down"
-                      >
-                        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
+                <div key={f.id} className="space-y-3">
+                  <div
+                    onClick={() => setSelectedId(f.id)}
+                    className={`flex cursor-pointer flex-col gap-3 rounded-xl border p-4 transition-all sm:flex-row sm:items-center sm:gap-4 ${
+                      selectedId === f.id
+                        ? "border-[var(--color-accent)] bg-[var(--color-accent-subtle)] ring-2 ring-[var(--color-accent)]/20"
+                        : "border-[var(--border-default)] bg-[var(--background-elevated)] hover:border-[var(--neutral-300)] hover:bg-[var(--neutral-50)]"
+                    }`}
+                  >
+                    <div className="flex min-w-0 flex-1 items-center gap-3 sm:order-2">
+                      <div className="flex shrink-0 items-center gap-2 text-[var(--foreground-muted)]">
+                        <span className="flex size-8 items-center justify-center rounded-lg bg-[var(--neutral-100)] text-sm font-medium">
+                          {fieldIcon(f.type)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); moveField(index, -1); }}
+                          disabled={index === 0}
+                          className="flex size-10 min-w-[44px] items-center justify-center rounded-lg text-[var(--foreground-muted)] hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)] disabled:opacity-30"
+                          aria-label="Move up"
+                        >
+                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); moveField(index, 1); }}
+                          disabled={index === fields.length - 1}
+                          className="flex size-10 min-w-[44px] items-center justify-center rounded-lg text-[var(--foreground-muted)] hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)] disabled:opacity-30"
+                          aria-label="Move down"
+                        >
+                          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="truncate font-medium text-[var(--foreground-heading)]">
+                            {f.label || f.name || "(Untitled)"}
+                          </span>
+                          <span className="shrink-0 rounded-md bg-[var(--neutral-100)] px-2 py-0.5 text-xs font-medium text-[var(--foreground-muted)]">
+                            {f.type}
+                          </span>
+                          {f.required && (
+                            <span className="shrink-0 text-xs text-[var(--color-danger)]">Required</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="truncate font-medium text-[var(--foreground-heading)]">
-                          {f.label || f.name || "(Untitled)"}
-                        </span>
-                        <span className="shrink-0 rounded-md bg-[var(--neutral-100)] px-2 py-0.5 text-xs font-medium text-[var(--foreground-muted)]">
-                          {f.type}
-                        </span>
-                        {f.required && (
-                          <span className="shrink-0 text-xs text-[var(--color-danger)]">Required</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeField(f.id); }}
+                      className="btn-base min-h-[44px] shrink-0 self-start rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium text-[var(--color-danger)] transition-colors hover:bg-[var(--color-danger)]/10 sm:order-3"
+                    >
+                      Remove
+                    </button>
+                  </div>
+
+                  {selectedId === f.id && (
+                    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)] sm:p-6">
+                      <div className="mb-4 flex items-center justify-between gap-2">
+                        <h3 className="font-heading text-base font-semibold text-[var(--foreground-heading)]">
+                          Edit Field
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(null)}
+                          className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[var(--foreground-muted)] transition-colors hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)]"
+                          aria-label="Close Edit Field"
+                        >
+                          <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Label</label>
+                          <input
+                            value={f.label}
+                            onChange={(e) => updateField(f.id, { label: e.target.value })}
+                            className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Field ID (used in form HTML)</label>
+                          <input
+                            value={f.id}
+                            onChange={(e) => updateField(f.id, { id: e.target.value })}
+                            className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Semantic key (storage)</label>
+                          <input
+                            value={f.name}
+                            onChange={(e) => updateField(f.id, { name: e.target.value })}
+                            placeholder="e.g. name, email, phone_number"
+                            className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+                          />
+                          <p className="mt-1 text-xs text-[var(--foreground-muted)]">Saved under this key regardless of field order.</p>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Placeholder</label>
+                          <input
+                            value={f.placeholder}
+                            onChange={(e) => updateField(f.id, { placeholder: e.target.value })}
+                            className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+                          />
+                        </div>
+                        {(f.type === "select" || f.type === "radio") && (
+                          <div className="sm:col-span-2">
+                            <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">
+                              Options (one per line)
+                            </label>
+                            <textarea
+                              value={f.options}
+                              onChange={(e) => updateField(f.id, { options: e.target.value })}
+                              className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
+                              rows={3}
+                            />
+                          </div>
+                        )}
+                        <label className="flex cursor-pointer items-center gap-2 sm:col-span-2">
+                          <input
+                            type="checkbox"
+                            checked={f.required}
+                            onChange={(e) => updateField(f.id, { required: e.target.checked })}
+                            className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+                          />
+                          <span className="text-sm font-medium text-[var(--foreground)]">Required field</span>
+                        </label>
+                        {f.type === "recaptcha" && (
+                          <div className="sm:col-span-2 rounded-lg border border-[var(--border-default)] bg-[var(--neutral-50)] p-3 text-sm text-[var(--foreground-muted)]">
+                            <p className="font-medium text-[var(--foreground)]">reCAPTCHA v3 (score-based)</p>
+                            <p className="mt-1">
+                              The public form uses reCAPTCHA v3: no checkbox — verification runs on submit. Set{" "}
+                              Google reCAPTCHA site/secret keys in Super Admin settings.
+                            </p>
+                          </div>
                         )}
                       </div>
                     </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); removeField(f.id); }}
-                    className="btn-base min-h-[44px] shrink-0 self-start rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium text-[var(--color-danger)] transition-colors hover:bg-[var(--color-danger)]/10 sm:order-3"
-                  >
-                    Remove
-                  </button>
+                  )}
                 </div>
               ))}
-            </div>
-          )}
-
-          {selected && (
-            <div className="mt-6 rounded-xl border border-[var(--border-default)] bg-[var(--background-elevated)] p-4 shadow-[var(--shadow-sm)] sm:p-6">
-              <div className="mb-4 flex items-center justify-between gap-2">
-                <h3 className="font-heading text-base font-semibold text-[var(--foreground-heading)]">
-                  Edit Field
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setSelectedId(null)}
-                  className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[var(--foreground-muted)] transition-colors hover:bg-[var(--neutral-200)] hover:text-[var(--foreground)]"
-                  aria-label="Close Edit Field"
-                >
-                  <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Label</label>
-                  <input
-                    value={selected.label}
-                    onChange={(e) => updateField(selected.id, { label: e.target.value })}
-                    className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Field ID (used in form HTML)</label>
-                  <input
-                    value={selected.id}
-                    onChange={(e) => updateField(selected.id, { id: e.target.value })}
-                    className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Semantic key (storage)</label>
-                  <input
-                    value={selected.name}
-                    onChange={(e) => updateField(selected.id, { name: e.target.value })}
-                    placeholder="e.g. name, email, phone_number"
-                    className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-                  />
-                  <p className="mt-1 text-xs text-[var(--foreground-muted)]">Saved under this key regardless of field order.</p>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">Placeholder</label>
-                  <input
-                    value={selected.placeholder}
-                    onChange={(e) => updateField(selected.id, { placeholder: e.target.value })}
-                    className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-                  />
-                </div>
-                {(selected.type === "select" || selected.type === "radio") && (
-                  <div className="sm:col-span-2">
-                    <label className="mb-1.5 block text-sm font-medium text-[var(--foreground-muted)]">
-                      Options (one per line)
-                    </label>
-                    <textarea
-                      value={selected.options}
-                      onChange={(e) => updateField(selected.id, { options: e.target.value })}
-                      className="form-input-base w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--background-elevated)] px-3 py-2 text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]/30"
-                      rows={3}
-                    />
-                  </div>
-                )}
-                <label className="flex cursor-pointer items-center gap-2 sm:col-span-2">
-                  <input
-                    type="checkbox"
-                    checked={selected.required}
-                    onChange={(e) => updateField(selected.id, { required: e.target.checked })}
-                    className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
-                  />
-                  <span className="text-sm font-medium text-[var(--foreground)]">Required field</span>
-                </label>
-                {selected.type === "recaptcha" && (
-                  <div className="sm:col-span-2 rounded-lg border border-[var(--border-default)] bg-[var(--neutral-50)] p-3 text-sm text-[var(--foreground-muted)]">
-                    <p className="font-medium text-[var(--foreground)]">reCAPTCHA v3 (score-based)</p>
-                    <p className="mt-1">
-                      The public form uses reCAPTCHA v3: no checkbox — verification runs on submit. Set{" "}
-                      Google reCAPTCHA site/secret keys in Super Admin settings.
-                    </p>
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>

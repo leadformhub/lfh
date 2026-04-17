@@ -37,9 +37,12 @@ export function useToast() {
 const variantStyles: Record<ToastVariant, string> = {
   default:
     "border-[var(--border-subtle)] bg-[var(--background-elevated)] text-[var(--foreground)]",
-  success: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200",
-  warning: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-200",
-  danger: "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200",
+  success:
+    "border-[var(--color-success)]/30 bg-[var(--background-elevated)] text-[var(--foreground)]",
+  warning:
+    "border-[var(--color-warning)]/30 bg-[var(--background-elevated)] text-[var(--foreground)]",
+  danger:
+    "border-[var(--color-danger)]/30 bg-[var(--background-elevated)] text-[var(--foreground)]",
 };
 
 function ToastItemComponent({
@@ -102,7 +105,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     typeof document !== "undefined" &&
     createPortal(
       <div
-        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+        className="fixed right-4 top-4 z-50 flex flex-col gap-2"
         aria-live="polite"
       >
         {toasts.map((t) => (

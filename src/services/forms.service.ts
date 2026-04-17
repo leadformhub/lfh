@@ -57,7 +57,7 @@ export function getFormsByUserIdCached(userId: string, page = 1, perPage = 25) {
   return unstable_cache(
     () => getFormsByUserId(userId, page, perPage),
     ["forms-list", userId, String(page), String(perPage)],
-    { revalidate: 30 }
+    { revalidate: 30, tags: [`forms-list:${userId}`] }
   )();
 }
 

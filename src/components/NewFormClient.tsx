@@ -301,9 +301,19 @@ export function NewFormClient({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="min-h-[44px] w-full rounded-lg bg-[var(--color-accent)] py-2.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
+                  className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[var(--color-accent)] py-2.5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {loading ? "Creating…" : "Create & Design"}
+                  {loading ? (
+                    <>
+                      <span
+                        className="size-4 animate-spin rounded-full border-2 border-white/70 border-t-transparent"
+                        aria-hidden
+                      />
+                      Processing...
+                    </>
+                  ) : (
+                    "Create & Design"
+                  )}
                 </button>
                 <Link
                   href={`/${username}/forms`}
