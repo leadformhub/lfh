@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { FormFieldSchema } from "@/lib/form-schema";
 import { validateName, validateEmail, validatePhone, isNameField } from "@/lib/validators";
 import { trackFacebookLead } from "@/lib/facebook-pixel";
-
-/** reCAPTCHA v3 (score-based): load with render=siteKey for execute() */
-function getRecaptchaScriptUrl(siteKey: string): string {
-  return `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
-}
+import { getRecaptchaToken } from "@/lib/recaptcha-client";
 
 /** Read UTM params from current URL (client-side). Returns object with only present keys. */
 function getUtmParams(): Record<string, string> {
@@ -54,7 +50,6 @@ export function PublicForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const phoneField = fields.find((f) => f.type === "phone");
@@ -99,22 +94,6 @@ export function PublicForm({
     }
     return true;
   }, [fields, values, validateField]);
-
-  useEffect(() => {
-    if (!recaptchaSiteKey) return;
-    if (typeof window === "undefined") return;
-    const scriptUrl = getRecaptchaScriptUrl(recaptchaSiteKey);
-    if (document.querySelector(`script[src^="https://www.google.com/recaptcha/api.js"]`)) {
-      setRecaptchaReady(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = scriptUrl;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => setRecaptchaReady(true);
-    document.head.appendChild(script);
-  }, [recaptchaSiteKey]);
 
   async function handleSendOtp() {
     const p = phoneField ? (values[phoneField.id] || phone) : "";
@@ -228,6 +207,7 @@ export function PublicForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     if (!canSubmit) {
       if (needsOtp && !otpVerified) setError("Please verify your phone with OTP first.");
       else if (needsEmailOtp && !emailOtpVerified) setError("Please verify your email with OTP first.");
@@ -243,20 +223,8 @@ export function PublicForm({
     try {
       let recaptchaToken: string | undefined;
       if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
-        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
-        if (!g?.execute) {
-          setError("reCAPTCHA is still loading. Please try again.");
-          setLoading(false);
-          return;
-        }
         try {
-          recaptchaToken = await new Promise<string>((resolve, reject) => {
-            g.ready(() => {
-              g.execute(recaptchaSiteKey!, { action: "submit" })
-                .then(resolve)
-                .catch(reject);
-            });
-          });
+          recaptchaToken = await getRecaptchaToken(recaptchaSiteKey, "submit");
         } catch {
           setError("reCAPTCHA could not run. Please refresh and try again.");
           setLoading(false);

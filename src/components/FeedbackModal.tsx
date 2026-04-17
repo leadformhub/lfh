@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, ModalCloseButton } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
-
-/** reCAPTCHA v3 script URL for execute() */
-function getRecaptchaScriptUrl(siteKey: string): string {
-  return `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
-}
+import { getRecaptchaToken } from "@/lib/recaptcha-client";
 
 export interface FeedbackModalProps {
   open: boolean;
@@ -25,19 +21,9 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
   const recaptchaSiteKey = useRecaptchaSiteKey();
   const recaptchaEnabled = Boolean(recaptchaSiteKey);
 
-  useEffect(() => {
-    if (!recaptchaSiteKey || typeof window === "undefined") return;
-    const scriptUrl = getRecaptchaScriptUrl(recaptchaSiteKey);
-    if (document.querySelector(`script[src^="https://www.google.com/recaptcha/api.js"]`)) return;
-    const script = document.createElement("script");
-    script.src = scriptUrl;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }, [recaptchaSiteKey]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     const trimmed = message.trim();
     if (!trimmed) {
       setError("Please enter your feedback.");
@@ -48,18 +34,8 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
     try {
       let recaptchaToken: string | undefined;
       if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
-        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
-        if (!g?.execute) {
-          setError("reCAPTCHA is still loading. Please try again.");
-          setSubmitting(false);
-          return;
-        }
         try {
-          recaptchaToken = await new Promise<string>((resolve, reject) => {
-            g.ready(() => {
-              g.execute(recaptchaSiteKey, { action: "submit" }).then(resolve).catch(reject);
-            });
-          });
+          recaptchaToken = await getRecaptchaToken(recaptchaSiteKey, "submit");
         } catch {
           setError("reCAPTCHA could not run. Please refresh and try again.");
           setSubmitting(false);

@@ -5,9 +5,7 @@ import Link from "next/link";
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRecaptchaSiteKey } from "@/hooks/useRecaptchaSiteKey";
-
-const RECAPTCHA_SCRIPT_URL = (siteKey: string) =>
-  `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
+import { getRecaptchaToken } from "@/lib/recaptcha-client";
 
 function SignupForm() {
   const searchParams = useSearchParams();
@@ -15,50 +13,11 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
-  const [recaptchaLoading, setRecaptchaLoading] = useState(false);
   const router = useRouter();
   const inviteParam = searchParams.get("invite");
 
   const recaptchaSiteKey = useRecaptchaSiteKey();
   const recaptchaEnabled = Boolean(recaptchaSiteKey);
-
-  useEffect(() => {
-    if (!recaptchaSiteKey || typeof window === "undefined") return;
-    const markReady = () => {
-      setRecaptchaReady(true);
-      setRecaptchaLoading(false);
-    };
-    const scriptEl = document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]');
-    if (scriptEl) {
-      setRecaptchaLoading(true);
-      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
-      if (g?.ready) {
-        g.ready(markReady);
-        return;
-      }
-      const id = setInterval(() => {
-        const gr = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
-        if (gr?.ready) {
-          clearInterval(id);
-          gr.ready(markReady);
-        }
-      }, 100);
-      return () => clearInterval(id);
-    }
-    setRecaptchaLoading(true);
-    const script = document.createElement("script");
-    script.src = RECAPTCHA_SCRIPT_URL(recaptchaSiteKey);
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void } }).grecaptcha;
-      if (g?.ready) g.ready(markReady);
-      else markReady();
-    };
-    script.onerror = () => setRecaptchaLoading(false);
-    document.head.appendChild(script);
-  }, [recaptchaSiteKey]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -73,29 +32,14 @@ function SignupForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError("");
-    if (recaptchaEnabled && recaptchaSiteKey) {
-      if (!recaptchaReady) {
-        setError("reCAPTCHA is still loading. Please wait a moment and try again.");
-        return;
-      }
-      const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
-      if (!g) {
-        setError("reCAPTCHA could not run. Please refresh and try again.");
-        return;
-      }
-    }
     setLoading(true);
     try {
       let recaptchaToken: string | undefined;
       if (recaptchaEnabled && recaptchaSiteKey && typeof window !== "undefined") {
-        const g = (window as unknown as { grecaptcha?: { ready: (cb: () => void) => void; execute: (key: string, opts: { action: string }) => Promise<string> } }).grecaptcha;
         try {
-          recaptchaToken = await new Promise<string>((resolve, reject) => {
-            g!.ready(() => {
-              g!.execute(recaptchaSiteKey, { action: "signup" }).then(resolve).catch(reject);
-            });
-          });
+          recaptchaToken = await getRecaptchaToken(recaptchaSiteKey, "signup");
         } catch {
           setError("reCAPTCHA could not run. Please refresh and try again.");
           setLoading(false);
@@ -242,11 +186,7 @@ function SignupForm() {
 
           {recaptchaEnabled && (
             <p className="text-center text-xs text-white/50" role="status" aria-live="polite">
-              {recaptchaLoading && !recaptchaReady ? (
-                <>Loading reCAPTCHA…</>
-              ) : recaptchaReady ? (
-                <>Protected by reCAPTCHA</>
-              ) : null}
+              Protected by reCAPTCHA
             </p>
           )}
         </form>
