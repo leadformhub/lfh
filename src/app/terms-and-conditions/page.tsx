@@ -2,14 +2,31 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
-import { buildPageMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Terms and Conditions | LeadFormHub",
-  description:
-    "LeadFormHub terms and conditions of use. Acceptable use, account terms, and legal terms for the lead capture platform and form builder.",
-  path: "/terms-and-conditions",
-});
+const title = "Terms and Conditions | LeadFormHub";
+const description =
+  "LeadFormHub terms and conditions of use. Acceptable use, account terms, and legal terms for the lead capture platform and form builder.";
+const url = `${SITE_URL}/terms-and-conditions`;
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: { canonical: url },
+  openGraph: {
+    title,
+    description,
+    url,
+    siteName: "LeadFormHub",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
+  robots: { index: false, follow: false },
+};
 
 export default function TermsAndConditionsPage() {
   return (

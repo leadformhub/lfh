@@ -27,6 +27,9 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     default: "Lead Capture Form Builder for High-Converting Leads | LeadFormHub",
     template: "%s | LeadFormHub",

@@ -9,6 +9,7 @@ export const metadata: Metadata = buildPageMetadata({
   description:
     "LeadFormHub privacy policy. How we collect, use, and protect your data and lead information when you use our lead capture form builder.",
   path: "/privacy-policy",
+  noIndex: true,
 });
 
 export default function PrivacyPolicyPage() {
