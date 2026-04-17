@@ -29,8 +29,8 @@ function getSiteUrl(): string {
 }
 
 export const SITE_URL = getSiteUrl();
-export const HOMEPAGE_H1_PREFIX = "Free Online Form Builder with";
-export const HOMEPAGE_H1_HIGHLIGHT = "Unlimited Submissions";
+export const HOMEPAGE_H1_PREFIX = "Verified Lead Capture Forms for";
+export const HOMEPAGE_H1_HIGHLIGHT = "Indian B2B Teams";
 export const HOMEPAGE_SEO_TITLE = `${HOMEPAGE_H1_PREFIX} ${HOMEPAGE_H1_HIGHLIGHT} | LeadFormHub`;
 
 type BuildPageMetadataOptions = {

@@ -25,7 +25,7 @@ import { buildPageMetadata, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: HOMEPAGE_SEO_TITLE,
   description:
-    "Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.",
+    "Capture verified leads with OTP-validated forms built for Indian B2B teams. Reduce fake submissions, notify sales instantly, and manage every lead from one dashboard.",
   path: "/",
 });
 
