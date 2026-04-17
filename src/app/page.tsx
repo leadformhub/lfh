@@ -20,10 +20,10 @@ import {
   FAQ,
   Footer,
 } from "@/components/landing";
-import { buildPageMetadata, SITE_URL } from "@/lib/seo";
+import { buildPageMetadata, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Free Online Form Builder with Unlimited Submissions | LeadFormHub",
+  title: HOMEPAGE_SEO_TITLE,
   description:
     "Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.",
   path: "/",

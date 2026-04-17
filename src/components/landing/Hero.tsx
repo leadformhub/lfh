@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { HOMEPAGE_H1_HIGHLIGHT, HOMEPAGE_H1_PREFIX } from "@/lib/seo";
 
 /**
  * 2. Hero Section (Above the Fold)
@@ -39,7 +40,7 @@ export function Hero() {
               id="hero-heading"
               className="font-heading max-w-3xl text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
             >
-              Free Online Form Builder with <span className="text-[var(--color-accent)]">Unlimited Submissions</span>
+              {HOMEPAGE_H1_PREFIX} <span className="text-[var(--color-accent)]">{HOMEPAGE_H1_HIGHLIGHT}</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--color-secondary)]">
               Build unlimited online forms in minutes with LeadFormHub. Collect leads, receive instant email notifications, and manage submissions from one simple dashboard.

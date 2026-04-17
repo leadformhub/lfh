@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { SITE_URL } from "@/lib/seo";
+import { HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   title: {
-    default: "Lead Capture Form Builder for High-Converting Leads | LeadFormHub",
+    default: HOMEPAGE_SEO_TITLE,
     template: "%s | LeadFormHub",
   },
   description:
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     "lead capture tools for business",
   ],
   openGraph: {
-    title: "Lead Capture Form Builder for High-Converting Leads | LeadFormHub",
+    title: HOMEPAGE_SEO_TITLE,
     description:
       "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
     url: `${SITE_URL}/`,
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lead Capture Form Builder for High-Converting Leads | LeadFormHub",
+    title: HOMEPAGE_SEO_TITLE,
     description:
       "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
   },
