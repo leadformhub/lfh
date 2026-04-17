@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { FacebookPixel } from "@/components/FacebookPixel";
 import { ProcessingProvider } from "@/components/ProcessingProvider";
@@ -147,6 +148,7 @@ export default async function RootLayout({
         <GoogleAnalytics measurementId={trackingIds.gaMeasurementId} />
         <FacebookPixel pixelId={trackingIds.fbPixelId} />
         <Analytics />
+        <SpeedInsights />
         <ProcessingProvider>{children}</ProcessingProvider>
       </body>
     </html>
