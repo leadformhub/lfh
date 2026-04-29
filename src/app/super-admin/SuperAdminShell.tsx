@@ -152,6 +152,10 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   >([]);
   const [cronLoading, setCronLoading] = useState(false);
   const [cronError, setCronError] = useState<string | null>(null);
+  const [cronRunLoadingKey, setCronRunLoadingKey] = useState<string | null>(null);
+  const [cronRunMessage, setCronRunMessage] = useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [ticketsError, setTicketsError] = useState<string | null>(null);
@@ -328,6 +332,52 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
     void fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeItem, userStatusFilter, userPlanFilter]);
+
+  async function refreshCronStatus() {
+    setCronLoading(true);
+    setCronError(null);
+    try {
+      const res = await fetch("/api/super-admin/cron-status", { method: "GET" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setCronError(typeof data.error === "string" ? data.error : "Failed to load cron status.");
+        setCronJobs([]);
+        return;
+      }
+      setCronJobs(Array.isArray(data.jobs) ? data.jobs : []);
+    } catch {
+      setCronError("Failed to load cron status.");
+      setCronJobs([]);
+    } finally {
+      setCronLoading(false);
+    }
+  }
+
+  async function runCronJob(jobKey: string) {
+    setCronRunMessage(null);
+    setCronRunLoadingKey(jobKey);
+    try {
+      const res = await fetch("/api/super-admin/run-cron", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobKey }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setCronRunMessage({
+          type: "error",
+          text: typeof data.error === "string" ? data.error : "Failed to run cron job.",
+        });
+        return;
+      }
+      setCronRunMessage({ type: "success", text: `Cron job "${jobKey}" executed.` });
+      await refreshCronStatus();
+    } catch {
+      setCronRunMessage({ type: "error", text: "Failed to run cron job." });
+    } finally {
+      setCronRunLoadingKey(null);
+    }
+  }
 
   async function fetchTickets() {
     setTicketsLoading(true);
@@ -1232,6 +1282,59 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                   </p>
 
                   <div className="mt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void runCronJob("expire-plans")}
+                          disabled={cronRunLoadingKey === "expire-plans"}
+                          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {cronRunLoadingKey === "expire-plans" ? "Running…" : "Run expire-plans now"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void runCronJob("send-expiry-reminders")}
+                          disabled={cronRunLoadingKey === "send-expiry-reminders"}
+                          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {cronRunLoadingKey === "send-expiry-reminders"
+                            ? "Running…"
+                            : "Run send-expiry-reminders now"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void runCronJob("support-requests-auto-close")}
+                          disabled={cronRunLoadingKey === "support-requests-auto-close"}
+                          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {cronRunLoadingKey === "support-requests-auto-close"
+                            ? "Running…"
+                            : "Run ticket auto-close now"}
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void refreshCronStatus()}
+                        disabled={cronLoading}
+                        className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {cronLoading ? "Refreshing…" : "Refresh"}
+                      </button>
+                    </div>
+
+                    {cronRunMessage ? (
+                      <div
+                        className={`mt-3 rounded-md px-3 py-2 text-sm ${
+                          cronRunMessage.type === "success"
+                            ? "border border-green-200 bg-green-50 text-green-700"
+                            : "border border-red-200 bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {cronRunMessage.text}
+                      </div>
+                    ) : null}
+
                     {cronLoading ? (
                       <p className="text-sm text-gray-600">Loading cron status…</p>
                     ) : cronError ? (
