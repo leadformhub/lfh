@@ -118,7 +118,7 @@ export default function KaizenVsKanbanPage() {
                 </span>
               </div>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Too much work. Not enough progress. Here&apos;s <strong>Kaizen vs Kanban</strong> in plain English, plus a simple way to choose the one that fits your team.
+                Feeling overloaded but not moving forward? This guide breaks down <strong>Kaizen vs Kanban</strong> and gives you a simple way to choose what fits your team.
               </p>
               <div className="hero-content mt-8">
                 <div className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-alt)] shadow-[var(--shadow-sm)]">
@@ -209,7 +209,7 @@ export default function KaizenVsKanbanPage() {
                 What Is Kaizen?
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Kaizen is a Japanese word that means &quot;continuous improvement.&quot; It became widely known in post‑World War II Japan. Many companies used it to rebuild quality and efficiency. Toyota helped popularise the approach. Masaaki Imai later brought it to a global audience through his writing and teaching.
+                <strong>Kaizen</strong> is a Japanese word that means &quot;continuous improvement.&quot; It became widely known in post‑World War II Japan. Many companies used it to rebuild quality and efficiency. Toyota helped popularise the approach. Masaaki Imai later brought it to a global audience through his writing and teaching.
               </p>
               <p className="mt-4 text-[var(--foreground-muted)]">
                 The core idea is simple: make small, meaningful improvements and repeat them. Kaizen is not a one‑time program. It is a habit. Everyone participates, not just managers. The people closest to the work often see the best fixes. That is why Kaizen puts so much weight on team involvement.
@@ -338,7 +338,7 @@ export default function KaizenVsKanbanPage() {
                 What Is Kanban?
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Kanban is a Japanese word that means a &quot;visual signal&quot; or &quot;card.&quot; It started inside the Toyota Production System in the 1940s. The original idea was to signal when to make or move work. In modern teams, Kanban has been adapted for knowledge work. David Anderson helped popularise this style of Kanban for software teams around 2010.
+                <strong>Kanban</strong> is a Japanese word that means a &quot;visual signal&quot; or &quot;card.&quot; It started inside the Toyota Production System in the 1940s. The original idea was to signal when to make or move work. In modern teams, Kanban has been adapted for knowledge work. David Anderson helped popularise this style of Kanban for software teams around 2010.
               </p>
               <p className="mt-4 text-[var(--foreground-muted)]">
                 The philosophy is to visualise work, limit work in progress (WIP), and improve flow. When you can see work clearly, you can manage it. When you limit WIP, you reduce multitasking. That makes bottlenecks easier to spot and easier to fix.
@@ -615,7 +615,7 @@ export default function KaizenVsKanbanPage() {
                 Key Similarities Between Kaizen and Kanban
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Kaizen and Kanban both started in Japan, and both connect strongly to Lean thinking. Each one aims to reduce waste and improve efficiency. Each one is iterative, so you do not &quot;finish&quot; and move on. Instead, you learn, adjust, and repeat. Kaizen and Kanban also shift power toward the team. They help people doing the work improve the system.
+                <strong>Kaizen and Kanban</strong> both started in Japan, and both connect strongly to Lean thinking. Each one aims to reduce waste and improve efficiency. Each one is iterative, so you do not &quot;finish&quot; and move on. Instead, you learn, adjust, and repeat. Kaizen and Kanban also shift power toward the team. They help people doing the work improve the system.
               </p>
               <p className="mt-4 text-[var(--foreground-muted)]">
                 Another shared trait is transparency. Kaizen encourages teams to surface problems early. Kanban makes problems visible through the board. When issues are visible, they are easier to discuss without blame. That creates safer, faster improvement.
@@ -627,6 +627,9 @@ export default function KaizenVsKanbanPage() {
               >
                 When to Use Kaizen vs Kanban
               </h2>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                If you&apos;re deciding between <strong>Kaizen vs Kanban</strong>, start with your pain point. Do you need better visibility right now? Or do you need to improve a messy process over time?
+              </p>
               <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
                 Use Kaizen when…
               </h3>
@@ -662,7 +665,7 @@ export default function KaizenVsKanbanPage() {
                 Can You Use Kaizen and Kanban Together?
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Yes. In practice, Kaizen and Kanban work best as a pair. Kanban gives you a shared picture of work, so problems are visible. Kaizen gives you a repeatable way to fix those problems, one improvement at a time. When teams use only Kanban, the board can turn into a dashboard that shows delays without solving them.
+                Yes. In practice, <strong>Kaizen and Kanban</strong> work best as a pair. Kanban gives you a shared picture of work, so problems are visible. Kaizen gives you a repeatable way to fix those problems, one improvement at a time. When teams use only Kanban, the board can turn into a dashboard that shows delays without solving them.
               </p>
               <figure className="mt-8">
                 <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--background-alt)]">
@@ -693,7 +696,7 @@ export default function KaizenVsKanbanPage() {
                 Applying Kaizen and Kanban to Lead Generation Workflows
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Lead generation is a workflow like any other. Leads enter a system, move through steps, and either convert or drop off. That makes it a good place to apply Kaizen and Kanban. Start by using a Kanban board to track leads from form submission to contacted to qualified to closed. When you see work at each stage, it becomes obvious where follow‑ups stall.
+                Lead generation is a workflow like any other. Leads enter a system, move through steps, and either convert or drop off. That makes it a good place to apply <strong>Kaizen and Kanban</strong>. Start by using a Kanban board to track leads from form submission to contacted to qualified to closed. When you see work at each stage, it becomes obvious where follow‑ups stall.
               </p>
               <p className="mt-4 text-[var(--foreground-muted)]">
                 Next, apply Kaizen to your lead capture forms. Make one improvement at a time. A/B test one field, then measure results. Reduce form length in small steps. Review conversion rate monthly, so you do not rely on guesswork. Small wins compound when you repeat them.
