@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getConfiguredSupportEmail, sendDailyUsersReport } from "@/lib/email";
+import { recordCronJobHealth } from "@/lib/cron-health";
 
 /**
  * Send daily users list to the configured Support Email.
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function runDailyUsersReport(req: NextRequest) {
+  const startedAt = Date.now();
   const secret = process.env.CRON_SECRET?.trim();
   const provided =
     req.headers.get("x-cron-secret") ??
@@ -23,32 +25,44 @@ async function runDailyUsersReport(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supportEmail = (await getConfiguredSupportEmail()).trim();
-  if (!supportEmail) {
-    return NextResponse.json(
-      { error: "Support email is not configured in Super Admin settings." },
-      { status: 500 }
-    );
+  try {
+    const supportEmail = (await getConfiguredSupportEmail()).trim();
+    if (!supportEmail) {
+      await recordCronJobHealth({
+        jobKey: "daily-users-report",
+        ok: false,
+        startedAt,
+        error: "Support email is not configured in Super Admin settings.",
+      });
+      return NextResponse.json(
+        { error: "Support email is not configured in Super Admin settings." },
+        { status: 500 }
+      );
+    }
+
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        plan: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+
+    const ok = await sendDailyUsersReport(supportEmail, users);
+    await recordCronJobHealth({ jobKey: "daily-users-report", ok, startedAt });
+
+    return NextResponse.json({
+      ok,
+      totalUsers: users.length,
+      sentTo: supportEmail,
+    });
+  } catch (error) {
+    await recordCronJobHealth({ jobKey: "daily-users-report", ok: false, startedAt, error });
+    throw error;
   }
-
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      email: true,
-      plan: true,
-      status: true,
-      createdAt: true,
-    },
-  });
-
-  const ok = await sendDailyUsersReport(supportEmail, users);
-
-  return NextResponse.json({
-    ok,
-    totalUsers: users.length,
-    sentTo: supportEmail,
-  });
 }

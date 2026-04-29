@@ -542,3 +542,15 @@ model SuperAdminPlanPricingSetting {
 
   @@map("super_admin_plan_pricing_settings")
 }
+
+/// Last known health/status of internal cron endpoints (best-effort logging).
+model CronJobHealth {
+  jobKey          String   @id @map("job_key") @db.VarChar(128)
+  lastRunAt       DateTime? @map("last_run_at")
+  lastOk          Boolean  @default(true) @map("last_ok")
+  lastDurationMs  Int?     @map("last_duration_ms")
+  lastError       String?  @map("last_error") @db.Text
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("cron_job_health")
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { recordCronJobHealth } from "@/lib/cron-health";
 
 const INACTIVE_DAYS = 7;
 
@@ -16,38 +17,46 @@ export async function POST(req: NextRequest) {
 }
 
 async function runAutoClose(req: NextRequest) {
+  const startedAt = Date.now();
   const secret = process.env.CRON_SECRET?.trim();
   const provided = req.headers.get("x-cron-secret") ?? req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   if (secret && provided !== secret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - INACTIVE_DAYS);
+  try {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - INACTIVE_DAYS);
 
-  const toClose = await prisma.supportRequest.findMany({
-    where: {
-      status: { not: "resolved" },
-      OR: [
-        { lastActivityAt: { lt: cutoff } },
-        { lastActivityAt: null, updatedAt: { lt: cutoff } },
-      ],
-    },
-    select: { id: true, ticketNumber: true, subject: true },
-  });
+    const toClose = await prisma.supportRequest.findMany({
+      where: {
+        status: { not: "resolved" },
+        OR: [
+          { lastActivityAt: { lt: cutoff } },
+          { lastActivityAt: null, updatedAt: { lt: cutoff } },
+        ],
+      },
+      select: { id: true, ticketNumber: true, subject: true },
+    });
 
-  if (toClose.length === 0) {
-    return NextResponse.json({ ok: true, closed: 0, message: "No tickets to close" });
+    if (toClose.length === 0) {
+      await recordCronJobHealth({ jobKey: "support-requests-auto-close", ok: true, startedAt });
+      return NextResponse.json({ ok: true, closed: 0, message: "No tickets to close" });
+    }
+
+    await prisma.supportRequest.updateMany({
+      where: { id: { in: toClose.map((t) => t.id) } },
+      data: { status: "resolved" },
+    });
+
+    await recordCronJobHealth({ jobKey: "support-requests-auto-close", ok: true, startedAt });
+    return NextResponse.json({
+      ok: true,
+      closed: toClose.length,
+      tickets: toClose.map((t) => ({ id: t.id, ticketNumber: t.ticketNumber, subject: t.subject })),
+    });
+  } catch (error) {
+    await recordCronJobHealth({ jobKey: "support-requests-auto-close", ok: false, startedAt, error });
+    throw error;
   }
-
-  await prisma.supportRequest.updateMany({
-    where: { id: { in: toClose.map((t) => t.id) } },
-    data: { status: "resolved" },
-  });
-
-  return NextResponse.json({
-    ok: true,
-    closed: toClose.length,
-    tickets: toClose.map((t) => ({ id: t.id, ticketNumber: t.ticketNumber, subject: t.subject })),
-  });
 }

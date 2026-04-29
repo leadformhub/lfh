@@ -9,6 +9,18 @@
     {
       "path": "/api/cron/daily-feedback-report",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/expire-plans",
+      "schedule": "10 8 * * *"
+    },
+    {
+      "path": "/api/cron/send-expiry-reminders",
+      "schedule": "20 8 * * *"
+    },
+    {
+      "path": "/api/support-requests/auto-close",
+      "schedule": "30 8 * * *"
     }
   ],
   "redirects": [

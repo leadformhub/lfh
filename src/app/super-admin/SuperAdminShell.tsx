@@ -141,6 +141,17 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [cronJobs, setCronJobs] = useState<
+    Array<{
+      jobKey: string;
+      lastRunAt: string | null;
+      lastOk: boolean;
+      lastDurationMs: number | null;
+      lastError: string | null;
+    }>
+  >([]);
+  const [cronLoading, setCronLoading] = useState(false);
+  const [cronError, setCronError] = useState<string | null>(null);
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [ticketsError, setTicketsError] = useState<string | null>(null);
@@ -230,14 +241,17 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
     let cancelled = false;
 
     async function loadSettings() {
+      setCronLoading(true);
+      setCronError(null);
       try {
-        const [smtpRes, recaptchaRes, googleRes, trackingRes, razorpayRes, smsRes] = await Promise.all([
+        const [smtpRes, recaptchaRes, googleRes, trackingRes, razorpayRes, smsRes, cronRes] = await Promise.all([
           fetch("/api/super-admin/smtp", { method: "GET" }),
           fetch("/api/super-admin/recaptcha", { method: "GET" }),
           fetch("/api/super-admin/google", { method: "GET" }),
           fetch("/api/super-admin/tracking", { method: "GET" }),
           fetch("/api/super-admin/razorpay", { method: "GET" }),
           fetch("/api/super-admin/sms", { method: "GET" }),
+          fetch("/api/super-admin/cron-status", { method: "GET" }),
         ]);
         const smtpData = await smtpRes.json().catch(() => ({}));
         const recaptchaData = await recaptchaRes.json().catch(() => ({}));
@@ -245,6 +259,7 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
         const trackingData = await trackingRes.json().catch(() => ({}));
         const razorpayData = await razorpayRes.json().catch(() => ({}));
         const smsData = await smsRes.json().catch(() => ({}));
+        const cronData = await cronRes.json().catch(() => ({}));
         if (cancelled) return;
         if (smtpRes.ok && smtpData.smtp) {
           setSmtpHost(smtpData.smtp.host || "");
@@ -280,8 +295,20 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
           setFast2smsQuickApiKey(smsData.sms.fast2smsQuickApiKey || "");
           setSmsEnabled(smsData.sms.enabled !== false);
         }
+        if (cronRes.ok && cronData.jobs) {
+          setCronJobs(Array.isArray(cronData.jobs) ? cronData.jobs : []);
+        } else if (!cronRes.ok) {
+          setCronError(typeof cronData.error === "string" ? cronData.error : "Failed to load cron status.");
+          setCronJobs([]);
+        }
       } catch {
         // Keep UI usable even if saved settings fail to load.
+        if (!cancelled) {
+          setCronError("Failed to load cron status.");
+          setCronJobs([]);
+        }
+      } finally {
+        if (!cancelled) setCronLoading(false);
       }
     }
 
@@ -1196,6 +1223,74 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
             {activeItem === "plans-pricing" ? <SuperAdminPlansPricingPanel /> : null}
             {activeItem === "setting" ? (
               <div className="space-y-4">
+                <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">Cron Status</p>
+                  <h2 className="mt-1 text-lg font-semibold text-gray-900">Scheduled jobs health</h2>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Shows the last recorded run of cron endpoints. If the “Last run” is empty, cron likely
+                    hasn&apos;t executed yet (or DB schema sync is pending).
+                  </p>
+
+                  <div className="mt-4">
+                    {cronLoading ? (
+                      <p className="text-sm text-gray-600">Loading cron status…</p>
+                    ) : cronError ? (
+                      <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                        {cronError}
+                      </div>
+                    ) : cronJobs.length === 0 ? (
+                      <p className="text-sm text-gray-600">No cron status recorded yet.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-gray-600">
+                              <th className="py-2 pr-4 font-medium">Job</th>
+                              <th className="py-2 pr-4 font-medium">Last run</th>
+                              <th className="py-2 pr-4 font-medium">OK</th>
+                              <th className="py-2 pr-4 font-medium">Duration</th>
+                              <th className="py-2 pr-4 font-medium">Last error</th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-gray-800">
+                            {cronJobs.map((j) => (
+                              <tr key={j.jobKey} className="border-t border-gray-200 align-top">
+                                <td className="py-2 pr-4 font-medium">{j.jobKey}</td>
+                                <td className="py-2 pr-4">
+                                  {j.lastRunAt ? new Date(j.lastRunAt).toLocaleString("en-IN") : "—"}
+                                </td>
+                                <td className="py-2 pr-4">
+                                  <span
+                                    className={
+                                      j.lastOk
+                                        ? "inline-flex rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700"
+                                        : "inline-flex rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700"
+                                    }
+                                  >
+                                    {j.lastOk ? "Yes" : "No"}
+                                  </span>
+                                </td>
+                                <td className="py-2 pr-4">{j.lastDurationMs != null ? `${j.lastDurationMs} ms` : "—"}</td>
+                                <td className="py-2 pr-4">
+                                  {j.lastError ? (
+                                    <span className="text-red-700">{j.lastError}</span>
+                                  ) : (
+                                    "—"
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                      Note: On Vercel, cron scheduling is configured in <code>vercel.json</code>. On a VPS,
+                      you must set up an OS cron that calls these endpoints with <code>x-cron-secret</code>.
+                    </div>
+                  </div>
+                </div>
                 <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">Settings Item 1</p>
                   <h2 className="mt-1 text-lg font-semibold text-gray-900">
