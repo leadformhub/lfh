@@ -323,9 +323,12 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
   }, [activeItem]);
 
   useEffect(() => {
-    if (activeItem !== "tickets") return;
+    if (activeItem !== "tickets" && activeItem !== "dashboard") return;
+    if (ticketsLoading) return;
+    if (tickets.length > 0) return;
     void fetchTickets();
-  }, [activeItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeItem, ticketsLoading, tickets.length]);
 
   useEffect(() => {
     if (activeItem !== "users") return;
@@ -1129,6 +1132,116 @@ export function SuperAdminShell({ dashboardStats }: { dashboardStats: SuperAdmin
                     </p>
                     <p className="mt-2 text-xs text-gray-400">Pro &amp; Business plans</p>
                   </button>
+                </div>
+
+                <div className="mt-8 grid gap-4 lg:grid-cols-3">
+                  <div className="lg:col-span-2 rounded-2xl border border-gray-200/90 bg-white p-6 shadow-sm ring-1 ring-black/[0.03]">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-semibold text-gray-900">Recent tickets</h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Latest support activity across the platform.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveItem("tickets")}
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        Open tickets →
+                      </button>
+                    </div>
+
+                    <div className="mt-4 overflow-x-auto">
+                      {ticketsLoading ? (
+                        <p className="text-sm text-gray-500">Loading…</p>
+                      ) : ticketsError ? (
+                        <p className="text-sm text-red-600">{ticketsError}</p>
+                      ) : tickets.length === 0 ? (
+                        <p className="text-sm text-gray-500">No tickets yet.</p>
+                      ) : (
+                        <table className="min-w-full text-left text-sm">
+                          <thead>
+                            <tr className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                              <th className="px-3 py-2">Ticket</th>
+                              <th className="px-3 py-2">User</th>
+                              <th className="px-3 py-2">Subject</th>
+                              <th className="px-3 py-2">Status</th>
+                              <th className="px-3 py-2">Last activity</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {tickets.slice(0, 5).map((ticket) => (
+                              <tr
+                                key={ticket.id}
+                                className="cursor-pointer hover:bg-gray-50"
+                                onClick={() => {
+                                  setActiveItem("tickets");
+                                  setActiveTicketId(ticket.id);
+                                  void fetchTicketThread(ticket.id);
+                                }}
+                              >
+                                <td className="px-3 py-2.5 whitespace-nowrap font-medium text-gray-900">
+                                  {ticket.ticketNumber || "—"}
+                                </td>
+                                <td className="px-3 py-2.5 whitespace-nowrap text-gray-700">
+                                  {ticket.user.username}
+                                </td>
+                                <td className="px-3 py-2.5 text-gray-700">{ticket.subject}</td>
+                                <td className="px-3 py-2.5 whitespace-nowrap">
+                                  <span
+                                    className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                      ticket.status === "open"
+                                        ? "bg-rose-50 text-rose-700"
+                                        : ticket.status === "in_progress"
+                                          ? "bg-amber-50 text-amber-700"
+                                          : "bg-emerald-50 text-emerald-700"
+                                    }`}
+                                  >
+                                    {ticket.status === "open"
+                                      ? "Open"
+                                      : ticket.status === "in_progress"
+                                        ? "In progress"
+                                        : "Resolved"}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2.5 whitespace-nowrap text-gray-600">
+                                  {new Date(ticket.lastActivityAt || ticket.createdAt).toLocaleString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200/90 bg-white p-6 shadow-sm ring-1 ring-black/[0.03]">
+                    <h3 className="text-base font-semibold text-gray-900">Ticket status</h3>
+                    <div className="mt-4 grid gap-3">
+                      <div className="flex items-center justify-between rounded-xl bg-rose-50 px-4 py-3">
+                        <p className="text-sm font-medium text-rose-800">Open</p>
+                        <p className="font-mono text-lg font-semibold tabular-nums text-rose-900">
+                          {tickets.filter((t) => t.status === "open").length}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between rounded-xl bg-amber-50 px-4 py-3">
+                        <p className="text-sm font-medium text-amber-800">In progress</p>
+                        <p className="font-mono text-lg font-semibold tabular-nums text-amber-900">
+                          {tickets.filter((t) => t.status === "in_progress").length}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-4 py-3">
+                        <p className="text-sm font-medium text-emerald-800">Resolved</p>
+                        <p className="font-mono text-lg font-semibold tabular-nums text-emerald-900">
+                          {tickets.filter((t) => t.status === "resolved").length}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-xs text-gray-500">
+                      Counts update after tickets finish loading.
+                    </p>
+                  </div>
                 </div>
 
                 {dashboardDetailOpen ? (
