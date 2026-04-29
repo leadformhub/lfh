@@ -5,6 +5,7 @@ function buildRobotsTxt(): string {
     "User-agent: *",
     "Allow: /",
     "Disallow: /api/",
+    "Disallow: /super-admin",
     "Disallow: /login",
     "Disallow: /signup",
     "Disallow: /forgot-password",

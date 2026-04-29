@@ -24,8 +24,13 @@ function PageViewTracker({ measurementId }: { measurementId: string }) {
 }
 
 export function GoogleAnalytics({ measurementId }: { measurementId?: string }) {
+  const pathname = usePathname();
   const effectiveMeasurementId = measurementId?.trim() || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "";
   if (!effectiveMeasurementId) {
+    return null;
+  }
+
+  if (pathname?.startsWith("/super-admin")) {
     return null;
   }
 
