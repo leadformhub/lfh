@@ -166,9 +166,9 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "how-to-increase-form-submissions",
-    title: "How to Increase Form Submissions: Simple Tweaks That Work",
+    title: "How to Increase Form Submissions: 12 Proven Tactics",
     description:
-      "Get more people to complete your lead capture form. Simple tweaks: fewer fields, clear value, mobile-friendly design, and where to place your form. No big redesign required.",
+      "Getting fewer form submissions than expected? 12 proven tactics to increase form conversion rate by cutting fields, improving CTA copy, adding trust signals, and fixing mobile UX.",
     publishedAt: "2025-02-20",
   },
   {
