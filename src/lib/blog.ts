@@ -11,6 +11,13 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "how-to-reduce-fake-leads-from-forms",
+    title: "How to Reduce Fake Leads from Forms (7 Proven Ways)",
+    description:
+      "Getting fake leads from your forms? 7 proven ways to stop spam submissions, filter bot traffic, and verify leads in real time—without hurting conversions.",
+    publishedAt: "2026-04-30",
+  },
+  {
     slug: "best-form-builder-tools-for-lead-generation-forms",
     title: "10 Best Form Builder Tools for Lead Generation Forms (2026)",
     description:
