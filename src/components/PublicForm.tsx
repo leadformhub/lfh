@@ -275,7 +275,7 @@ export function PublicForm({
       aria-label="LeadFormHub branding"
     >
       <a
-        href="https://www.leadformhub.com"
+        href="https://leadformhub.com"
         target="_blank"
         rel="noopener noreferrer"
         className="text-neutral-500 hover:text-neutral-700 text-sm font-medium transition-colors inline-flex flex-col items-center gap-0.5"

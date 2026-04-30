@@ -84,7 +84,7 @@ const articleSchema = {
   },
   datePublished: PUBLISHED_AT,
   dateModified: UPDATED_AT,
-  mainEntityOfPage: "https://www.leadformhub.com/blog/best-form-builder-tools-for-lead-generation-forms",
+  mainEntityOfPage: "https://leadformhub.com/blog/best-form-builder-tools-for-lead-generation-forms",
 };
 
 const itemListSchema = {

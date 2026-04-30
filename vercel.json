@@ -51,193 +51,193 @@
     {
       "source": "/blog",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/blog/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/blog/:path*",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/:path*",
+      "destination": "https://leadformhub.com/blog/:path*",
       "permanent": true
     },
     {
       "source": "/login",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/login",
+      "destination": "https://leadformhub.com/login",
       "permanent": true
     },
     {
       "source": "/login/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/login",
+      "destination": "https://leadformhub.com/login",
       "permanent": true
     },
     {
       "source": "/category/blog",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/category/blog/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/home",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/home/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog",
+      "destination": "https://leadformhub.com/blog",
       "permanent": true
     },
     {
       "source": "/free-online-form-builders",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-online-form-builders",
+      "destination": "https://leadformhub.com/blog/free-online-form-builders",
       "permanent": true
     },
     {
       "source": "/free-online-form-builders/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-online-form-builders",
+      "destination": "https://leadformhub.com/blog/free-online-form-builders",
       "permanent": true
     },
     {
       "source": "/case-study-of-using-lead-generation-forms",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/case-study-of-using-lead-generation-forms",
+      "destination": "https://leadformhub.com/blog/case-study-of-using-lead-generation-forms",
       "permanent": true
     },
     {
       "source": "/case-study-of-using-lead-generation-forms/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/case-study-of-using-lead-generation-forms",
+      "destination": "https://leadformhub.com/blog/case-study-of-using-lead-generation-forms",
       "permanent": true
     },
     {
       "source": "/kaizen-vs-kanban",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/kaizen-vs-kanban",
+      "destination": "https://leadformhub.com/blog/kaizen-vs-kanban",
       "permanent": true
     },
     {
       "source": "/kaizen-vs-kanban/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/kaizen-vs-kanban",
+      "destination": "https://leadformhub.com/blog/kaizen-vs-kanban",
       "permanent": true
     },
     {
       "source": "/free-form-builder-for-coaching-institutes",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "destination": "https://leadformhub.com/blog/free-form-builder-for-coaching-institutes",
       "permanent": true
     },
     {
       "source": "/free-form-builder-for-coaching-institutes/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "destination": "https://leadformhub.com/blog/free-form-builder-for-coaching-institutes",
       "permanent": true
     },
     {
       "source": "/blog/free-form-builder-for-coaching-institutes",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "destination": "https://leadformhub.com/blog/free-form-builder-for-coaching-institutes",
       "permanent": true
     },
     {
       "source": "/blog/free-form-builder-for-coaching-institutes/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/free-form-builder-for-coaching-institutes",
+      "destination": "https://leadformhub.com/blog/free-form-builder-for-coaching-institutes",
       "permanent": true
     },
     {
       "source": "/drag-and-drop-form-builder",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/drag-and-drop-form-builder",
+      "destination": "https://leadformhub.com/blog/drag-and-drop-form-builder",
       "permanent": true
     },
     {
       "source": "/drag-and-drop-form-builder/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/drag-and-drop-form-builder",
+      "destination": "https://leadformhub.com/blog/drag-and-drop-form-builder",
       "permanent": true
     },
     {
       "source": "/online-forms-in-digital-marketing",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/online-forms-in-digital-marketing",
+      "destination": "https://leadformhub.com/blog/online-forms-in-digital-marketing",
       "permanent": true
     },
     {
       "source": "/online-forms-in-digital-marketing/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/online-forms-in-digital-marketing",
+      "destination": "https://leadformhub.com/blog/online-forms-in-digital-marketing",
       "permanent": true
     },
     {
       "source": "/how-to-generate-leads-using-free-tools",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/how-to-generate-leads-for-free",
+      "destination": "https://leadformhub.com/blog/how-to-generate-leads-for-free",
       "permanent": true
     },
     {
       "source": "/how-to-generate-leads-using-free-tools/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/how-to-generate-leads-for-free",
+      "destination": "https://leadformhub.com/blog/how-to-generate-leads-for-free",
       "permanent": true
     },
     {
       "source": "/best-free-lead-generation-form",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/best-free-lead-generation-form/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/best-free-online-form-builder",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/best-free-online-form-builder/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/free-online-form-builder",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/free-online-form-builder/",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/free-online-form-builder-unlimited",
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
       "permanent": true
     },
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
-      "destination": "https://www.leadformhub.com/blog/:path*",
+      "destination": "https://leadformhub.com/blog/:path*",
       "permanent": true
     }
   ]
