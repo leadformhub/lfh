@@ -61,10 +61,10 @@ const faqSchema = {
 };
 
 export default function HowToReduceFakeLeadsFromFormsPage() {
-  const publishedAt = "2026-04-30";
-  const readingTime = "8 min read";
+  const lastUpdated = "April 30, 2026";
   const author = {
-    name: "LeadFormHub Team",
+    name: "LeadFormHub Editorial Team",
+    role: "Workflow + lead ops writers",
     bio: "The LeadFormHub team writes about lead generation, form design, and sales workflow for growing businesses.",
   };
 
@@ -97,17 +97,17 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
                     LF
                   </span>
                   <span className="font-medium text-[var(--foreground)]">{author.name}</span>
+                  <span className="hidden sm:inline" aria-hidden>
+                    •
+                  </span>
+                  <span className="hidden sm:inline">{author.role}</span>
                 </span>
                 <span className="hidden sm:inline" aria-hidden>
                   •
                 </span>
                 <span>
-                  <span className="font-medium text-[var(--foreground)]">Date:</span> {publishedAt}
+                  <span className="font-medium text-[var(--foreground)]">Last updated:</span> {lastUpdated}
                 </span>
-                <span className="hidden sm:inline" aria-hidden>
-                  •
-                </span>
-                <span className="font-medium text-[var(--foreground)]">{readingTime}</span>
               </div>
 
               <p className="hero-content mt-4 text-sm text-[var(--foreground-muted)]">{author.bio}</p>
