@@ -42,9 +42,26 @@ async function getSavedEmailConfig() {
   };
 }
 
+// Cache SMTP config in-memory to avoid Prisma DB lookup on every email.
+// This reduces DB connection pressure on serverless deployments.
+let cachedEmailConfig: Awaited<ReturnType<typeof getSavedEmailConfig>> | null = null;
+let cachedEmailConfigAt = 0;
+const EMAIL_CONFIG_TTL_MS = 30_000;
+
+async function getSavedEmailConfigCached() {
+  const now = Date.now();
+  if (cachedEmailConfigAt && now - cachedEmailConfigAt < EMAIL_CONFIG_TTL_MS) {
+    return cachedEmailConfig;
+  }
+  const cfg = await getSavedEmailConfig();
+  cachedEmailConfig = cfg;
+  cachedEmailConfigAt = now;
+  return cfg;
+}
+
 /** True if SMTP is configured from Super Admin settings. */
 export async function isEmailConfigured(): Promise<boolean> {
-  return (await getSavedEmailConfig()) !== null;
+  return (await getSavedEmailConfigCached()) !== null;
 }
 
 /** Support email configured in Super Admin settings; empty when missing. */
@@ -893,7 +910,7 @@ async function sendEmail(
   html: string,
   options?: { replyTo?: string }
 ): Promise<boolean> {
-  const config = await getSavedEmailConfig();
+  const config = await getSavedEmailConfigCached();
   const maxAttempts = 2;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     if (!config) {

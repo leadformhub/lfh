@@ -4,7 +4,7 @@ import { createLead } from "@/services/leads.service";
 import { createLeadActivity } from "@/services/lead-activity.service";
 import { isPhoneVerifiedForSubmission, isEmailVerifiedForSubmission } from "@/services/otp.service";
 import { recordEvent } from "@/services/analytics.service";
-import { sendNewLeadNotification } from "@/lib/email";
+import { isEmailConfigured, sendNewLeadNotification } from "@/lib/email";
 import { runFormAutomation } from "@/services/automation.service";
 import { dispatchWebhooksForEvent } from "@/services/webhook.service";
 import { verifyRecaptcha, isRecaptchaConfigured } from "@/lib/recaptcha";
@@ -13,6 +13,7 @@ import { parseFormSchema } from "@/lib/form-schema";
 import { validateName, validateEmail, validatePhone, isNameField } from "@/lib/validators";
 import type { PlanKey } from "@/lib/plans";
 import { getLeadsLimitEffective, hasLeadsRemainingEffective } from "@/lib/super-admin-plan-pricing";
+import { canUseEmailAlertOnLead } from "@/lib/plan-features";
 
 type SchemaField = { id: string; type: string; name?: string; label: string; required: boolean };
 
@@ -232,16 +233,40 @@ export async function POST(req: NextRequest) {
     await recordEvent(formId, "submission");
 
     const emailAlertEnabled = schema.settings?.emailAlertEnabled ?? true;
-    if (emailAlertEnabled && form.user?.email && form.user.plan !== "free") {
+    const ownerPlan = (form.user?.plan ?? "free") as PlanKey;
+    if (emailAlertEnabled && form.user?.email && canUseEmailAlertOnLead(ownerPlan)) {
       const name = getByKeys(structuredData, ["name", "Name", "full_name", "fullName"]);
       const email = getByKeys(structuredData, ["email", "Email"]);
-      sendNewLeadNotification(form.user.email, {
-        name,
-        email,
-        source: "Direct",
-        formName: form.name,
-        username: form.user.username ?? undefined,
-      }).catch((err) => console.error("[leads/submit] Lead notification email failed:", err));
+      const smtpOk = await isEmailConfigured();
+      if (!smtpOk) {
+        console.error("[leads/submit] Email notification skipped: SMTP not configured in Super Admin settings", {
+          formId,
+          userId: form.userId,
+        });
+      } else {
+        void sendNewLeadNotification(form.user.email, {
+          name,
+          email,
+          source: "Direct",
+          formName: form.name,
+          username: form.user.username ?? undefined,
+        })
+          .then((ok) => {
+            if (!ok) {
+              console.error("[leads/submit] Lead notification email failed (send returned false)", {
+                formId,
+                userId: form.userId,
+                adminEmail: form.user?.email ?? null,
+              });
+            }
+          })
+          .catch((err) => console.error("[leads/submit] Lead notification email threw:", err));
+      }
+    } else if (emailAlertEnabled && !canUseEmailAlertOnLead(ownerPlan)) {
+      console.warn("[leads/submit] Email notification skipped: plan does not include email alerts", {
+        formId,
+        plan: ownerPlan,
+      });
     }
 
     runFormAutomation(formId, "lead_submitted", {
