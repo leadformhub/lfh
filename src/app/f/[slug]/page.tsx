@@ -50,7 +50,12 @@ export default async function PublicFormPage({
       </>
     );
   }
-  await recordEvent(form.id, "view");
+  // Don't block embed rendering on analytics write (DB latency can make embeds feel blank).
+  if (isEmbed) {
+    void recordEvent(form.id, "view");
+  } else {
+    await recordEvent(form.id, "view");
+  }
   const ownerPlan = (form.user?.plan ?? "free").toString().toLowerCase();
   const settings = form.schema?.settings ?? {};
   const canHideBranding = ownerPlan === "pro" || ownerPlan === "business";

@@ -92,7 +92,7 @@ export async function countRecentOtpsForPhone(formId: string, phone: string): Pr
   });
 }
 
-export async function createAndSendOtp(formId: string, userId: string, phone: string) {
+export async function createAndSendOtp(formId: string, userId: string, phone: string): Promise<{ success: boolean; message?: string; requestId?: string }> {
   const limitCheck = await checkOtpLimit(userId);
   if (!limitCheck.allowed) return { success: false, message: limitCheck.message };
 
@@ -151,7 +151,7 @@ export async function createAndSendOtp(formId: string, userId: string, phone: st
     }
   }
 
-  return { success: result.success, message: result.message };
+  return { success: result.success, message: result.message, requestId: result.requestId };
 }
 
 export async function verifyOtp(formId: string, phone: string, otp: string): Promise<boolean> {

@@ -37,10 +37,19 @@ export async function POST(req: NextRequest) {
       console.warn("[api/otp/send] Sending mobile OTP – formId:", formId, "phone: ****" + String(phone).trim().slice(-4));
       const result = await createAndSendOtp(formId, form.userId, String(phone).trim());
       if (!result.success) {
-        console.warn("[api/otp/send] Mobile OTP failed:", result.message);
-        return NextResponse.json({ error: result.message }, { status: 400 });
+        console.warn("[api/otp/send] Mobile OTP failed:", result.message, result.requestId ? `requestId=${result.requestId}` : "");
+        return NextResponse.json(
+          {
+            error: result.message,
+            provider: { name: "fast2sms", requestId: result.requestId, message: result.message },
+          },
+          { status: 400 }
+        );
       }
-      return NextResponse.json({ message: "OTP sent" });
+      return NextResponse.json({
+        message: "OTP sent",
+        provider: { name: "fast2sms", requestId: result.requestId, message: result.message },
+      });
     }
 
     return NextResponse.json({ error: "phone or email required" }, { status: 400 });

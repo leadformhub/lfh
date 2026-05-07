@@ -58,7 +58,7 @@ export async function sendOtpViaFast2SMS(phone: string, otp: string): Promise<Se
 
   const message = `Your OTP is ${otp}. Valid for 5 minutes. - LeadFormHub`;
   const body = { route: "q", message, numbers: normalizedPhone, flash: "0" };
-  console.error("[Fast2SMS] CALLING API – POST", FAST2SMS_URL, "| route: q | numbers:", normalizedPhone);
+  console.log("[Fast2SMS] CALLING API – POST", FAST2SMS_URL, "| route: q | numbers:", normalizedPhone);
   debugLog("request body", { route: body.route, numbers: body.numbers });
 
   try {
@@ -76,17 +76,19 @@ export async function sendOtpViaFast2SMS(phone: string, otp: string): Promise<Se
     clearTimeout(timeoutId);
 
     const rawText = await res.text();
-    console.error("[Fast2SMS] API RESPONSE – status:", res.status, "| body:", rawText.slice(0, 200));
     let data: { return?: boolean; request_id?: string; message?: string | string[] };
     try {
       data = JSON.parse(rawText) as typeof data;
     } catch {
+      console.error("[Fast2SMS] API RESPONSE – status:", res.status, "| body:", rawText.slice(0, 200));
       return { success: false, message: `Quick SMS failed: ${res.status} ${rawText.slice(0, 200)}` };
     }
 
     const ok = res.ok && data.return === true;
     const msg = Array.isArray(data.message) ? data.message[0] : data.message;
     let messageStr = typeof msg === "string" ? msg : "";
+    const logFn = ok ? console.log : console.error;
+    logFn("[Fast2SMS] API RESPONSE – status:", res.status, "| body:", rawText.slice(0, 200));
     if (!ok && messageStr && /website verification|OTP Message|complete verification/i.test(messageStr)) {
       messageStr = "Complete website verification in Fast2SMS dashboard (Quick SMS section), then try again.";
     }
