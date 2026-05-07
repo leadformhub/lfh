@@ -1,7 +1,7 @@
 import { getFormById } from "@/services/forms.service";
 import { getFormStats } from "@/services/analytics.service";
 import { getAutomationRulesByFormId } from "@/services/automation-rules.service";
-import { getSession } from "@/lib/auth";
+import { getVerifiedSessionCached } from "@/lib/auth";
 import { getRazorpayKeyId } from "@/lib/razorpay";
 import { redirect } from "next/navigation";
 import { FormPageTabs } from "@/components/FormPageTabs";
@@ -22,7 +22,7 @@ export default async function FormPage({
   params: Promise<{ username: string; formId: string }>;
   searchParams: Promise<{ tab?: string }>;
 }) {
-  const session = await getSession();
+  const session = await getVerifiedSessionCached();
   const { username, formId } = await params;
   if (!session || session.username.toLowerCase() !== username.toLowerCase()) redirect("/login");
 
@@ -54,6 +54,9 @@ export default async function FormPage({
           break;
         }
       }
+    }
+    if (e.data && e.data.type === "leadformhub-redirect" && typeof e.data.url === "string") {
+      try { window.location.href = e.data.url; } catch (err) {}
     }
   });
 })();

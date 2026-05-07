@@ -32,6 +32,8 @@ export type FormSchema = {
   settings?: {
     status?: "PUBLIC" | "PRIVATE";
     description?: string;
+    /** When true, shows the description on the public form page. Default: false. */
+    showDescription?: boolean;
     redirectUrl?: string;
     showFormName?: boolean;
     /** When true (default), public form uses reCAPTCHA if keys are set in env. */
@@ -42,6 +44,8 @@ export type FormSchema = {
     autoReplyEnabled?: boolean;
     autoReplySubject?: string;
     autoReplyBody?: string;
+    /** When true, hides the "Powered by LeadFormHub" block (Pro/Business only). */
+    hideBranding?: boolean;
     /** Email automation rules (trigger → send email via SMTP). */
     automationRules?: AutomationRule[];
   };
@@ -52,10 +56,12 @@ export const DEFAULT_FORM_SCHEMA: FormSchema = {
   settings: {
     status: "PUBLIC",
     showFormName: true,
+    showDescription: false,
     recaptchaEnabled: true,
     emailAlertEnabled: true,
     mobileOtpEnabled: false,
     autoReplyEnabled: false,
+    hideBranding: false,
   },
 };
 

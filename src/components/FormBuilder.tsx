@@ -111,7 +111,12 @@ export function FormBuilder({
     schemaFieldsToEditor(initialSchema.fields ?? [])
   );
   const [showFormName, setShowFormName] = useState<boolean>(
-    initialSchema.settings?.showFormName !== false
+    !(
+      initialSchema.settings?.showFormName === false ||
+      initialSchema.settings?.showFormName === "false" ||
+      initialSchema.settings?.showFormName === 0 ||
+      initialSchema.settings?.showFormName === "0"
+    )
   );
   const [mobileOtpEnabled, setMobileOtpEnabled] = useState<boolean>(
     initialSchema.settings?.mobileOtpEnabled ?? false
@@ -125,6 +130,12 @@ export function FormBuilder({
   const [recaptchaEnabled, setRecaptchaEnabled] = useState<boolean>(
     initialSchema.settings?.recaptchaEnabled !== false
   );
+  const [hideBranding, setHideBranding] = useState<boolean>(
+    initialSchema.settings?.hideBranding ?? false
+  );
+  const [showDescription, setShowDescription] = useState<boolean>(
+    initialSchema.settings?.showDescription === true
+  );
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeModalReason, setUpgradeModalReason] = useState<"otp" | "email">("otp");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -133,6 +144,7 @@ export function FormBuilder({
 
   const canUseOtpFeature = canUseOtp(plan);
   const canUseEmailAlert = canUseEmailAlertOnLead(plan);
+  const canHideBranding = plan === "pro" || plan === "business";
 
   const usedTypes = new Set(fields.map((f) => f.type));
 
@@ -196,6 +208,8 @@ export function FormBuilder({
         emailAlertEnabled: canUseEmailAlert ? emailAlertEnabled : false,
         mobileOtpEnabled: canUseOtpFeature ? mobileOtpEnabled : false,
         emailOtpEnabled: canUseOtpFeature ? emailOtpEnabled : false,
+        hideBranding: canHideBranding ? hideBranding : false,
+        showDescription,
       };
       const schema = editorFieldsToSchema(fields, settings);
       const res = await fetch(`/api/forms/${formId}/schema`, {
@@ -222,9 +236,25 @@ export function FormBuilder({
     } finally {
       setSaving(false);
     }
-  }, [formId, fields, initialSchema.settings, showFormName, recaptchaEnabled, emailAlertEnabled, mobileOtpEnabled, emailOtpEnabled, canUseOtpFeature, canUseEmailAlert, router, username, addToast]);
+  }, [formId, fields, initialSchema.settings, showFormName, recaptchaEnabled, emailAlertEnabled, mobileOtpEnabled, emailOtpEnabled, hideBranding, showDescription, canHideBranding, canUseOtpFeature, canUseEmailAlert, router, username, addToast]);
 
   const fieldIcon = (type: string) => FIELD_TYPES.find((t) => t.type === type)?.icon ?? "•";
+
+  const LockIcon = ({ className = "size-3.5 text-[var(--foreground-muted)]" }: { className?: string }) => (
+    <svg
+      className={className}
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      aria-hidden
+      focusable="false"
+    >
+      <path
+        fillRule="evenodd"
+        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -252,6 +282,42 @@ export function FormBuilder({
               />
               <span className="text-sm text-[var(--foreground)]">Show form name above form</span>
             </label>
+            <label className="mt-3 flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                checked={showDescription}
+                onChange={(e) => setShowDescription(e.target.checked)}
+                className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
+              />
+              <span className="text-sm text-[var(--foreground)]">Show description on public form</span>
+            </label>
+            <div className="mt-3">
+              <label
+                className={`flex items-center gap-3 rounded-md px-2 py-1.5 ${
+                  canHideBranding ? "cursor-pointer hover:bg-[var(--neutral-50)]" : "cursor-pointer"
+                }`}
+                onClick={(e) => {
+                  if (!canHideBranding) {
+                    e.preventDefault();
+                    setUpgradeModalReason("email");
+                    setShowUpgradeModal(true);
+                  }
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={hideBranding}
+                  onChange={(e) => canHideBranding && setHideBranding(e.target.checked)}
+                  disabled={!canHideBranding}
+                  className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)] disabled:cursor-pointer"
+                />
+                <span className="text-sm text-[var(--foreground)]">Hide “Powered by LeadFormHub”</span>
+                {!canHideBranding && <LockIcon />}
+              </label>
+              <p className="mt-1.5 text-xs text-[var(--foreground-muted)]">
+                Branding is shown by default. Pro/Business can hide it.
+              </p>
+            </div>
           </div>
           <div className="rounded-xl border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)]">
             <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wider text-[var(--foreground-muted)]">
@@ -279,7 +345,7 @@ export function FormBuilder({
             </p>
             <div className="flex flex-col gap-2">
               <label
-                className={`flex cursor-pointer items-center gap-3 ${!canUseOtpFeature ? "cursor-pointer" : ""}`}
+                className={`flex items-center gap-3 rounded-md px-2 py-1.5 ${!canUseOtpFeature ? "cursor-pointer hover:bg-[var(--neutral-50)]" : "cursor-pointer"}`}
                 onClick={(e) => {
                   if (!canUseOtpFeature) {
                     e.preventDefault();
@@ -296,9 +362,10 @@ export function FormBuilder({
                   className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)] disabled:cursor-pointer"
                 />
                 <span className="text-sm text-[var(--foreground)]">Mobile OTP</span>
+                {!canUseOtpFeature && <LockIcon />}
               </label>
               <label
-                className={`flex cursor-pointer items-center gap-3 ${!canUseOtpFeature ? "cursor-pointer" : ""}`}
+                className={`flex items-center gap-3 rounded-md px-2 py-1.5 ${!canUseOtpFeature ? "cursor-pointer hover:bg-[var(--neutral-50)]" : "cursor-pointer"}`}
                 onClick={(e) => {
                   if (!canUseOtpFeature) {
                     e.preventDefault();
@@ -315,6 +382,7 @@ export function FormBuilder({
                   className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)] disabled:cursor-pointer"
                 />
                 <span className="text-sm text-[var(--foreground)]">Email OTP</span>
+                {!canUseOtpFeature && <LockIcon />}
               </label>
             </div>
           </div>
@@ -323,7 +391,7 @@ export function FormBuilder({
               Notifications
             </h3>
             <label
-              className={`flex cursor-pointer items-center gap-3 ${!canUseEmailAlert ? "cursor-pointer" : ""}`}
+              className={`flex items-center gap-3 rounded-md px-2 py-1.5 ${!canUseEmailAlert ? "cursor-pointer hover:bg-[var(--neutral-50)]" : "cursor-pointer"}`}
               onClick={(e) => {
                 if (!canUseEmailAlert) {
                   e.preventDefault();
@@ -340,6 +408,7 @@ export function FormBuilder({
                 className="h-4 w-4 rounded border-[var(--border-default)] text-[var(--color-accent)] focus:ring-[var(--color-accent)] disabled:cursor-pointer"
               />
               <span className="text-sm text-[var(--foreground)]">Notify Lead By Email</span>
+              {!canUseEmailAlert && <LockIcon />}
             </label>
             <p className="mt-1.5 text-xs text-[var(--foreground-muted)]">
               Send an email to your account when someone submits this form.

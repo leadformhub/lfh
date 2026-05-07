@@ -52,8 +52,9 @@ export default async function PublicFormPage({
   }
   await recordEvent(form.id, "view");
   const ownerPlan = (form.user?.plan ?? "free").toString().toLowerCase();
-  const showBranding = ownerPlan !== "pro" && ownerPlan !== "business";
   const settings = form.schema?.settings ?? {};
+  const canHideBranding = ownerPlan === "pro" || ownerPlan === "business";
+  const showBranding = !(canHideBranding && settings.hideBranding === true);
   const recaptchaEnabled = settings.recaptchaEnabled !== false;
   const recaptchaSiteKey = recaptchaEnabled ? await getRecaptchaSiteKey() : null;
   const fields = form.schema?.fields ?? [];
@@ -72,7 +73,11 @@ export default async function PublicFormPage({
     </div>
   ) : null;
 
-  const showFormName = settings.showFormName !== false;
+  const rawShowFormName = settings.showFormName as unknown;
+  const showFormName =
+    rawShowFormName === undefined || rawShowFormName === null
+      ? true
+      : !(rawShowFormName === false || rawShowFormName === "false" || rawShowFormName === 0 || rawShowFormName === "0");
 
   const wrapperClass = isEmbed
     ? "bg-neutral-100 py-4 px-3 sm:px-4"
@@ -86,7 +91,7 @@ export default async function PublicFormPage({
         {showFormName && (
           <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-2 break-words">{form.name}</h1>
         )}
-        {settings.description && (
+        {settings.showDescription === true && settings.description && (
           <p className="text-neutral-600 text-base mb-4 sm:mb-6 break-words">{settings.description}</p>
         )}
         {fields.length === 0 ? (

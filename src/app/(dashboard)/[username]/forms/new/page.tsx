@@ -1,6 +1,5 @@
 import { getVerifiedSessionCached } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getRazorpayKeyId } from "@/lib/razorpay";
 import { NewFormClient } from "@/components/NewFormClient";
 import type { PlanKey } from "@/lib/plans";
 import { canCreateFormWithEffectiveLimits } from "@/lib/super-admin-plan-pricing";
@@ -25,9 +24,5 @@ export default async function NewFormPage({
     redirect(`/${username}/pricing?reason=form_limit`);
   }
 
-  const razorpayKeyId = await getRazorpayKeyId();
-
-  return (
-    <NewFormClient plan={session.plan} razorpayKeyId={razorpayKeyId ?? null} />
-  );
+  return <NewFormClient />;
 }

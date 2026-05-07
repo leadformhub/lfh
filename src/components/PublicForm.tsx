@@ -260,7 +260,24 @@ export function PublicForm({
       setSuccess(true);
       trackFacebookLead();
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        // In embeds (iframe), redirecting the iframe can fail for destinations that disallow framing (e.g. WhatsApp).
+        // Prefer redirecting the top window via postMessage; the embed script will handle it.
+        try {
+          if (typeof window !== "undefined" && window.parent && window.parent !== window) {
+            window.parent.postMessage(
+              { type: "leadformhub-redirect", url: redirectUrl },
+              "*"
+            );
+          }
+        } catch {
+          // ignore
+        }
+        // Fallback for non-embedded usage.
+        try {
+          if (typeof window !== "undefined") window.location.href = redirectUrl;
+        } catch {
+          // ignore
+        }
       }
     } catch {
       setError("Network error. Please check your connection and try again.");
