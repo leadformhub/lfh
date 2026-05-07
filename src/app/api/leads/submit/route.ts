@@ -237,30 +237,53 @@ export async function POST(req: NextRequest) {
     if (emailAlertEnabled && form.user?.email && canUseEmailAlertOnLead(ownerPlan)) {
       const name = getByKeys(structuredData, ["name", "Name", "full_name", "fullName"]);
       const email = getByKeys(structuredData, ["email", "Email"]);
-      const smtpOk = await isEmailConfigured();
-      if (!smtpOk) {
-        console.error("[leads/submit] Email notification skipped: SMTP not configured in Super Admin settings", {
-          formId,
-          userId: form.userId,
-        });
-      } else {
-        void sendNewLeadNotification(form.user.email, {
-          name,
-          email,
-          source: "Direct",
-          formName: form.name,
-          username: form.user.username ?? undefined,
-        })
-          .then((ok) => {
-            if (!ok) {
-              console.error("[leads/submit] Lead notification email failed (send returned false)", {
-                formId,
-                userId: form.userId,
-                adminEmail: form.user?.email ?? null,
-              });
-            }
-          })
-          .catch((err) => console.error("[leads/submit] Lead notification email threw:", err));
+      try {
+        const smtpOk = await isEmailConfigured();
+        if (!smtpOk) {
+          console.error("[leads/submit] Email notification skipped: SMTP not configured in Super Admin settings", {
+            formId,
+            userId: form.userId,
+          });
+        } else {
+          console.log("[leads/submit] Sending lead notification email…", {
+            formId,
+            userId: form.userId,
+            adminEmail: form.user.email,
+          });
+
+          const sendPromise = sendNewLeadNotification(form.user.email, {
+            name,
+            email,
+            source: "Direct",
+            formName: form.name,
+            username: form.user.username ?? undefined,
+          });
+
+          // On serverless, fire-and-forget promises can be cut off when the request finishes.
+          // Await with a short timeout so we have a high chance of sending without blocking too long.
+          const result = await Promise.race([
+            sendPromise.then((ok) => ({ ok })),
+            new Promise<{ ok: null }>((resolve) => setTimeout(() => resolve({ ok: null }), 3000)),
+          ]);
+
+          if (result.ok === true) {
+            console.log("[leads/submit] Lead notification email sent", { formId, adminEmail: form.user.email });
+          } else if (result.ok === false) {
+            console.error("[leads/submit] Lead notification email failed (send returned false)", {
+              formId,
+              userId: form.userId,
+              adminEmail: form.user.email,
+            });
+          } else {
+            console.warn("[leads/submit] Lead notification email send timed out (may still send)", {
+              formId,
+              userId: form.userId,
+              adminEmail: form.user.email,
+            });
+          }
+        }
+      } catch (err) {
+        console.error("[leads/submit] Lead notification email crashed:", err);
       }
     } else if (emailAlertEnabled && !canUseEmailAlertOnLead(ownerPlan)) {
       console.warn("[leads/submit] Email notification skipped: plan does not include email alerts", {
