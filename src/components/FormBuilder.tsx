@@ -110,14 +110,12 @@ export function FormBuilder({
   const [fields, setFields] = useState<FormFieldEditor[]>(() =>
     schemaFieldsToEditor(initialSchema.fields ?? [])
   );
-  const [showFormName, setShowFormName] = useState<boolean>(
-    !(
-      initialSchema.settings?.showFormName === false ||
-      initialSchema.settings?.showFormName === "false" ||
-      initialSchema.settings?.showFormName === 0 ||
-      initialSchema.settings?.showFormName === "0"
-    )
-  );
+  const [showFormName, setShowFormName] = useState<boolean>(() => {
+    const raw = initialSchema.settings?.showFormName as unknown;
+    // Default: show the form name unless explicitly disabled (supports legacy string/number values).
+    if (raw === undefined || raw === null) return true;
+    return !(raw === false || raw === "false" || raw === 0 || raw === "0");
+  });
   const [mobileOtpEnabled, setMobileOtpEnabled] = useState<boolean>(
     initialSchema.settings?.mobileOtpEnabled ?? false
   );
