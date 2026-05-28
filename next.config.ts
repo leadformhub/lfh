@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { buildBlogSubdomainNextRedirects } from "./src/lib/blog-subdomain-redirects";
+import { OFF_TOPIC_BLOG_REDIRECTS } from "./src/lib/off-topic-blog-redirects";
 
 const nextConfig: NextConfig = {
   trailingSlash: false,
@@ -21,6 +22,13 @@ const nextConfig: NextConfig = {
       { source: "/subscribe/basic", destination: "/pricing", permanent: true },
       { source: "/subscribe/pro", destination: "/pricing", permanent: true },
       { source: "/support_tickets/create", destination: "/support", permanent: true },
+      ...Object.entries(OFF_TOPIC_BLOG_REDIRECTS)
+        .filter(([source]) => source.startsWith("/blog/"))
+        .map(([source, destination]) => ({
+          source,
+          destination,
+          permanent: true,
+        })),
     ];
   },
 };

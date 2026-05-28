@@ -1,4 +1,5 @@
 import { BLOG_POSTS } from "./blog";
+import { OFF_TOPIC_BLOG_REDIRECTS } from "./off-topic-blog-redirects";
 
 export const BLOG_SUBDOMAIN_HOST = "blog.leadformhub.com";
 export const CANONICAL_ORIGIN = "https://leadformhub.com";
@@ -17,6 +18,9 @@ const BLOG_SUBDOMAIN_LEGACY_REDIRECTS: Readonly<Record<string, string>> = {
   "/best-free-lead-generation-form": "/free-online-form-builder-unlimited",
   "/best-free-online-form-builder": "/free-online-form-builder-unlimited",
   "/free-online-form-builder": "/free-online-form-builder-unlimited",
+  ...Object.fromEntries(
+    Object.entries(OFF_TOPIC_BLOG_REDIRECTS).filter(([source]) => !source.startsWith("/blog/"))
+  ),
 };
 
 /** All blog post slugs at subdomain root → /blog/:slug on apex. */

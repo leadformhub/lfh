@@ -117,9 +117,9 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "google-forms-vs-business-form-builders",
-    title: "Google Forms vs Business Form Builders | Comparison",
+    title: "Google Forms vs Business Builders | Lead Form Alternatives",
     description:
-      "Compare Google Forms vs business form builders for lead capture, data quality, analytics, and scalability. See when Google Forms is enough and when to use a dedicated online form builder for business.",
+      "Alternatives to basic lead generation forms compared—Google Forms, Jotform, Typeform, HubSpot, Zoho, Wufoo & LeadFormHub. CRM, automation, branding & lead capture.",
     publishedAt: "2025-02-10",
   },
   {
@@ -225,13 +225,6 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Case Study: Using Lead Generation Forms to Grow a Small Business",
     description:
       "A real-world case study on how a small business used lead generation forms to capture enquiries, qualify leads, and grow sales without a big marketing budget.",
-    publishedAt: "2025-02-21",
-  },
-  {
-    slug: "kaizen-vs-kanban",
-    title: "Kaizen vs Kanban: Improving Your Lead Capture and Form Workflow",
-    description:
-      "Kaizen (continuous improvement) vs Kanban (visual workflow): how each approach can improve your lead capture forms, follow-up process, and conversion rates.",
     publishedAt: "2025-02-21",
   },
   {

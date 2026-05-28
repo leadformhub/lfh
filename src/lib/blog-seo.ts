@@ -45,6 +45,12 @@ const RELATED_BY_SLUG: Record<string, RelatedPost[]> = {
     { slug: "google-forms-vs-business-form-builders", title: "Google Forms vs business builders" },
     { slug: "how-to-follow-up-on-leads-quickly", title: "Follow up on leads quickly" },
   ],
+  "google-forms-vs-business-form-builders": [
+    { slug: "google-forms-alternative", title: "Google Forms alternative" },
+    { slug: "best-form-builder-tools-for-lead-generation-forms", title: "Best form builders for lead gen" },
+    { slug: "hubspot-forms-vs-typeform-vs-google-forms", title: "HubSpot vs Typeform vs Google" },
+    { slug: "set-up-lead-generation-form-without-coding", title: "Set up a lead form (no code)" },
+  ],
   "google-forms-alternative": [
     { slug: "google-forms-vs-business-form-builders", title: "Google Forms vs business form builders" },
     { slug: "hubspot-forms-vs-typeform-vs-google-forms", title: "HubSpot vs Typeform vs Google Forms" },
