@@ -16,6 +16,8 @@ import {
   UseCases,
   Integrations,
   PricingPreview,
+  RecentArticles,
+  CompanyPagesStrip,
   CTA,
   FAQ,
   Footer,
@@ -83,6 +85,8 @@ export default function Home() {
         <UseCases />
         <Integrations />
         <PricingPreview />
+        <RecentArticles />
+        <CompanyPagesStrip />
         <CTA />
         <FAQ />
         <Footer />

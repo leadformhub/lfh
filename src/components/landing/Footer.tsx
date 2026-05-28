@@ -32,6 +32,7 @@ const useCaseLinks = [
 ];
 
 const compareLinks = [
+  { label: "Free form builder (unlimited)", href: "/free-online-form-builder-unlimited" },
   { label: "Typeform alternative", href: "/blog/typeform-alternative" },
   { label: "Google Forms alternative", href: "/blog/google-forms-alternative" },
   { label: "Zoho Forms alternative", href: "/zoho-forms-alternative" },
@@ -39,6 +40,9 @@ const compareLinks = [
 
 const resourcesLinks = [
   { label: "Knowledge Base", href: "/knowledge-base" },
+  { label: "Integrations", href: "/integrations" },
+  { label: "API Docs", href: "/api-docs" },
+  { label: "Reduce fake leads", href: "/blog/how-to-reduce-fake-leads-from-forms" },
 ];
 
 const companyLinks = [

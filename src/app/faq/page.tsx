@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, ComparisonFAQ, CTA, Footer } from "@/components/landing";
+import { BlogGuidesStrip } from "@/components/blog/BlogGuidesStrip";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -224,6 +225,7 @@ export default function FAQPage() {
           </Container>
         </section>
 
+        <BlogGuidesStrip context="Answers to common product questions—plus longer guides on fake leads, form fields, and no-code setup." />
         <CTA />
         <Footer />
       </main>

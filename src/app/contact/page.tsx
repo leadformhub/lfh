@@ -2,31 +2,14 @@ import type { Metadata } from "next";
 import { Navbar, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import Link from "next/link";
-import { SITE_URL } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
 
-const title = "Contact Us | LeadFormHub Form Builder";
-const description =
-  "Get in touch with LeadFormHub. Questions about lead capture forms, online form builder, OTP verification, or pricing? We're here to help.";
-const url = `${SITE_URL}/contact`;
-
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: url },
-  openGraph: {
-    title,
-    description,
-    url,
-    siteName: "LeadFormHub",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-  },
-  robots: "index, follow",
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: "Contact LeadFormHub | Sales & Product Questions",
+  description:
+    "Contact LeadFormHub about lead capture forms, OTP verification, pricing, or partnerships. We route you to support or sales as needed.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

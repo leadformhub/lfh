@@ -9,7 +9,6 @@ export const metadata: Metadata = buildPageMetadata({
   description:
     "LeadFormHub API and webhooks documentation. Integrate forms, submit leads, and receive support ticket replies via HTTP APIs and webhooks.",
   path: "/api-docs",
-  noIndex: true,
 });
 
 const BASE_URL = "https://leadformhub.com";

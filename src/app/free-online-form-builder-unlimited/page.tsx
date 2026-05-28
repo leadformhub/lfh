@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Navbar, ComparisonFAQ, CTA, Footer } from "@/components/landing";
+import { Navbar, ComparisonFAQ, CTA, Footer, LandingPageExploreLinks } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
-import { buildPageMetadata, SITE_URL } from "@/lib/seo";
+import { buildWebPageBreadcrumbSchema } from "@/lib/company-page-seo";
+import { buildPageMetadata, canonicalUrlFromPath } from "@/lib/seo";
+
+const PAGE_PATH = "/free-online-form-builder-unlimited";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Free Online Form Builder With Unlimited Submissions | LeadFormHub",
+  title: "Free Form Builder With Unlimited Submissions",
   description:
-    "Create forms with unlimited submissions—no caps, no paywalls. Free online form builder for lead capture, events, and landing pages. Start free, scale without limits.",
-  path: "/free-online-form-builder-unlimited",
+    "Free online form builder with unlimited submissions—no monthly caps. Lead capture, events, OTP optional. Compare limits vs unlimited and start free.",
+  path: PAGE_PATH,
 });
+
+const breadcrumbSchema = buildWebPageBreadcrumbSchema(PAGE_PATH, "Free form builder");
 
 const whyBullets = [
   {
@@ -110,13 +116,14 @@ const productSchema = {
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
   description: "Free online form builder with unlimited submissions. Lead capture, events, contact forms. No caps, no paywalls.",
-  url: `${SITE_URL}/free-online-form-builder-unlimited`,
+  url: canonicalUrlFromPath(PAGE_PATH),
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
 
 export default function FreeOnlineFormBuilderUnlimitedPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       <Navbar />
@@ -144,15 +151,27 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
                 <span className="hero-highlight">unlimited submissions</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                No caps. No surprise paywalls. Create forms for lead capture, events, and landing pages—and collect every submission in one place. Start free, scale when you're ready.
+                Most free form tools quietly cap you at 50–100 responses, then block new leads mid-campaign. LeadFormHub&apos;s free tier keeps accepting submissions so paid ads, viral posts, and batch signups do not hit a wall—pair it with{" "}
+                <Link href="/blog/unlimited-form-submissions-why-it-matters" className="font-medium text-[var(--color-accent)] hover:underline">
+                  why unlimited matters
+                </Link>{" "}
+                and our{" "}
+                <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
+                  transparent pricing
+                </Link>
+                .
               </p>
               <p className="hero-content mt-4 text-base text-[var(--foreground-muted)]">
                 <Link href="/blog/how-to-generate-leads-for-free" className="font-medium text-[var(--color-accent)] hover:underline">
-                  Learn how to generate leads for free
+                  Generate leads for free
                 </Link>
                 {" · "}
                 <Link href="/blog/free-online-form-builders" className="font-medium text-[var(--color-accent)] hover:underline">
-                  Compare free form builders
+                  Compare free builders
+                </Link>
+                {" · "}
+                <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Google Forms alternative
                 </Link>
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -176,49 +195,22 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
           </Container>
         </section>
 
-        {/* Why unlimited: the problem */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
+        <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Why unlimited submissions matter
+              Why unlimited submissions matter for lead capture
             </h2>
             <p className="mt-6 text-[var(--foreground-muted)]">
-              Many form builders cap submissions at 50, 100, or 500 per month. That sounds fine until you run a campaign that works—and hit the cap. The form stops, you get an upgrade prompt, or submissions get dropped. Your campaign stops right when it matters most.
+              Submission caps look harmless on a pricing page—50 or 100 responses per month sounds enough until a Facebook ad, a WhatsApp blast, or an admission week sends real volume. The form stops accepting entries, shows an upgrade wall, or silently drops late submissions. You paid for the click; the form became the bottleneck. That is the core problem a{" "}
+              <Link href="/blog/unlimited-form-submissions-why-it-matters" className="font-medium text-[var(--color-accent)] hover:underline">
+                free builder without caps
+              </Link>{" "}
+              solves: marketing can scale while capture keeps working.
             </p>
-          </Container>
-        </section>
-
-        {/* Why unlimited: real impact */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              How submission caps hurt businesses
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              A coaching centre opens batch registration and gets a flood of signups—only to find the form cut off after 50. An agency runs a Facebook ad; the ad performs, but the form hits its cap and leads are lost. Interest is there. The form becomes the bottleneck.
+            <p className="mt-4 text-[var(--foreground-muted)]">
+              Coaching centres see batch registrations spike in 48 hours. Agencies run multi-client campaigns where one landing page can burn through a shared quota. Real-estate teams get enquiry waves after open houses. With unlimited submissions on the free tier, you focus on follow-up speed—not counting responses before month-end.
             </p>
-          </Container>
-        </section>
-
-        {/* Why unlimited: the solution */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Unlimited removes the bottleneck
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Run ads, publish content, and open registrations without wondering when the cap will hit. When traffic spikes, your form keeps accepting submissions. No interruption, no surprise upgrades. Focus on marketing; the form keeps working.
-            </p>
-          </Container>
-        </section>
-
-        {/* Why unlimited: bullets */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Key benefits
-            </h2>
-            <ul className="mt-6 space-y-4">
+            <ul className="mt-8 space-y-4">
               {whyBullets.map((b) => (
                 <li key={b.title} className="flex gap-4">
                   <span className="mt-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
@@ -236,141 +228,137 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
           </Container>
         </section>
 
-        {/* Use cases intro + cards */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-14 sm:py-16">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              Capped free tiers vs unlimited submissions
+            </h2>
+            <p className="mt-4 text-[var(--foreground-muted)]">
+              Before you publish a campaign, compare what happens when traffic exceeds a free-plan limit. Our{" "}
+              <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                form builder comparison guide
+              </Link>{" "}
+              goes deeper on tools; this table focuses on the cap question alone.
+            </p>
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <th className="py-3 pr-4 font-semibold text-[var(--foreground-heading)]">Scenario</th>
+                    <th className="py-3 pr-4 font-semibold text-[var(--foreground-heading)]">Typical capped builder</th>
+                    <th className="py-3 font-semibold text-[var(--foreground-heading)]">LeadFormHub (unlimited)</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[var(--foreground-muted)]">
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <td className="py-3 pr-4">Paid ad converts well</td>
+                    <td className="py-3 pr-4">Form may lock; leads lost after cap</td>
+                    <td className="py-3">Keeps collecting through the spike</td>
+                  </tr>
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <td className="py-3 pr-4">Three forms, one account</td>
+                    <td className="py-3 pr-4">Shared quota; one form eats the limit</td>
+                    <td className="py-3 pr-4">Each form independent on volume</td>
+                  </tr>
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <td className="py-3 pr-4">Webinar registration final week</td>
+                    <td className="py-3 pr-4">Risk closing early or upgrading under pressure</td>
+                    <td className="py-3 pr-4">Registration stays open</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-4">Need verified phone leads</td>
+                    <td className="py-3 pr-4">Often paid add-on</td>
+                    <td className="py-3 pr-4">Optional OTP on eligible plans—see <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">features</Link></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <figure className="mt-8 overflow-hidden rounded-xl border border-[var(--border-subtle)]">
+              <Image
+                src="/og.png"
+                alt="LeadFormHub dashboard collecting unlimited form submissions"
+                width={1200}
+                height={630}
+                className="h-auto w-full"
+              />
+              <figcaption className="bg-white px-4 py-2 text-center text-sm text-[var(--foreground-muted)]">
+                One dashboard for every form—contact, demo, event, and enquiry flows.
+              </figcaption>
+            </figure>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl text-center">
-              Use cases
+              Use cases that need uncapped submissions
             </h2>
             <p className="mt-6 text-center text-[var(--foreground-muted)] max-w-2xl mx-auto">
-              A free form builder with unlimited submissions fits many scenarios. Lead capture, event registration, or multiple forms—you don&apos;t want a cap to interrupt your workflow.
+              Pick the scenario closest to you—then follow the linked guide to launch faster.
             </p>
             <ul className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-3">
               {useCases.map((uc) => (
-                <li
-                  key={uc.title}
-                  className="rounded-2xl border border-[var(--border-default)] bg-[var(--background-alt)] p-6"
-                >
+                <li key={uc.title} className="rounded-2xl border border-[var(--border-default)] bg-[var(--background-alt)] p-6">
                   <h3 className="font-heading font-semibold text-[var(--foreground-heading)]">{uc.title}</h3>
                   <p className="mt-2 text-base text-[var(--foreground-muted)]">{uc.description}</p>
                 </li>
               ))}
             </ul>
+            <div className="mt-10 space-y-6 text-[var(--foreground-muted)]">
+              <p>
+                <strong className="text-[var(--foreground-heading)]">Lead capture & landing pages.</strong> Contact, demo, and enquiry forms on{" "}
+                <Link href="/blog/lead-capture-form-for-facebook-ads-landing-page" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Facebook ad landing pages
+                </Link>{" "}
+                or organic traffic need every convert saved. Pair with{" "}
+                <Link href="/blog/best-lead-form-fields-for-high-conversion" className="font-medium text-[var(--color-accent)] hover:underline">
+                  high-converting field choices
+                </Link>{" "}
+                and our{" "}
+                <Link href="/blog/lead-form-landing-page-checklist-2026" className="font-medium text-[var(--color-accent)] hover:underline">
+                  landing page checklist
+                </Link>
+                .
+              </p>
+              <p>
+                <strong className="text-[var(--foreground-heading)]">Events, webinars, and batches.</strong> Registration spikes in the last 48 hours are normal. See{" "}
+                <Link href="/blog/online-registration-form-builder-for-workshops" className="font-medium text-[var(--color-accent)] hover:underline">
+                  workshop registration forms
+                </Link>{" "}
+                and{" "}
+                <Link href="/blog/free-form-builder-for-coaching-institutes" className="font-medium text-[var(--color-accent)] hover:underline">
+                  coaching institute forms
+                </Link>
+                .
+              </p>
+              <p>
+                <strong className="text-[var(--foreground-heading)]">Agencies & multi-form setups.</strong> Run separate client forms without one quota blocking another. Wire exports through{" "}
+                <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">
+                  integrations
+                </Link>{" "}
+                when you scale.
+              </p>
+            </div>
           </Container>
         </section>
 
-        {/* Lead capture use case */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Lead capture
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              What you get beyond unlimited volume
             </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Contact, demo, and enquiry forms collect name, email, phone. When you run ads or organic traffic, every convert is a lead. A 50–100 submission cap means you might stop right when the campaign peaks. Unlimited lets you capture all of them.
+            <p className="mt-4 text-[var(--foreground-muted)]">
+              Submission count is only half the story. You still need mobile layouts, instant alerts, and—when quality matters—verification. Read{" "}
+              <Link href="/blog/contact-form-with-instant-email-notification" className="font-medium text-[var(--color-accent)] hover:underline">
+                why instant email notification matters
+              </Link>{" "}
+              and{" "}
+              <Link href="/blog/how-to-reduce-fake-leads-from-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                how to cut fake leads
+              </Link>
+              .
             </p>
-          </Container>
-        </section>
-
-        {/* Events & webinars use case */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Events & webinars
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Registration forms need to stay open until the event. Signups often spike in the final days. A limited tier forces you to close early, upgrade under pressure, or lose registrations. Unlimited lets you accept every signup.
-            </p>
-          </Container>
-        </section>
-
-        {/* Multiple forms use case */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Multiple forms, one tool
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Contact, enquiry, newsletter, demo request. If all share one response quota, one popular form can use up the limit and block others. Unlimited lets each form operate independently—no rationing.
-            </p>
-          </Container>
-        </section>
-
-        {/* Who it's for: solopreneurs & small biz */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Who it&apos;s for
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Built for solopreneurs, freelancers, coaches, consultants, and small business owners who need lead capture without caps or surprise costs. You need something you can set up yourself, share quickly, and rely on when traffic grows.
-            </p>
-          </Container>
-        </section>
-
-        {/* Who it's for: education & agencies */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Coaching, schools, and agencies
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Coaching centres use forms for batch registration and trial signups; signups surge when a batch opens. Schools need admission and feedback forms with seasonal spikes. Agencies need forms that scale with ad spend.
-            </p>
-          </Container>
-        </section>
-
-        {/* Who it's for: real estate & startups */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Real estate, freelancers, startups
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Contact and enquiry forms capture interest. A viral post or referral can bring a wave of enquiries. Startups testing content or ads need forms that won&apos;t block growth. Unlimited means you can experiment without the form becoming the constraint.
-            </p>
-          </Container>
-        </section>
-
-        {/* Form types: contact & enquiry */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Form types you can create
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Contact forms: name, email, phone, message. Demo and trial forms add qualifiers like company or role. Enquiry forms collect what the visitor wants and how to reach them. All benefit from unlimited submissions.
-            </p>
-          </Container>
-        </section>
-
-        {/* Form types: events & newsletter */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Events, newsletter, client intake
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Event registration asks for name, email, sometimes phone. Newsletter and waitlist forms are simpler—email and name. Client intake forms collect goals, background, timeline. With a visual editor, add fields, get a link and embed, and publish. No coding.
-            </p>
-          </Container>
-        </section>
-
-        {/* What you get intro */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              What you get
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Beyond unlimited submissions, you need features that make lead capture practical: mobile-friendly forms, instant notifications, and optional OTP verification. Here&apos;s what matters.
-            </p>
-          </Container>
-        </section>
-
-        {/* What you get: bullets */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <ul className="space-y-4">
+            <ul className="mt-8 space-y-4">
               {benefitsBullets.map((b) => (
                 <li key={b.title} className="flex gap-4">
                   <span className="mt-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
@@ -387,117 +375,45 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
             </ul>
             <p className="mt-8">
               <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">
-                View all form builder features →
+                View all form builder features
+              </Link>
+              {" · "}
+              <Link href="/blog/drag-and-drop-form-builder" className="font-medium text-[var(--color-accent)] hover:underline">
+                Drag-and-drop builder guide
               </Link>
             </p>
           </Container>
         </section>
 
-        {/* Mobile & notifications */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
+        <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Mobile-friendly and instant notifications
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              Launch in under 15 minutes (no code)
             </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Most people fill forms on phones. Buttons and fields must be easy to tap; layout should adapt. Instant email notification means you get an alert on each submission—no checking the dashboard by chance. Speed matters for conversion.
-            </p>
-          </Container>
-        </section>
-
-        {/* Choosing criteria 1 */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              What makes a good free form builder
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Check submission limits: per form or total? What happens when you hit the cap? Ease of use: can you create a form in under 10 minutes? Email notification and a single dashboard for all forms should be included on the free tier.
-            </p>
-          </Container>
-        </section>
-
-        {/* Choosing criteria 2 */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Link, embed, and mobile
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              You need a shareable link and embed code. Forms should render well on phones—test on a real device. Custom domains or removing &quot;Powered by&quot; may be paid options; the free tier should give you a working link and embed.
-            </p>
-          </Container>
-        </section>
-
-        {/* How to get started: signup */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              How to get started
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Sign up (no credit card), create a form, and add fields. Use the visual editor to add text, email, phone, or dropdown fields. Set labels and required fields. Give the form a title and optional description.
-            </p>
-          </Container>
-        </section>
-
-        {/* How to get started: share */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Share and notify
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Get the shareable link for email, social, or ads. Use the embed code for your website. Turn on email notification. Test the form yourself and confirm the submission lands in the dashboard.
-            </p>
-          </Container>
-        </section>
-
-        {/* How to get started: scale */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-16">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
-              Create more forms
-            </h2>
-            <p className="mt-6 text-[var(--foreground-muted)]">
-              Create contact, enquiry, and event forms from one dashboard. With unlimited submissions, focus on driving traffic and following up. The form will keep working.
-            </p>
-          </Container>
-        </section>
-
-        {/* Related resources */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
-          <Container size="narrow" className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Related resources
-            </h2>
-            <p className="mt-4 text-[var(--foreground-muted)]">
-              Learn more about lead capture and form building from our blog:
-            </p>
-            <ul className="mt-6 space-y-3">
+            <ol className="mt-6 list-decimal space-y-4 pl-5 text-[var(--foreground-muted)]">
               <li>
-                <Link href="/blog/what-is-a-lead-capture-form" className="font-medium text-[var(--color-accent)] hover:underline">
-                  What is a lead capture form? Definition & best practices
+                <Link href="/signup" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Sign up free
+                </Link>{" "}
+                — no credit card. Follow the{" "}
+                <Link href="/blog/set-up-lead-generation-form-without-coding" className="font-medium text-[var(--color-accent)] hover:underline">
+                  no-code setup guide
                 </Link>
+                .
               </li>
-              <li>
-                <Link href="/blog/how-to-increase-form-submissions" className="font-medium text-[var(--color-accent)] hover:underline">
-                  How to increase form submissions
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/contact-form-with-instant-email-notification" className="font-medium text-[var(--color-accent)] hover:underline">
-                  Contact form with instant email notification
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/drag-and-drop-form-builder" className="font-medium text-[var(--color-accent)] hover:underline">
-                  Drag and drop form builder: create forms without coding
-                </Link>
-              </li>
-            </ul>
+              <li>Add name, email, phone, and one intent field. Keep it short; see <Link href="/blog/what-is-a-lead-capture-form" className="font-medium text-[var(--color-accent)] hover:underline">lead capture form basics</Link>.</li>
+              <li>Share the link on ads or embed on your site. Test once on your phone.</li>
+              <li>Turn on email notifications and respond within minutes—<Link href="/blog/how-to-follow-up-on-leads-quickly" className="font-medium text-[var(--color-accent)] hover:underline">speed wins deals</Link>.</li>
+              <li>Clone the form for new campaigns; volume stays uncapped on the free tier.</li>
+            </ol>
+            <p className="mt-8 text-[var(--foreground-muted)]">
+              Stuck? Use the <Link href="/knowledge-base" className="font-medium text-[var(--color-accent)] hover:underline">knowledge base</Link> or{" "}
+              <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">raise a support request</Link>.
+            </p>
           </Container>
         </section>
+
+        <LandingPageExploreLinks />
 
         {/* FAQ */}
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
@@ -516,7 +432,10 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
             <h2 className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
               No submission caps. No credit card required.
             </h2>
-            <p className="mt-2 text-[var(--foreground-muted)]">Create your account and your first form in minutes.</p>
+            <p className="mt-2 text-[var(--foreground-muted)]">
+              Create your account and your first form in minutes. Compare plans on{" "}
+              <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">pricing</Link> when you need more OTP or seats.
+            </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Unlimited submissions</span>
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Mobile-friendly</span>

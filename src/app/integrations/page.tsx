@@ -1,15 +1,34 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
+import { buildCompanyFaqSchema, buildWebPageBreadcrumbSchema, type CompanyFaqItem } from "@/lib/company-page-seo";
 import { buildPageMetadata } from "@/lib/seo";
 
+const INTEGRATIONS_FAQS: CompanyFaqItem[] = [
+  {
+    question: "Which integrations does LeadFormHub support today?",
+    answer:
+      "All plans include email notifications and CSV export. Business plans add CRM-oriented workflows, webhooks, and API access. Zapier connectors are on the roadmap.",
+  },
+  {
+    question: "Can I send leads to my CRM automatically?",
+    answer:
+      "Yes on eligible plans. Map form fields to CRM properties so verified leads land in the pipeline your sales team already uses.",
+  },
+  {
+    question: "Do I need developers to integrate LeadFormHub?",
+    answer:
+      "No for email alerts and share links. Developers can use the HTTP API and webhooks documented on the API docs page for custom stacks.",
+  },
+];
+
 export const metadata: Metadata = buildPageMetadata({
-  title: "Form Builder Integrations & API | LeadFormHub",
+  title: "Integrations & API | LeadFormHub",
   description:
-    "Connect LeadFormHub with CRM, email tools, Zapier, and APIs to sync verified leads from your lead capture forms.",
+    "Connect LeadFormHub to CRM, email, webhooks, and API workflows. Compare integration options and sync verified leads from every form.",
   path: "/integrations",
-  noIndex: true,
 });
 
 const integrationCards = [
@@ -72,9 +91,14 @@ const integrationCards = [
   },
 ];
 
+const breadcrumbSchema = buildWebPageBreadcrumbSchema("/integrations", "Integrations");
+const faqSchema = buildCompanyFaqSchema(INTEGRATIONS_FAQS);
+
 export default function IntegrationsPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -100,7 +124,15 @@ export default function IntegrationsPage() {
                 <span className="hero-highlight">tools you already use</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Lead capture integrations help you act on leads where you already work. Verified leads flow into your existing stack.
+                Stop copying leads from spreadsheets into your CRM. LeadFormHub pushes verified submissions into email, exports, webhooks, and API endpoints your team already monitors—see the{" "}
+                <Link href="/api-docs" className="font-medium text-[var(--color-accent)] hover:underline">
+                  API reference
+                </Link>{" "}
+                or browse the{" "}
+                <Link href="/knowledge-base" className="font-medium text-[var(--color-accent)] hover:underline">
+                  setup guides
+                </Link>
+                .
               </p>
               <Link
                 href="/signup"
@@ -150,14 +182,79 @@ export default function IntegrationsPage() {
           </Container>
         </section>
 
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              Integration comparison: manual export vs connected stack
+            </h2>
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <th className="py-2 pr-4 font-semibold">Workflow</th>
+                    <th className="py-2 pr-4 font-semibold">Manual CSV</th>
+                    <th className="py-2 font-semibold">LeadFormHub integrations</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[var(--foreground-muted)]">
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <td className="py-3 pr-4">Speed to sales</td>
+                    <td className="py-3 pr-4">Hours of delay</td>
+                    <td className="py-3">Instant email + optional API</td>
+                  </tr>
+                  <tr className="border-b border-[var(--border-subtle)]">
+                    <td className="py-3 pr-4">Data quality</td>
+                    <td className="py-3 pr-4">Typos slip through</td>
+                    <td className="py-3">Optional OTP verification</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 pr-4">Scaling campaigns</td>
+                    <td className="py-3 pr-4">Export bottlenecks</td>
+                    <td className="py-3">Webhooks + unlimited submissions</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <figure className="mt-8 overflow-hidden rounded-xl border border-[var(--border-subtle)]">
+              <Image src="/og.png" alt="LeadFormHub integrations overview" width={1200} height={630} className="h-auto w-full" />
+            </figure>
+            <h2 className="mt-10 font-heading text-xl font-semibold text-[var(--foreground-heading)]">Common integration use cases</h2>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-[var(--foreground-muted)]">
+              <li>Push demo requests into a CRM stage for same-day callbacks</li>
+              <li>Trigger nurture sequences when a webinar registration form submits</li>
+              <li>Feed ad landing page leads into a Slack channel via webhook</li>
+              <li>Sync coaching enquiries into a shared Google Sheet replacement (dashboard export)</li>
+            </ul>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 id="integrations-faq" className="font-heading text-2xl font-bold text-[var(--foreground-heading)]">
+              Integrations FAQ
+            </h2>
+            <dl className="mt-6 space-y-6">
+              {INTEGRATIONS_FAQS.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-heading font-semibold text-[var(--foreground)]">{item.question}</dt>
+                  <dd className="mt-2 text-[var(--foreground-muted)]">{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-8 text-[var(--foreground-muted)]">
+              Need hands-on help? <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">Contact support</Link> or read <Link href="/about" className="font-medium text-[var(--color-accent)] hover:underline">about LeadFormHub</Link>.
+            </p>
+          </Container>
+        </section>
+
         {/* Help + CTA strip */}
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
           <Container size="default" className="px-4 text-center sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Get help with your integration setup
+              Connect your stack this week
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-[var(--foreground-muted)]">
-              Need help connecting LeadFormHub to your CRM or tools? Our support and documentation are there to get you set up.
+              Publish one form, confirm notifications, then wire your CRM or webhook. Our <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">support team</Link> can review your flow.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <span className="rounded-full border border-[var(--border-default)] bg-white px-4 py-2 text-sm font-medium text-[var(--foreground-heading)] shadow-[var(--shadow-xs)]">CRM</span>

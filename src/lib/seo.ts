@@ -33,6 +33,24 @@ export const HOMEPAGE_H1_PREFIX = "Verified Lead Capture Forms for";
 export const HOMEPAGE_H1_HIGHLIGHT = "Indian B2B Teams";
 export const HOMEPAGE_SEO_TITLE = `${HOMEPAGE_H1_PREFIX} ${HOMEPAGE_H1_HIGHLIGHT} | LeadFormHub`;
 
+/**
+ * Normalize a URL path for canonical/sitemap use: leading slash, no trailing slash (except "/"),
+ * no query/hash, stable lowercase for static marketing routes.
+ */
+export function normalizePublicPath(path: string): string {
+  if (!path || path === "/") return "/";
+  let p = path.split("?")[0].split("#")[0];
+  if (!p.startsWith("/")) p = `/${p}`;
+  if (p.length > 1 && p.endsWith("/")) p = p.slice(0, -1);
+  return p.toLowerCase();
+}
+
+/** Absolute canonical URL on production host (https://leadformhub.com/path). */
+export function canonicalUrlFromPath(path: string): string {
+  const normalized = normalizePublicPath(path);
+  return normalized === "/" ? SITE_URL : `${SITE_URL}${normalized}`;
+}
+
 type BuildPageMetadataOptions = {
   title: string;
   description: string;
@@ -52,7 +70,8 @@ export function buildPageMetadata({
   noIndex = false,
   image,
 }: BuildPageMetadataOptions): Metadata {
-  const url = path === "/" ? SITE_URL : `${SITE_URL}${path}`;
+  const normalizedPath = normalizePublicPath(path);
+  const url = canonicalUrlFromPath(normalizedPath);
   return {
     title,
     description,

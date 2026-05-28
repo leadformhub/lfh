@@ -1,25 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Navbar,
-  ComparisonTable,
-  ComparisonFAQ,
-  CTA,
-  Footer,
-} from "@/components/landing";
+import { Navbar, ComparisonTable, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
-import { buildPageMetadata, SITE_URL } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
 
-/**
- * Google Forms Alternative — SEO: google forms alternative, online form builder for lead generation.
- */
+const SLUG = "google-forms-alternative";
+const PUBLISHED = "2025-02-01";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Google Forms Alternative – Online Form Builder for Lead Generation",
+  title: "Best Google Forms Alternative for Lead Generation",
   description:
-    "Upgrade from Google Forms to a professional online form builder and lead capture platform with branding, OTP verification, and form analytics.",
-  path: "/blog/google-forms-alternative",
+    "The best Google Forms alternative for lead capture adds branding, OTP verification, and a lead dashboard—not just a spreadsheet. Compare options and when to switch.",
+  path: `/blog/${SLUG}`,
 });
 
 const googleCompetitorCells = {
@@ -46,43 +41,80 @@ const useCases = [
   },
 ];
 
-const faqItems = [
+/** Snippet-first answers: lead with the direct reply in sentence one. */
+const faqItems: BlogFaqItem[] = [
   {
-    question: "Why switch from Google Forms to LeadFormHub for lead generation?",
+    question: "What is the best Google Forms alternative for lead generation?",
     answer:
-      "Google Forms is a capable data collection tool for internal use. For B2B lead capture, teams often need a professional brand presence, mobile verification (OTP), and a dedicated lead dashboard. LeadFormHub is built for that: branded hub, OTP verification, and transparent monthly pricing.",
+      "LeadFormHub is a strong Google Forms alternative for B2B lead generation because it combines branded form URLs, optional OTP phone verification, instant notifications, and a dedicated lead dashboard instead of manual Google Sheets workflows.",
   },
   {
-    question: "Is LeadFormHub free to start?",
+    question: "What is a Google Forms alternative?",
     answer:
-      "Yes. You can Start Free with one form and 50 leads per month. Upgrade when you need OTP verification, more leads, or integrations. No credit card required.",
+      "A Google Forms alternative is any form builder that replaces forms.google.com links with branded capture, better lead workflows, and sales-ready features such as verification, notifications, and CRM-friendly exports.",
   },
   {
-    question: "Can I embed LeadFormHub forms on my site?",
+    question: "Is Google Forms good for lead capture?",
     answer:
-      "Yes. You can share a direct link (e.g. leadformhub.com/yourbrand/your-form) or embed the form on your website. Forms are responsive and work on all devices.",
+      "Google Forms works for simple internal surveys and basic contact collection. It is weaker for B2B lead capture because branding is limited, there is no built-in OTP verification, and responses usually live in Sheets without a sales-focused dashboard.",
+  },
+  {
+    question: "Is there a free Google Forms alternative?",
+    answer:
+      "Yes. LeadFormHub offers a free tier to start with branded forms and lead capture. Google Forms is also free, but teams often switch when they need verification, unlimited-style volume, or a professional client-facing experience.",
+  },
+  {
+    question: "Can Google Forms verify phone numbers with OTP?",
+    answer:
+      "No. Google Forms does not offer native OTP mobile verification. LeadFormHub and other business form builders can require a one-time code on high-intent forms to reduce fake numbers.",
+  },
+  {
+    question: "Can I embed LeadFormHub forms on my website?",
+    answer:
+      "Yes. You can share a branded link (leadformhub.com/yourbrand/your-form) or embed the form on your site. Forms are mobile-responsive on all devices.",
   },
 ];
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqItems.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: { "@type": "Answer", text: item.answer },
-  })),
-};
 
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
-  description: "Verified lead capture platform with OTP verification. Google Forms alternative for professional lead generation. Branded hub, monthly pricing.",
-  url: `${SITE_URL}/blog/google-forms-alternative`,
+  description: "Google Forms alternative for professional lead generation with OTP verification, branded hub, and lead dashboard.",
+  url: "https://leadformhub.com/blog/google-forms-alternative",
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
+
+const bestAlternativesItemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Best Google Forms alternatives for lead generation",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "LeadFormHub", description: "B2B lead capture with OTP, branded hub, and one dashboard" },
+    { "@type": "ListItem", position: 2, name: "Typeform", description: "Conversational, design-led forms" },
+    { "@type": "ListItem", position: 3, name: "Jotform", description: "Large template library; check free-tier limits" },
+    { "@type": "ListItem", position: 4, name: "Tally", description: "Minimal forms; verify caps on paid plans" },
+  ],
+};
+
+const bestAlternativesList = [
+  {
+    name: "LeadFormHub",
+    bestFor: "B2B lead capture with OTP, branded hub, and one dashboard (especially Indian teams)",
+  },
+  {
+    name: "Typeform",
+    bestFor: "Conversational, design-led forms—less focus on verified phone leads",
+  },
+  {
+    name: "Jotform",
+    bestFor: "Large template library and general forms—check submission limits on free tier",
+  },
+  {
+    name: "Tally",
+    bestFor: "Minimal forms and fast setup—verify caps and branding on paid plans",
+  },
+];
 
 const whyBullets = [
   { title: "Professional branding and trust", desc: "Google Forms links and styling say \"Google,\" not your brand. For B2B lead generation, a dedicated tool with your branding builds trust and improves completion rates." },
@@ -99,8 +131,14 @@ const brandBullets = [
 export default function GoogleFormsAlternativePage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <BlogStructuredData
+        slug={SLUG}
+        headline="Best Google Forms Alternative for Lead Generation"
+        description="What a Google Forms alternative is, the best options for lead capture, comparison with LeadFormHub, and when to switch."
+        datePublished={PUBLISHED}
+        faqs={faqItems}
+        extraSchemas={[productSchema, bestAlternativesItemListSchema]}
+      />
       <Navbar />
       <main>
         {/* Hero */}
@@ -122,11 +160,10 @@ export default function GoogleFormsAlternativePage() {
                 id="google-hero-heading"
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
-                Professional lead generation,{" "}
-                <span className="hero-highlight">verified and branded</span>
+                Best <span className="hero-highlight">Google Forms Alternative</span> for Lead Generation
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Google Forms works for internal surveys. For professional lead generation — branded forms, verified contacts, and one dashboard — LeadFormHub is built for that.
+                <strong className="text-[var(--foreground-heading)]">Short answer:</strong> The best Google Forms alternative for lead generation is a business form builder with branded URLs, optional OTP verification, instant notifications, and a lead dashboard—not just a Google Sheet. LeadFormHub is built for that workflow; Google Forms remains fine for internal surveys.
               </p>
               <Link
                 href="/signup"
@@ -139,11 +176,100 @@ export default function GoogleFormsAlternativePage() {
           </Container>
         </section>
 
+        {/* Snippet targets: definition + list + comparison early */}
+        <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              What is a Google Forms alternative?
+            </h2>
+            <p className="mt-4 text-lg text-[var(--foreground-muted)]">
+              A <strong className="text-[var(--foreground-heading)]">Google Forms alternative</strong> is a form tool you use instead of forms.google.com when you need branded client-facing forms, sales-ready lead handling, and features Google does not include—such as OTP verification, instant team alerts, and a dedicated lead inbox.
+            </p>
+
+            <h2 className="font-heading mt-12 text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              What is the best Google Forms alternative for lead generation?
+            </h2>
+            <p className="mt-4 text-lg text-[var(--foreground-muted)]">
+              For B2B teams that care about lead quality, <strong className="text-[var(--foreground-heading)]">LeadFormHub</strong> is among the best Google Forms alternatives because it keeps unlimited-style submission volume on the free tier, adds optional OTP on phone fields, sends instant notifications, and stores every lead in one dashboard instead of a spreadsheet you manage by hand.
+            </p>
+            <p className="mt-4 text-[var(--foreground-muted)]">
+              Compare the broader category in our{" "}
+              <Link href="/blog/google-forms-vs-business-form-builders" className="font-medium text-[var(--color-accent)] hover:underline">
+                Google Forms vs business form builders
+              </Link>{" "}
+              guide, or see{" "}
+              <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">features</Link>{" "}
+              and <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">pricing</Link>.
+            </p>
+
+            <h2 className="font-heading mt-12 text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              Best Google Forms alternatives for lead capture (compared)
+            </h2>
+            <ol className="mt-6 list-decimal space-y-4 pl-5 text-[var(--foreground-muted)]">
+              {bestAlternativesList.map((item) => (
+                <li key={item.name}>
+                  <strong className="text-[var(--foreground-heading)]">
+                    {item.name === "LeadFormHub" ? (
+                      <Link href="/signup" className="text-[var(--color-accent)] hover:underline">{item.name}</Link>
+                    ) : item.name === "Typeform" ? (
+                      <Link href="/blog/typeform-alternative" className="text-[var(--color-accent)] hover:underline">{item.name}</Link>
+                    ) : (
+                      item.name
+                    )}
+                  </strong>{" "}
+                  — {item.bestFor}
+                </li>
+              ))}
+            </ol>
+
+            <h2 className="font-heading mt-12 text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              When should you keep Google Forms vs switch?
+            </h2>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-[var(--foreground-muted)]">
+              <li>
+                <strong className="text-[var(--foreground-heading)]">Keep Google Forms</strong> for internal polls, quick team surveys, and classroom-style data collection.
+              </li>
+              <li>
+                <strong className="text-[var(--foreground-heading)]">Switch to a business builder</strong> when prospects see the form, you run paid ads, or sales needs verified phone leads fast.
+              </li>
+              <li>
+                <strong className="text-[var(--foreground-heading)]">Switch</strong> when responses stuck in Sheets slow follow-up or branding hurts conversion.
+              </li>
+            </ul>
+
+            <h2 className="font-heading mt-12 text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              5 reasons teams leave Google Forms for lead capture
+            </h2>
+            <ol className="mt-4 list-decimal space-y-3 pl-5 text-[var(--foreground-muted)]">
+              <li>forms.google.com URLs look generic to B2B buyers</li>
+              <li>No native OTP—fake or wrong phone numbers waste sales time</li>
+              <li>Leads land in Sheets, not an action-oriented dashboard</li>
+              <li>Limited control over follow-up notifications per form</li>
+              <li>Harder to present a consistent brand on landing pages and ads</li>
+            </ol>
+          </Container>
+        </section>
+
+        {/* Comparison table — early for table snippets */}
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+          <Container className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl text-center">
+              Google Forms vs LeadFormHub: quick comparison
+            </h2>
+            <p className="mt-4 text-center text-[var(--foreground-muted)] max-w-2xl mx-auto">
+              LeadFormHub is a Google Forms alternative focused on verified, branded B2B lead capture.
+            </p>
+            <div className="mt-10">
+              <ComparisonTable competitorLabel="Google Forms" competitorCells={googleCompetitorCells} />
+            </div>
+          </Container>
+        </section>
+
         {/* Why dedicated tool */}
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Why use a dedicated tool for lead generation instead of Google Forms
+              Why use a dedicated tool instead of Google Forms for leads?
             </h2>
             <ul className="mt-8 space-y-6">
               {whyBullets.map((b) => (
@@ -183,21 +309,6 @@ export default function GoogleFormsAlternativePage() {
           </Container>
         </section>
 
-        {/* Comparison table */}
-        <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
-          <Container className="px-4 sm:px-6">
-            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl text-center">
-              LeadFormHub vs Google Forms for lead generation
-            </h2>
-            <p className="mt-4 text-center text-[var(--foreground-muted)] max-w-2xl mx-auto">
-              Branding, verification, dashboard, pricing. When lead generation is the goal, LeadFormHub is built for it.
-            </p>
-            <div className="mt-10">
-              <ComparisonTable competitorLabel="Google Forms" competitorCells={googleCompetitorCells} />
-            </div>
-          </Container>
-        </section>
-
         {/* Pricing and support strip */}
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-16">
           <Container size="narrow" className="px-4 text-center sm:px-6">
@@ -230,13 +341,20 @@ export default function GoogleFormsAlternativePage() {
           </Container>
         </section>
 
-        {/* FAQ */}
-        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+        {/* FAQ — visible Q&A aligned with FAQPage schema */}
+        <section id="faq" className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] text-center">
-              Frequently Asked Questions
+              Google Forms alternative FAQ
             </h2>
-            <ComparisonFAQ items={faqItems} className="mt-10" />
+            <dl className="mt-10 space-y-8">
+              {faqItems.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-heading text-lg font-semibold text-[var(--foreground-heading)]">{item.question}</dt>
+                  <dd className="mt-2 text-[var(--foreground-muted)]">{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </Container>
         </section>
 
@@ -262,7 +380,7 @@ export default function GoogleFormsAlternativePage() {
             </Link>
           </Container>
         </section>
-        <BlogInternalLinks />
+        <BlogInternalLinks slug={SLUG} />
         <CTA />
         <Footer />
       </main>

@@ -45,6 +45,31 @@ function redirectBlogSubdomainToCanonical(req: NextRequest): NextResponse | null
   return NextResponse.redirect(destination, 301);
 }
 
+/** 301 trailing slash (except root) and uppercase path segments on public marketing URLs. */
+function redirectNormalizePath(req: NextRequest): NextResponse | null {
+  const raw = req.nextUrl.pathname;
+  if (isDashboardPath(raw)) return null;
+
+  let path = raw;
+  let changed = false;
+
+  if (path.length > 1 && path.endsWith("/")) {
+    path = path.slice(0, -1);
+    changed = true;
+  }
+
+  const lower = path.toLowerCase();
+  if (lower !== path) {
+    path = lower;
+    changed = true;
+  }
+
+  if (!changed) return null;
+
+  const destination = `${CANONICAL_ORIGIN}${path === "/" ? "" : path}${req.nextUrl.search}`;
+  return NextResponse.redirect(destination, 301);
+}
+
 /** Strip tracking params and return clean search string; if no change, return null. */
 function getCleanSearchRedirect(nextUrl: NextRequest["nextUrl"]): string | null {
   const search = nextUrl.search;
@@ -81,6 +106,9 @@ export async function middleware(req: NextRequest) {
 
   const blogRedirect = redirectBlogSubdomainToCanonical(req);
   if (blogRedirect) return blogRedirect;
+
+  const pathRedirect = redirectNormalizePath(req);
+  if (pathRedirect) return pathRedirect;
 
   if (shouldRedirectHttpToHttps(req)) {
     const path = req.nextUrl.pathname + req.nextUrl.search;

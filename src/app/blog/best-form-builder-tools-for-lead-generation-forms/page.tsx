@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
+
+const SLUG = "best-form-builder-tools-for-lead-generation-forms";
 
 const PUBLISHED_AT = "2026-04-15";
-const UPDATED_AT = "2026-04-15";
+const UPDATED_AT = "2026-05-28";
 const AUTHOR_NAME = "LeadFormHub Editorial Team";
 
 const rankedTools = [
@@ -23,69 +28,34 @@ const rankedTools = [
 ];
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "10 Best Form Builder Tools for Lead Generation Forms (2026)",
+  title: "10 Best Form Builder Tools for Lead Generation (2026)",
   description:
-    "A practical comparison of the best form builder tools for lead generation forms. Compare features, free plan limits, pricing, and use cases to choose the right tool.",
-  path: "/blog/best-form-builder-tools-for-lead-generation-forms",
+    "Compare 10 form builders for lead generation—Typeform, HubSpot, Jotform, Fillout & more. Free plan limits, OTP verification, pricing, and pros/cons ranked for campaigns.",
+  path: `/blog/${SLUG}`,
 });
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What is the best form builder tool for lead generation forms?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "The best form builder depends on your workflow. If you need strong lead quality controls and campaign-oriented forms, pick a tool with validation, instant notifications, and CRM integrations. If your workflow is tied to WordPress or a CRM, choose a builder native to that stack.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How many fields should a lead generation form have?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "For top-of-funnel campaigns, 3 to 5 fields is a practical starting point. Capture only what is necessary for follow-up, then collect more detail in later stages.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Do free form builders work for lead generation?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, free plans can work for early-stage campaigns. Before choosing one, verify monthly submission limits, integration caps, branding restrictions, and whether notifications and exports are included.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is OTP verification useful for lead generation forms?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "OTP verification is useful when teams lose time on fake or low-intent phone leads. It adds a verification step that can improve lead quality, especially in campaigns where follow-up calls are central to conversion.",
-      },
-    },
-  ],
-};
-
-const articleSchema = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  headline: "10 Best Form Builder Tools for Lead Generation Forms (2026)",
-  description:
-    "A practical comparison of the best form builder tools for lead generation forms, including features, pricing, and lead quality considerations.",
-  author: {
-    "@type": "Person",
-    name: AUTHOR_NAME,
+const ARTICLE_FAQS: BlogFaqItem[] = [
+  {
+    question: "What is the best form builder tool for lead generation forms?",
+    answer:
+      "The best form builder depends on your workflow. If you need strong lead quality controls and campaign-oriented forms, pick a tool with validation, instant notifications, and CRM integrations. If your workflow is tied to WordPress or a CRM, choose a builder native to that stack.",
   },
-  publisher: {
-    "@type": "Organization",
-    name: "LeadFormHub",
+  {
+    question: "How many fields should a lead generation form have?",
+    answer:
+      "For top-of-funnel campaigns, 3 to 5 fields is a practical starting point. Capture only what is necessary for follow-up, then collect more detail in later stages.",
   },
-  datePublished: PUBLISHED_AT,
-  dateModified: UPDATED_AT,
-  mainEntityOfPage: "https://leadformhub.com/blog/best-form-builder-tools-for-lead-generation-forms",
-};
+  {
+    question: "Do free form builders work for lead generation?",
+    answer:
+      "Yes, free plans can work for early-stage campaigns. Before choosing one, verify monthly submission limits, integration caps, branding restrictions, and whether notifications and exports are included.",
+  },
+  {
+    question: "Is OTP verification useful for lead generation forms?",
+    answer:
+      "OTP verification is useful when teams lose time on fake or low-intent phone leads. It adds a verification step that can improve lead quality, especially in campaigns where follow-up calls are central to conversion.",
+  },
+];
 
 const itemListSchema = {
   "@context": "https://schema.org",
@@ -103,9 +73,15 @@ const itemListSchema = {
 export default function BestFormBuilderToolsForLeadGenerationFormsPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
+      <BlogStructuredData
+        slug={SLUG}
+        headline="10 Best Form Builder Tools for Lead Generation Forms (2026)"
+        description="Compare 10 form builders for lead generation—Typeform, HubSpot, Jotform, Fillout & more. Free plan limits, OTP verification, pricing, and pros/cons ranked for campaigns."
+        datePublished={PUBLISHED_AT}
+        dateModified={UPDATED_AT}
+        faqs={ARTICLE_FAQS}
+        extraSchemas={[itemListSchema]}
+      />
       <Navbar />
       <main>
         <section
@@ -777,7 +753,8 @@ export default function BestFormBuilderToolsForLeadGenerationFormsPage() {
             </div>
           </Container>
         </section>
-        <BlogInternalLinks />
+        <BlogRelatedPosts slug={SLUG} />
+        <BlogInternalLinks slug={SLUG} />
         <CTA />
         <Footer />
       </main>

@@ -2,19 +2,50 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
+
+const SLUG = "lead-form-landing-page-checklist-2026";
+const PUBLISHED = "2026-03-19";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Lead Form Landing Page Checklist for 2026",
+  title: "Lead Form Landing Page Checklist 2026",
   description:
-    "Use this 2026 lead form landing page checklist to improve conversion rates. Covers headlines, CTA copy, field design, trust signals, speed, and mobile UX.",
-  path: "/blog/lead-form-landing-page-checklist-2026",
+    "2026 checklist for lead form landing pages: headline tests, CTA copy, mobile UX, trust signals, and field layout—fix drop-off without a full redesign.",
+  path: `/blog/${SLUG}`,
 });
+
+const ARTICLE_FAQS: BlogFaqItem[] = [
+  {
+    question: "What is the most important part of a lead form landing page?",
+    answer:
+      "Clarity: visitors should understand the offer, who it is for, and what happens after submit within seconds. Headline, supporting line, and a single primary CTA usually move the needle first.",
+  },
+  {
+    question: "How many fields should a landing page form have in 2026?",
+    answer:
+      "Most campaigns perform well with three to five fields. Add qualifiers only when sales uses them on the first call.",
+  },
+  {
+    question: "Does page speed affect form conversion?",
+    answer:
+      "Yes. Slow mobile loads increase bounce before users see the form. Compress images, defer non-critical scripts, and test on real devices.",
+  },
+];
 
 export default function LeadFormLandingPageChecklist2026Page() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <BlogStructuredData
+        slug={SLUG}
+        headline="Lead Form Landing Page Checklist for 2026"
+        description="A practical 2026 checklist to improve lead form landing page conversions."
+        datePublished={PUBLISHED}
+        faqs={ARTICLE_FAQS}
+      />
       <Navbar />
       <main>
         <section
@@ -38,7 +69,11 @@ export default function LeadFormLandingPageChecklist2026Page() {
                 Lead Form Landing Page Checklist for 2026
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                If your page gets clicks but not leads, use this checklist to find friction fast. These practical checks help improve lead form conversions without redesigning your entire website.
+                Traffic without leads usually means the page—not the ad—is leaking trust or adding friction. Walk this 2026 checklist section by section; pair it with{" "}
+                <Link href="/blog/best-lead-form-fields-for-high-conversion" className="font-medium text-[var(--color-accent)] hover:underline">
+                  smarter field choices
+                </Link>{" "}
+                once the layout is sound.
               </p>
             </div>
           </Container>
@@ -348,7 +383,8 @@ export default function LeadFormLandingPageChecklist2026Page() {
           </Container>
         </section>
 
-        <BlogInternalLinks />
+        <BlogRelatedPosts slug={SLUG} />
+        <BlogInternalLinks slug={SLUG} />
         <CTA />
         <Footer />
       </main>

@@ -4,6 +4,7 @@ import { Navbar, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { getPublishedPosts, formatBlogDate } from "@/lib/blog";
+import { getBlogPath, INDEX_PRIORITY_SLUGS } from "@/lib/blog-seo";
 
 /**
  * Blog — Long-tail SEO: lead capture blog, lead generation forms tips, form builder best practices.
@@ -77,6 +78,34 @@ export default function BlogPage() {
                 <Link href="/zoho-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Zoho Forms alternative</Link>.
               </p>
             </div>
+          </Container>
+        </section>
+
+        {/* Priority guides — stronger internal linking for indexing */}
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-14">
+          <Container size="default" className="px-4 sm:px-6">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-2xl">
+              Popular lead capture guides
+            </h2>
+            <p className="mt-2 max-w-2xl text-[var(--foreground-muted)]">
+              In-depth comparisons, checklists, and setup guides for teams improving form conversions and lead quality.
+            </p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {INDEX_PRIORITY_SLUGS.map((slug) => {
+                const post = posts.find((p) => p.slug === slug);
+                if (!post) return null;
+                return (
+                  <li key={slug}>
+                    <Link
+                      href={getBlogPath(slug)}
+                      className="block rounded-lg border border-[var(--border-subtle)] bg-white px-4 py-3 font-medium text-[var(--color-accent)] shadow-sm hover:border-[var(--color-accent)]/40"
+                    >
+                      {post.title}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </Container>
         </section>
 

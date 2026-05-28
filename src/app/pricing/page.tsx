@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer, Navbar } from "@/components/landing";
+import { BlogGuidesStrip } from "@/components/blog/BlogGuidesStrip";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata, SITE_URL } from "@/lib/seo";
 import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
@@ -475,6 +476,7 @@ export default async function PricingPage() {
         </Container>
       </div>
 
+      <BlogGuidesStrip context="Compare form builders, avoid submission caps, and launch lead forms before you upgrade—free guides from our blog." />
       <div className="h-20" aria-hidden />
       <Footer />
     </div>

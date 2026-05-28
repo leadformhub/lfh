@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
+import { BlogGuidesStrip } from "@/components/blog/BlogGuidesStrip";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -354,6 +355,22 @@ export default function FeaturesPage() {
           </Container>
         </section>
 
+        <BlogGuidesStrip context="See how OTP verification, field design, and landing pages work together in these step-by-step guides." />
+        <section className="border-t border-[var(--border-subtle)] bg-white py-12">
+          <Container size="default" className="px-4 text-center sm:px-6">
+            <p className="text-[var(--foreground-muted)]">
+              <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">Free unlimited forms</Link>
+              {" · "}
+              <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">Integrations</Link>
+              {" · "}
+              <Link href="/knowledge-base" className="font-medium text-[var(--color-accent)] hover:underline">Knowledge base</Link>
+              {" · "}
+              <Link href="/about" className="font-medium text-[var(--color-accent)] hover:underline">About</Link>
+              {" · "}
+              <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">Support</Link>
+            </p>
+          </Container>
+        </section>
         <CTA />
         <Footer />
       </main>

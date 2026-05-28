@@ -15,4 +15,7 @@ export { Integrations } from "./Integrations";
 export { PricingPreview } from "./PricingPreview";
 export { CTA } from "./CTA";
 export { FAQ } from "./FAQ";
+export { RecentArticles } from "./RecentArticles";
+export { CompanyPagesStrip } from "./CompanyPagesStrip";
+export { LandingPageExploreLinks } from "./LandingPageExploreLinks";
 export { Footer } from "./Footer";

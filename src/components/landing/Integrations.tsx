@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 
@@ -17,7 +18,11 @@ export function Integrations() {
             Fits Into Your Existing Stack
           </h2>
           <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-            Fits seamlessly into your existing stack.
+            Fits seamlessly into your existing stack.{" "}
+            <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">
+              View all integrations
+            </Link>
+            .
           </p>
         </div>
         <div className="mx-auto mt-16 flex flex-wrap justify-center gap-8">

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { buildBlogSubdomainNextRedirects } from "./src/lib/blog-subdomain-redirects";
 
 const nextConfig: NextConfig = {
+  trailingSlash: false,
   async redirects() {
     return [
       // Canonical host: non-www apex (301). Also enforced in middleware + vercel.json.

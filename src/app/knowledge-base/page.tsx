@@ -3,14 +3,18 @@ import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
 import { KnowledgeBaseSearch } from "@/components/KnowledgeBaseSearch";
+import Image from "next/image";
+import { buildWebPageBreadcrumbSchema } from "@/lib/company-page-seo";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Knowledge Base – How to Use LeadFormHub | Step-by-Step Guide",
+  title: "Knowledge Base | How to Use LeadFormHub",
   description:
-    "Learn how to use LeadFormHub: create forms, collect leads, enable OTP verification, view your dashboard, and get help. Simple answers for new users.",
+    "Step-by-step LeadFormHub guides: create forms, share links, enable OTP, read analytics, and troubleshoot—written for non-technical users.",
   path: "/knowledge-base",
 });
+
+const breadcrumbSchema = buildWebPageBreadcrumbSchema("/knowledge-base", "Knowledge Base");
 
 const gettingStartedItems = [
   {
@@ -209,6 +213,7 @@ const kbSchema = {
 export default function KnowledgeBasePage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(kbSchema) }}
@@ -221,7 +226,7 @@ export default function KnowledgeBasePage() {
               Knowledge Base: How to Use LeadFormHub
             </h1>
             <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-              New to LeadFormHub? Here you’ll find simple answers to the most common questions — no technical background needed. Learn how to create forms, collect leads, and get the most out of your account.
+              Search this knowledge base for step-by-step answers—no technical background required. For company background see <Link href="/about" className="font-medium text-[var(--color-accent)] hover:underline">about LeadFormHub</Link>; for CRM connections visit <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">integrations</Link>.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
               <Link
@@ -237,6 +242,21 @@ export default function KnowledgeBasePage() {
                 FAQ
               </Link>
             </div>
+          </Container>
+        </section>
+
+        <section className="border-b border-[var(--border-subtle)] bg-[var(--background-alt)] py-12">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-xl font-semibold text-[var(--foreground-heading)]">Popular workflows in the knowledge base</h2>
+            <ul className="mt-4 list-disc space-y-2 pl-5 text-[var(--foreground-muted)]">
+              <li>Launch a contact form and share the link on Instagram or WhatsApp</li>
+              <li>Turn on OTP for demo requests so sales only calls verified numbers</li>
+              <li>Embed a form on your website without hiring a developer</li>
+              <li>Export leads weekly for CRM import while API sync is planned</li>
+            </ul>
+            <figure className="mt-6 overflow-hidden rounded-xl border border-[var(--border-subtle)]">
+              <Image src="/og.png" alt="LeadFormHub knowledge base topics" width={1200} height={630} className="h-auto w-full" />
+            </figure>
           </Container>
         </section>
 

@@ -1,15 +1,38 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { Container } from "@/components/ui/Container";
+import { buildCompanyFaqSchema, buildWebPageBreadcrumbSchema, type CompanyFaqItem } from "@/lib/company-page-seo";
 import { buildPageMetadata } from "@/lib/seo";
 
+const ABOUT_FAQS: CompanyFaqItem[] = [
+  {
+    question: "Who founded LeadFormHub and why?",
+    answer:
+      "The product grew out of real ad spend wasted on invalid phone numbers. The team built affordable OTP-verified capture so small businesses could trust every lead they paid to acquire.",
+  },
+  {
+    question: "Is LeadFormHub only for Indian businesses?",
+    answer:
+      "We optimize for Indian B2B workflows—OTP on mobile, INR pricing, and local support—but teams anywhere can use branded hubs and verified capture.",
+  },
+  {
+    question: "How is LeadFormHub different from Google Forms?",
+    answer:
+      "Google Forms is general-purpose data collection. LeadFormHub focuses on branded B2B lead capture, optional OTP verification, and a sales-ready dashboard.",
+  },
+];
+
 export const metadata: Metadata = buildPageMetadata({
-  title: "About LeadFormHub – Lead Capture Form Builder & Online Form Builder",
+  title: "About LeadFormHub | Verified Lead Capture",
   description:
-    "About LeadFormHub: verified lead capture for modern businesses. Mission, product philosophy, and transparent pricing for agencies, startups, and sales teams.",
+    "Meet LeadFormHub: mission, team, and product philosophy behind OTP-verified lead capture for agencies, startups, and sales teams in India.",
   path: "/about",
 });
+
+const breadcrumbSchema = buildWebPageBreadcrumbSchema("/about", "About");
+const faqSchema = buildCompanyFaqSchema(ABOUT_FAQS);
 
 const missionBullets = [
   { title: "Why we built LeadFormHub", desc: "We saw teams struggling with generic forms, fake leads, and scattered data. We built LeadFormHub to give B2B teams one place to capture, verify, and act on leads — with branding and pricing that fit how teams work." },
@@ -59,6 +82,8 @@ const icons = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
         {/* Hero */}
@@ -84,7 +109,7 @@ export default function AboutPage() {
                 <span className="hero-highlight">built for modern teams</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                We combine a branded hub, optional OTP verification, and a centralized lead dashboard so agencies, startups, sales teams, and marketers can capture better leads without juggling multiple tools.
+                LeadFormHub exists because invalid phone numbers were burning ad budgets. Today we help agencies, startups, and sales teams capture verified leads through one branded hub—explore <Link href="/features" className="font-medium text-[var(--color-accent)] hover:underline">product features</Link>, <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">integrations</Link>, or <Link href="/support" className="font-medium text-[var(--color-accent)] hover:underline">reach support</Link> anytime.
               </p>
               <Link
                 href="/signup"
@@ -217,8 +242,45 @@ export default function AboutPage() {
           </Container>
         </section>
 
-        {/* CTA strip */}
         <section className="border-t border-[var(--border-subtle)] bg-white py-16 sm:py-20">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
+              Who uses LeadFormHub today
+            </h2>
+            <ul className="mt-6 space-y-4 text-[var(--foreground-muted)]">
+              <li>
+                <strong className="text-[var(--foreground-heading)]">Digital marketing agencies</strong> — white-label style hubs per client with OTP on high-intent forms.
+              </li>
+              <li>
+                <strong className="text-[var(--foreground-heading)]">Coaching & education brands</strong> — admission and trial-class forms that must work on mobile.
+              </li>
+              <li>
+                <strong className="text-[var(--foreground-heading)]">B2B SaaS & services</strong> — demo request flows synced toward CRM via{" "}
+                <Link href="/integrations" className="font-medium text-[var(--color-accent)] hover:underline">integrations</Link>.
+              </li>
+            </ul>
+            <figure className="mt-8 overflow-hidden rounded-xl border border-[var(--border-subtle)]">
+              <Image src="/og.png" alt="LeadFormHub product overview" width={1200} height={630} className="h-auto w-full" />
+            </figure>
+            <h2 id="about-faq" className="mt-12 font-heading text-xl font-semibold text-[var(--foreground-heading)]">
+              About LeadFormHub — FAQ
+            </h2>
+            <dl className="mt-6 space-y-6">
+              {ABOUT_FAQS.map((item) => (
+                <div key={item.question}>
+                  <dt className="font-heading font-semibold text-[var(--foreground)]">{item.question}</dt>
+                  <dd className="mt-2 text-[var(--foreground-muted)]">{item.answer}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-8 text-[var(--foreground-muted)]">
+              New user? Start with the <Link href="/knowledge-base" className="font-medium text-[var(--color-accent)] hover:underline">knowledge base</Link>.
+            </p>
+          </Container>
+        </section>
+
+        {/* CTA strip */}
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
           <Container size="default" className="px-4 text-center sm:px-6">
             <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Join us</p>
             <h2 className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">

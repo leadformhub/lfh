@@ -11,38 +11,80 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "leadformhub-vs-jotform",
+    title: "LeadFormHub vs Jotform: Which Form Builder Is Better in 2026?",
+    description:
+      "LeadFormHub vs Jotform for lead capture: pricing, OTP verification, CRM workflows, and branding. See which form builder fits B2B campaigns in 2026.",
+    publishedAt: "2026-05-28",
+  },
+  {
+    slug: "leadformhub-vs-hubspot-forms",
+    title: "LeadFormHub vs HubSpot Forms: Lead Capture Compared (2026)",
+    description:
+      "LeadFormHub vs HubSpot Forms: pricing, CRM lock-in, OTP verification, and branding. See which tool fits SMB lead gen without a full HubSpot stack.",
+    publishedAt: "2026-05-28",
+  },
+  {
+    slug: "best-zoho-forms-alternative",
+    title: "Best Zoho Forms Alternative for Lead Generation (2026)",
+    description:
+      "Best Zoho Forms alternative for lead gen: branding, OTP verification, and a lead dashboard without Zoho CRM bundle complexity. Compare top picks.",
+    publishedAt: "2026-05-28",
+  },
+  {
+    slug: "leadformhub-vs-wufoo",
+    title: "LeadFormHub vs Wufoo: Form Builder Comparison for Leads (2026)",
+    description:
+      "LeadFormHub vs Wufoo compared for lead capture, pricing, branding, and CRM. See which form builder fits growing SMB campaigns in 2026.",
+    publishedAt: "2026-05-28",
+  },
+  {
+    slug: "hubspot-forms-vs-typeform-vs-google-forms",
+    title: "HubSpot Forms vs Typeform vs Google Forms Compared (2026)",
+    description:
+      "HubSpot Forms vs Typeform vs Google Forms for lead capture: pricing, branding, CRM, and UX. Plus when LeadFormHub fits B2B campaigns.",
+    publishedAt: "2026-05-28",
+  },
+  {
+    slug: "jotform-vs-hubspot-vs-wufoo-vs-formstack-for-lead-capture",
+    title: "Jotform vs HubSpot vs Wufoo vs Formstack for Lead Capture (2026)",
+    description:
+      "Compare Jotform, HubSpot Forms, Wufoo, and Formstack for lead capture—pricing, CRM, branding, OTP. See when LeadFormHub fits B2B teams.",
+    publishedAt: "2026-05-28",
+  },
+  {
     slug: "how-to-reduce-fake-leads-from-forms",
     title: "How to Reduce Fake Leads from Forms (7 Proven Ways)",
     description:
-      "Getting fake leads from your forms? 7 proven ways to stop spam submissions, filter bot traffic, and verify leads in real time—without hurting conversions.",
+      "Stop spam and bot submissions on lead forms: honeypots, OTP verification, rate limits, and tiered setups that protect quality without killing conversions.",
     publishedAt: "2026-04-30",
   },
   {
     slug: "best-form-builder-tools-for-lead-generation-forms",
-    title: "10 Best Form Builder Tools for Lead Generation Forms (2026)",
+    title: "10 Best Form Builder Tools for Lead Generation (2026)",
     description:
-      "Compare the best form builder tools for lead generation forms. See features, pricing, integrations, and how to choose the right lead capture form builder for your campaigns.",
+      "Compare 10 form builders for lead generation—Typeform, HubSpot, Jotform, Fillout & more. Free plan limits, OTP verification, pricing, and pros/cons ranked for campaigns.",
     publishedAt: "2026-04-15",
   },
   {
     slug: "best-lead-form-fields-for-high-conversion",
     title: "Best Lead Form Fields for High Conversion (What to Ask and What to Skip)",
     description:
-      "Choose the best lead form fields to increase conversions without hurting lead quality. A practical guide on required fields, optional qualifiers, and common mistakes.",
+      "Which fields belong on a lead form—and which to drop. Field-by-field advice, examples, and FAQs to lift conversions without junk leads.",
     publishedAt: "2026-03-19",
   },
   {
     slug: "lead-form-landing-page-checklist-2026",
     title: "Lead Form Landing Page Checklist for 2026",
     description:
-      "Use this 2026 lead form landing page checklist to improve conversion rates. Covers headlines, CTA copy, field design, trust signals, speed, and mobile UX.",
+      "2026 checklist for lead form landing pages: headline tests, CTA copy, mobile UX, trust signals, and field layout—fix drop-off without a full redesign.",
     publishedAt: "2026-03-19",
   },
   {
     slug: "set-up-lead-generation-form-without-coding",
     title: "How to Set Up a Lead Generation Form Quickly (Without Coding)",
     description:
-      "Set up a lead generation form in minutes without coding. A practical checklist for choosing fields, publishing fast, and improving conversions from day one.",
+      "Launch a no-code lead generation form in under 15 minutes: pick fields, publish, wire notifications, and avoid setup mistakes that kill conversions.",
     publishedAt: "2026-03-19",
   },
   {
@@ -68,9 +110,9 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: "google-forms-alternative",
-    title: "Google Forms Alternative – Online Form Builder for Lead Generation",
+    title: "Best Google Forms Alternative for Lead Generation",
     description:
-      "Upgrade from Google Forms to a professional online form builder and lead capture platform with branding, OTP verification, and form analytics.",
+      "The best Google Forms alternative for lead capture adds branding, OTP verification, and a lead dashboard—not just a spreadsheet. Compare options and when to switch.",
     publishedAt: "2025-02-01",
   },
   {
@@ -217,7 +259,7 @@ export const BLOG_POSTS: BlogPost[] = [
     slug: "unlimited-form-submissions-why-it-matters",
     title: "Why Unlimited Form Submissions Matter for Growing Businesses",
     description:
-      "Many form builders restrict submissions with monthly caps and upgrade triggers. For growing businesses, form submission limits can interrupt campaigns and result in lost leads. Here's why unlimited form submissions matter.",
+      "Form caps can stop campaigns mid-flight. Compare limited vs unlimited form builders, real use cases, and how to pick a plan that scales with your traffic.",
     publishedAt: "2025-02-21",
   },
 ];

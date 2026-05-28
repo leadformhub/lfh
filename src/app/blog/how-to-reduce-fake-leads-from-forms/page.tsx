@@ -3,62 +3,49 @@ import Image from "next/image";
 import Link from "next/link";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
+
+const SLUG = "how-to-reduce-fake-leads-from-forms";
+const PUBLISHED = "2026-04-30";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "How to Reduce Fake Leads from Forms (7 Proven Ways)",
+  title: "Reduce Fake Leads from Forms (7 Ways) | Guide",
   description:
-    "Getting fake leads from your forms? 7 proven ways to stop spam submissions, filter bot traffic, and verify leads in real time—without hurting conversions.",
-  path: "/blog/how-to-reduce-fake-leads-from-forms",
+    "Stop spam and bot submissions on lead forms: honeypots, OTP verification, rate limits, and tiered setups that protect quality without killing conversions.",
+  path: `/blog/${SLUG}`,
 });
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Why am I getting so many fake leads from my contact form?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Most fake leads come from bots — automated scripts that fill in forms at scale. Others come from real people who use throwaway contact details to avoid being followed up. A honeypot field stops most bots. OTP verification stops fake human submissions.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does CAPTCHA stop fake leads?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "CAPTCHA stops bots from submitting your form, but it does not verify that the contact details entered are real. Someone can pass a CAPTCHA and still give a fake phone number. Use CAPTCHA alongside OTP verification or real-time validation for better results.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What is OTP verification on a lead form?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "OTP stands for One-Time Password. When a user enters their phone number or email, the form sends a unique code to that contact. The user must enter the code to complete the submission. This ensures every lead has a verified, reachable contact detail.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Will adding OTP verification hurt my conversion rate?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "It will reduce total submission volume slightly. But the leads you capture are verified and reachable. For most teams, fewer high-quality leads are more valuable than more unverifiable ones — especially if your sales team wastes time on dead phone numbers.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How do I stop competitor spam on my lead forms?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Combine rate limiting (blocking repeated submissions from the same IP), geo-filtering (restricting forms to your target regions), and OTP verification (which requires a real, working contact to complete the submission).",
-      },
-    },
-  ],
-};
+const ARTICLE_FAQS: BlogFaqItem[] = [
+  {
+    question: "Why am I getting so many fake leads from my contact form?",
+    answer:
+      "Most fake leads come from bots — automated scripts that fill in forms at scale. Others come from real people who use throwaway contact details to avoid being followed up. A honeypot field stops most bots. OTP verification stops fake human submissions.",
+  },
+  {
+    question: "Does CAPTCHA stop fake leads?",
+    answer:
+      "CAPTCHA stops bots from submitting your form, but it does not verify that the contact details entered are real. Someone can pass a CAPTCHA and still give a fake phone number. Use CAPTCHA alongside OTP verification or real-time validation for better results.",
+  },
+  {
+    question: "What is OTP verification on a lead form?",
+    answer:
+      "OTP stands for One-Time Password. When a user enters their phone number or email, the form sends a unique code to that contact. The user must enter the code to complete the submission. This ensures every lead has a verified, reachable contact detail.",
+  },
+  {
+    question: "Will adding OTP verification hurt my conversion rate?",
+    answer:
+      "It will reduce total submission volume slightly. But the leads you capture are verified and reachable. For most teams, fewer high-quality leads are more valuable than more unverifiable ones — especially if your sales team wastes time on dead phone numbers.",
+  },
+  {
+    question: "How do I stop competitor spam on my lead forms?",
+    answer:
+      "Combine rate limiting (blocking repeated submissions from the same IP), geo-filtering (restricting forms to your target regions), and OTP verification (which requires a real, working contact to complete the submission).",
+  },
+];
 
 export default function HowToReduceFakeLeadsFromFormsPage() {
   const lastUpdated = "April 30, 2026";
@@ -70,6 +57,14 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <BlogStructuredData
+        slug={SLUG}
+        headline="How to Reduce Fake Leads from Forms (7 Proven Ways)"
+        description="Seven practical ways to reduce fake and spam leads from web forms without destroying conversion rate."
+        datePublished={PUBLISHED}
+        dateModified={PUBLISHED}
+        faqs={ARTICLE_FAQS}
+      />
       <Navbar />
       <main>
         <section className="hero-section relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28" aria-labelledby="article-heading">
@@ -503,12 +498,6 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
               <h2 id="faq" className="font-heading mt-10 scroll-mt-28 text-xl font-semibold text-[var(--foreground)]">
                 Frequently Asked Questions
               </h2>
-              <script
-                type="application/ld+json"
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-              />
-
               <h3 className="font-heading mt-6 text-lg font-semibold text-[var(--foreground)]">
                 Why am I getting so many fake leads from my contact form?
               </h3>
@@ -550,9 +539,17 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
                 Start with Tier 1 today: honeypot and format validation. If you run paid campaigns or book high-value demos, add OTP verification for the forms where lead quality matters most.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                To see how a well-built form fits into your full lead capture process, read our guide on{" "}
+                To see how a well-built form fits into your full lead capture process, read our guides on{" "}
                 <Link href="/blog/what-is-a-lead-capture-form" className="font-medium text-[var(--color-accent)] hover:underline">
-                  what makes a lead capture form effective
+                  lead capture forms
+                </Link>
+                ,{" "}
+                <Link href="/blog/best-lead-form-fields-for-high-conversion" className="font-medium text-[var(--color-accent)] hover:underline">
+                  high-converting form fields
+                </Link>
+                , and{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  form builders with verification built in
                 </Link>
                 .
               </p>
@@ -563,7 +560,8 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
           </Container>
         </section>
 
-        <BlogInternalLinks />
+        <BlogRelatedPosts slug={SLUG} />
+        <BlogInternalLinks slug={SLUG} />
         <CTA />
         <Footer />
       </main>

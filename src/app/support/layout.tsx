@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Support | LeadFormHub Lead Capture Software",
+  title: "Support | LeadFormHub Help & Tickets",
   description:
-    "Submit a support request for LeadFormHub. Get help with your account, form builder, lead capture, billing, or technical issues.",
+    "LeadFormHub support for billing, forms, OTP verification, and integrations. Submit a ticket or use the knowledge base and FAQ first.",
   path: "/support",
 });
 
