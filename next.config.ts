@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { buildBlogSubdomainNextRedirects } from "./src/lib/blog-subdomain-redirects";
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -10,6 +11,8 @@ const nextConfig: NextConfig = {
         destination: "https://leadformhub.com/:path*",
         permanent: true,
       },
+      // blog.leadformhub.com → leadformhub.com/blog (all posts + legacy slug renames).
+      ...buildBlogSubdomainNextRedirects(),
       { source: "/typeform-alternative", destination: "/blog/typeform-alternative", permanent: true },
       { source: "/google-forms-alternative", destination: "/blog/google-forms-alternative", permanent: true },
       // Legacy subscribe URLs → canonical pricing (fixes GSC "Page with redirect")

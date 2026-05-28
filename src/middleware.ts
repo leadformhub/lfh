@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import { getSessionCookieName } from "@/lib/jwt";
-
-/** Canonical origin for SEO — all non-canonical hosts 301 here. */
-const CANONICAL_ORIGIN = "https://leadformhub.com";
+import {
+  BLOG_SUBDOMAIN_HOST,
+  CANONICAL_ORIGIN,
+  resolveBlogSubdomainDestination,
+} from "@/lib/blog-subdomain-redirects";
 
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/forgot-password", "/reset-password"];
 const API_PUBLIC = ["/api/auth/", "/api/otp/", "/api/leads/submit"];
@@ -34,13 +36,12 @@ function shouldRedirectHttpToHttps(req: NextRequest): boolean {
   return host === "leadformhub.com" && proto !== "https";
 }
 
-/** If on blog subdomain, 301 to canonical origin so GSC doesn't report alternates. */
+/** 301 blog.leadformhub.com → leadformhub.com/blog (exact slug map + /blog/:slug fallback). */
 function redirectBlogSubdomainToCanonical(req: NextRequest): NextResponse | null {
-  const hostHeader = req.headers.get("host") ?? "";
-  const host = hostHeader.split(":")[0].toLowerCase();
-  if (host !== "blog.leadformhub.com") return null;
-  const path = req.nextUrl.pathname + req.nextUrl.search;
-  const destination = path === "/" ? `${CANONICAL_ORIGIN}/blog` : `${CANONICAL_ORIGIN}${path}`;
+  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (host !== BLOG_SUBDOMAIN_HOST) return null;
+  const canonicalPath = resolveBlogSubdomainDestination(req.nextUrl.pathname);
+  const destination = `${CANONICAL_ORIGIN}${canonicalPath}${req.nextUrl.search}`;
   return NextResponse.redirect(destination, 301);
 }
 

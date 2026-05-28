@@ -1,0 +1,49 @@
+# 301 blog.leadformhub.com → leadformhub.com/blog (apex canonical)
+# Add this server block alongside your main leadformhub.com config.
+# Requires blog.leadformhub.com DNS A/AAAA or CNAME pointing to this host.
+
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name blog.leadformhub.com;
+
+    # ssl_certificate     /path/to/fullchain.pem;
+    # ssl_certificate_key /path/to/privkey.pem;
+
+    # Legacy slug renames (must appear before generic /blog/ rules)
+    location = /how-to-generate-leads-using-free-tools {
+        return 301 https://leadformhub.com/blog/how-to-generate-leads-for-free;
+    }
+    location = /best-free-lead-generation-form {
+        return 301 https://leadformhub.com/free-online-form-builder-unlimited;
+    }
+    location = /best-free-online-form-builder {
+        return 301 https://leadformhub.com/free-online-form-builder-unlimited;
+    }
+    location = /free-online-form-builder {
+        return 301 https://leadformhub.com/free-online-form-builder-unlimited;
+    }
+
+    # Non-blog paths on the old subdomain
+    location = /login { return 301 https://leadformhub.com/login; }
+    location = /home { return 301 https://leadformhub.com/blog; }
+    location = /category/blog { return 301 https://leadformhub.com/blog; }
+
+    # Subdomain root and /blog index
+    location = / { return 301 https://leadformhub.com/blog; }
+    location = /blog { return 301 https://leadformhub.com/blog; }
+
+    # Paths already prefixed with /blog on the subdomain
+    location ~ ^/blog/(?<slug>.+)/?$ {
+        return 301 https://leadformhub.com/blog/$slug;
+    }
+
+    # All other paths: prefix with /blog on apex (e.g. /free-online-form-builders)
+    location ~ ^/(?<slug>[^/]+)/?$ {
+        return 301 https://leadformhub.com/blog/$slug;
+    }
+
+    location / {
+        return 301 https://leadformhub.com/blog$request_uri;
+    }
+}
