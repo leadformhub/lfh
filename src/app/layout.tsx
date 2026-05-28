@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
@@ -26,47 +27,56 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  alternates: {
-    canonical: "/",
-  },
-  title: {
-    default: HOMEPAGE_SEO_TITLE,
-    template: "%s | LeadFormHub",
-  },
-  description:
-    "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
-  keywords: [
-    "lead capture form builder",
-    "online form builder",
-    "lead generation forms",
-    "drag and drop form builder",
-    "lead capture software",
-    "form builder SaaS",
-    "secure lead capture forms",
-    "form builder with analytics",
-    "lead capture tools for business",
-  ],
-  openGraph: {
-    title: HOMEPAGE_SEO_TITLE,
+function getCanonicalUrl(pathname: string): string {
+  return pathname === "/" ? SITE_URL : `${SITE_URL}${pathname}`;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const pathname = (await headers()).get("x-pathname") ?? "/";
+  const canonical = getCanonicalUrl(pathname);
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    alternates: {
+      canonical,
+    },
+    title: {
+      default: HOMEPAGE_SEO_TITLE,
+      template: "%s | LeadFormHub",
+    },
     description:
       "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
-    url: `${SITE_URL}/`,
-    siteName: "LeadFormHub",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: HOMEPAGE_SEO_TITLE,
-    description:
-      "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
-  },
-  robots: "index, follow",
-  other: {
-    "saashub-verification": "303o4dlr984j",
-  },
-};
+    keywords: [
+      "lead capture form builder",
+      "online form builder",
+      "lead generation forms",
+      "drag and drop form builder",
+      "lead capture software",
+      "form builder SaaS",
+      "secure lead capture forms",
+      "form builder with analytics",
+      "lead capture tools for business",
+    ],
+    openGraph: {
+      title: HOMEPAGE_SEO_TITLE,
+      description:
+        "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+      url: canonical,
+      siteName: "LeadFormHub",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: HOMEPAGE_SEO_TITLE,
+      description:
+        "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+    },
+    robots: "index, follow",
+    other: {
+      "saashub-verification": "303o4dlr984j",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

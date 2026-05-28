@@ -19,15 +19,19 @@ const NON_DASHBOARD_FIRST = new Set(["api", "login", "signup", "forgot-password"
 /** Second segment values that indicate dashboard area (auth required). */
 const DASHBOARD_SEGMENTS = new Set(["dashboard", "forms", "leads", "settings", "analytics", "integrations", "raise-request", "payment-success", "access-denied"]);
 
-function shouldRedirectToCanonical(req: NextRequest): boolean {
-  const hostHeader = req.headers.get("host") ?? "";
-  const host = hostHeader.split(":")[0].toLowerCase();
+/** 301 www → non-www apex (canonical host). */
+function redirectWwwToApex(req: NextRequest): NextResponse | null {
+  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (host !== "www.leadformhub.com") return null;
+  const path = req.nextUrl.pathname + req.nextUrl.search;
+  const destination = path === "/" ? CANONICAL_ORIGIN : `${CANONICAL_ORIGIN}${path}`;
+  return NextResponse.redirect(destination, 301);
+}
+
+function shouldRedirectHttpToHttps(req: NextRequest): boolean {
+  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const proto = (req.headers.get("x-forwarded-proto") ?? req.nextUrl.protocol.replace(":", "")).toLowerCase();
-
-  const isProductionDomain = host === "leadformhub.com" || host === "www.leadformhub.com";
-  const isCanonical = host === "leadformhub.com" && proto === "https";
-
-  return isProductionDomain && !isCanonical;
+  return host === "leadformhub.com" && proto !== "https";
 }
 
 /** If on blog subdomain, 301 to canonical origin so GSC doesn't report alternates. */
@@ -64,11 +68,20 @@ function isDashboardPath(path: string): boolean {
   return DASHBOARD_SEGMENTS.has(segments[1]);
 }
 
+function nextWithPathname(req: NextRequest): NextResponse {
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
+}
+
 export async function middleware(req: NextRequest) {
+  const wwwRedirect = redirectWwwToApex(req);
+  if (wwwRedirect) return wwwRedirect;
+
   const blogRedirect = redirectBlogSubdomainToCanonical(req);
   if (blogRedirect) return blogRedirect;
 
-  if (shouldRedirectToCanonical(req)) {
+  if (shouldRedirectHttpToHttps(req)) {
     const path = req.nextUrl.pathname + req.nextUrl.search;
     const destination = path === "/" ? CANONICAL_ORIGIN : `${CANONICAL_ORIGIN}${path}`;
     return NextResponse.redirect(destination, 301);
@@ -85,11 +98,11 @@ export async function middleware(req: NextRequest) {
   if (process.env.NODE_ENV === "development") {
     console.log(`[${new Date().toISOString()}] ${req.method} ${path}`);
   }
-  if (path.startsWith("/api/auth/verify-email")) return NextResponse.next();
-  if (path.startsWith(F_PREFIX)) return NextResponse.next();
-  if (PUBLIC_PATHS.some((p) => path === p)) return NextResponse.next();
-  if (path.startsWith("/api/") && API_PUBLIC.some((p) => path.startsWith(p))) return NextResponse.next();
-  if (path.startsWith("/api/public/")) return NextResponse.next();
+  if (path.startsWith("/api/auth/verify-email")) return nextWithPathname(req);
+  if (path.startsWith(F_PREFIX)) return nextWithPathname(req);
+  if (PUBLIC_PATHS.some((p) => path === p)) return nextWithPathname(req);
+  if (path.startsWith("/api/") && API_PUBLIC.some((p) => path.startsWith(p))) return nextWithPathname(req);
+  if (path.startsWith("/api/public/")) return nextWithPathname(req);
 
   if (isDashboardPath(path)) {
     const token = req.cookies.get(getSessionCookieName())?.value;
@@ -98,5 +111,5 @@ export async function middleware(req: NextRequest) {
     if (!payload) return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  return NextResponse.next();
+  return nextWithPathname(req);
 }
