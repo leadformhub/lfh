@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -38,6 +39,7 @@ export default function CaseStudyLeadGenerationFormsPage() {
               >
                 Case Study: Using Lead Generation Forms to Grow a Small Business
               </h1>
+              <BlogArticleDates slug="case-study-of-using-lead-generation-forms" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 How one small business went from scattered enquiries to a structured pipeline by centralising lead capture with simple forms. Real lessons on form design, follow-up, and conversion.
               </p>

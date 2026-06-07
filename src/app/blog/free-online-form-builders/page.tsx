@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -38,6 +39,7 @@ export default function FreeOnlineFormBuildersPage() {
               >
                 Free Online Form Builders: How to Choose One for Lead Capture
               </h1>
+              <BlogArticleDates slug="free-online-form-builders" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Free online form builders let you create contact, enquiry, and registration forms without coding. Here&apos;s what to look for when comparing options for lead capture—limits, notifications, and ease of use.
               </p>

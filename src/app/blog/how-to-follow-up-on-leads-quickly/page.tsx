@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "How to Follow Up on Leads Quickly: Why Speed Matters",
@@ -12,9 +15,39 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/blog/how-to-follow-up-on-leads-quickly",
 });
 
+const SLUG = "how-to-follow-up-on-leads-quickly";
+const PUBLISHED = "2025-02-20";
+const UPDATED = "2026-06-07";
+
+const ARTICLE_FAQS: BlogFaqItem[] = [
+  {
+    question: "How fast should I follow up on a lead?",
+    answer:
+      "Ideally within five to 15 minutes for high-intent leads (demo, contact, quote). Even a short “Got it, calling you shortly” helps. For lower-intent (e.g. newsletter), same day is usually fine. The sooner you respond, the better your conversion tends to be.",
+  },
+  {
+    question: "What if I can’t respond 24/7?",
+    answer:
+      "Use an instant email notification so you see leads as they come in. When you’re available, reply immediately. When you’re not, set an auto-reply so they know when to expect a response. Prioritise the hottest leads when you’re back so you don’t leave them waiting days.",
+  },
+  {
+    question: "Does instant follow-up really increase conversions?",
+    answer:
+      "Yes. Fast contact keeps you top of mind and shows you’re serious. Leads who are contacted within minutes are much more likely to answer and move forward than those who wait hours or days. It’s one of the simplest levers to improve lead conversion.",
+  },
+];
+
 export default function HowToFollowUpOnLeadsQuicklyPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <BlogStructuredData
+        slug={SLUG}
+        headline="How to Follow Up on Leads Quickly: Why Speed Matters"
+        description="Why fast follow-up on leads wins more deals. Practical tips to respond within minutes, use notifications, and never let a hot lead go cold. For small teams and solopreneurs."
+        datePublished={PUBLISHED}
+        dateModified={UPDATED}
+        faqs={ARTICLE_FAQS}
+      />
       <Navbar />
       <main>
         <section
@@ -37,6 +70,7 @@ export default function HowToFollowUpOnLeadsQuicklyPage() {
               >
                 How to Follow Up on Leads <span className="hero-highlight">Quickly</span>
               </h1>
+              <BlogArticleDates slug="how-to-follow-up-on-leads-quickly" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 A lead that gets a response within minutes is far more likely to convert than one that waits hours or days. Here’s why speed matters and how to follow up on leads quickly—without burning out—using simple systems and the right tools.
               </p>
@@ -121,6 +155,17 @@ export default function HowToFollowUpOnLeadsQuicklyPage() {
               </h3>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 Yes. Fast contact keeps you top of mind and shows you’re serious. Leads who are contacted within minutes are much more likely to answer and move forward than those who wait hours or days. It’s one of the simplest levers to improve lead conversion.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Make sure your forms are capturing quality leads first. See the{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  best form builders for lead generation
+                </Link>
+                {" "}and learn how to{" "}
+                <Link href="/blog/how-to-reduce-fake-leads-from-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  stop fake leads from polluting your CRM
+                </Link>
+                .
               </p>
             </div>
           </Container>

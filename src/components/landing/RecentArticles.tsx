@@ -30,8 +30,8 @@ export function RecentArticles() {
                 href={getBlogPath(post.slug)}
                 className="group flex h-full flex-col rounded-xl border border-[var(--border-subtle)] bg-[var(--background)] p-5 transition-all hover:border-[var(--color-accent)]/40 hover:shadow-md"
               >
-                <time dateTime={post.publishedAt} className="text-sm font-medium text-[var(--color-accent)]">
-                  {formatBlogDate(post.publishedAt)}
+                <time dateTime={post.updatedAt} className="text-sm font-medium text-[var(--color-accent)]">
+                  Updated {formatBlogDate(post.updatedAt)}
                 </time>
                 <h3 className="mt-2 font-heading text-base font-semibold leading-snug text-[var(--foreground-heading)] group-hover:text-[var(--color-accent)]">
                   {post.title}

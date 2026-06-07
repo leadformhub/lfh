@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
+import ComparisonTable from "@/app/components/ComparisonTable";
+import QuickAnswer from "@/app/components/QuickAnswer";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Typeform vs LeadFormHub: Compare Form Builders & Lead Capture",
@@ -12,49 +17,44 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/blog/typeform-vs-leadformhub",
 });
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Is LeadFormHub a good Typeform alternative for lead capture?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. LeadFormHub is built as a Typeform alternative for teams that prioritise lead capture and lead quality. You get optional OTP verification, a branded hub, and a unified lead dashboard. If your main goal is verified, actionable leads rather than survey-style form experience, LeadFormHub is a strong fit.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does Typeform have OTP or phone verification for leads?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Typeform does not offer built-in OTP or phone verification. You receive whatever phone number or email the respondent enters. LeadFormHub offers optional OTP verification so you can confirm that leads have access to the phone number they submitted.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How does form builder pricing compare between Typeform and LeadFormHub?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Typeform prices in USD with a free tier and paid subscriptions. LeadFormHub offers a free tier and paid plans with monthly payment options. Check our pricing page for current plans.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Which is better for B2B lead generation forms?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "For B2B lead generation forms where you need real, reachable contacts (e.g. demo requests, contact forms), LeadFormHub is often the better fit because of OTP verification and a lead-focused dashboard. Typeform is better when the main goal is survey or feedback experience rather than verified lead quality.",
-      },
-    },
-  ],
-};
+const SLUG = "typeform-vs-leadformhub";
+const PUBLISHED = "2025-02-01";
+const UPDATED = "2026-06-07";
+
+const faqItems: BlogFaqItem[] = [
+  {
+    question: "Is LeadFormHub a good Typeform alternative for lead capture?",
+    answer:
+      "Yes. LeadFormHub is built as a Typeform alternative for teams that prioritise lead capture and lead quality. You get optional OTP verification, a branded hub, and a unified lead dashboard. If your main goal is verified, actionable leads rather than survey-style form experience, LeadFormHub is a strong fit.",
+  },
+  {
+    question: "Does Typeform have OTP or phone verification for leads?",
+    answer:
+      "No. Typeform does not offer built-in OTP or phone verification. You receive whatever phone number or email the respondent enters. LeadFormHub offers optional OTP verification so you can confirm that leads have access to the phone number they submitted.",
+  },
+  {
+    question: "How does form builder pricing compare between Typeform and LeadFormHub?",
+    answer:
+      "Typeform prices in USD with a free tier and paid subscriptions. LeadFormHub offers a free tier and paid plans with monthly payment options. Check our pricing page for current plans.",
+  },
+  {
+    question: "Which is better for B2B lead generation forms?",
+    answer:
+      "For B2B lead generation forms where you need real, reachable contacts (e.g. demo requests, contact forms), LeadFormHub is often the better fit because of OTP verification and a lead-focused dashboard. Typeform is better when the main goal is survey or feedback experience rather than verified lead quality.",
+  },
+];
 
 export default function TypeformVsLeadformhubPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <BlogStructuredData
+        slug={SLUG}
+        headline="Typeform vs LeadFormHub: Compare Form Builders & Lead Capture"
+        description="Compare Typeform and LeadFormHub for lead capture: ease of use, form builder pricing, OTP verification, and best use cases. See who should choose which tool."
+        datePublished={PUBLISHED}
+        dateModified={UPDATED}
+        faqs={faqItems}
+      />
       <Navbar />
       <main>
         <section
@@ -77,9 +77,27 @@ export default function TypeformVsLeadformhubPage() {
               >
                 Typeform vs <span className="hero-highlight">LeadFormHub</span>
               </h1>
+              <BlogArticleDates slug="typeform-vs-leadformhub" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Two different takes on the same need: collecting information from people online. Typeform excels at conversational, one-question-at-a-time forms and surveys. LeadFormHub is lead capture software built around verified leads, a branded hub, and a single dashboard. This comparison covers ease of use, lead capture features, pricing, verification (including OTP), and best use cases so you can decide which tool fits your goals.
               </p>
+              <div className="hero-content mx-auto mt-6 max-w-2xl text-left">
+                <QuickAnswer
+                  question="Typeform vs LeadFormHub: which is better for lead capture?"
+                  answer="For verified B2B lead capture, LeadFormHub is the better choice. It offers optional OTP phone verification, a branded hub, and a unified lead dashboard—features Typeform lacks. Choose Typeform when conversational survey UX matters more than lead quality and sales-ready follow-up workflows."
+                />
+                <ComparisonTable
+                  usName="LeadFormHub"
+                  themName="Typeform"
+                  rows={[
+                    { feature: "OTP / phone verification", us: "Yes (optional)", them: "No", winner: "us" },
+                    { feature: "Branded hub / custom URL", us: "Dedicated hub included", them: "Custom domain (paid add-on)", winner: "us" },
+                    { feature: "Lead dashboard", us: "Unified view for all forms", them: "Responses view; focus on form UX", winner: "us" },
+                    { feature: "Form experience", us: "Classic multi-field forms", them: "Conversational, one-question flow", winner: "them" },
+                    { feature: "Best for lead capture", us: "B2B leads, demo requests, verified contacts", them: "Surveys, feedback, quizzes", winner: "us" },
+                  ]}
+                />
+              </div>
             </div>
           </Container>
         </section>
@@ -272,6 +290,21 @@ export default function TypeformVsLeadformhubPage() {
               </h3>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 For B2B lead generation forms where you need real, reachable contacts (e.g. demo requests, contact forms), LeadFormHub is often the better fit because of OTP verification and a lead-focused dashboard. Typeform is better when the main goal is survey or feedback experience rather than verified lead quality.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Looking for more options? Browse the{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  best form builders for lead generation
+                </Link>
+                {" "}or see how LeadFormHub compares as a{" "}
+                <Link href="/blog/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Typeform alternative
+                </Link>
+                . You can also check our{" "}
+                <Link href="/blog/best-zoho-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Zoho Forms alternative
+                </Link>
+                {" "}page.
               </p>
             </div>
           </Container>

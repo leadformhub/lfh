@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -41,6 +42,7 @@ export default function HowToGenerateLeadsManuallyPage() {
               >
                 How to Generate Leads Manually
               </h1>
+              <BlogArticleDates slug="how-to-generate-leads-manually" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Automation has its place, but manual lead generation still works—especially when you&apos;re small, personal, and focused. This guide covers practical tactics to generate leads manually: networking, referrals, outreach, and events, so you can fill your pipeline without depending only on ads or algorithms.
               </p>

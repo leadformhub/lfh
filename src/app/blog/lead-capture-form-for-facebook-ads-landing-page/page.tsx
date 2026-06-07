@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function LeadCaptureFormForFacebookAdsLandingPagePage() {
               >
                 Lead Capture Form for <span className="hero-highlight">Facebook Ads Landing Page</span>: Turn Clicks Into Leads
               </h1>
+              <BlogArticleDates slug="lead-capture-form-for-facebook-ads-landing-page" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You’re paying for Facebook ads. People click. Then what? A lead capture form for your Facebook ads landing page is where the click becomes a contact. Get the form wrong and you waste budget; get it right and you fill your pipeline. Here’s how to set it up.
               </p>

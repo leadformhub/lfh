@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
+import QuickAnswer from "@/app/components/QuickAnswer";
 import {
   Navbar,
   ComparisonTable,
@@ -8,8 +10,10 @@ import {
   Footer,
 } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata, SITE_URL } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
 
 /**
  * Typeform Alternative — SEO: typeform alternative, lead capture form builder.
@@ -46,7 +50,11 @@ const useCases = [
   },
 ];
 
-const faqItems = [
+const SLUG = "typeform-alternative";
+const PUBLISHED = "2025-02-01";
+const UPDATED = "2026-06-07";
+
+const faqItems: BlogFaqItem[] = [
   {
     question: "Why use LeadFormHub instead of Typeform for lead capture?",
     answer:
@@ -63,16 +71,6 @@ const faqItems = [
       "Yes. You get a dedicated hub at leadformhub.com/yourbrand. All your forms live under that URL for a professional, consistent presence.",
   },
 ];
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqItems.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: { "@type": "Answer", text: item.answer },
-  })),
-};
 
 const productSchema = {
   "@context": "https://schema.org",
@@ -93,8 +91,15 @@ const whyBullets = [
 export default function TypeformAlternativePage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <BlogStructuredData
+        slug={SLUG}
+        headline="Typeform Alternative for Verified Lead Capture Forms"
+        description="Looking for a Typeform alternative? Use LeadFormHub as your lead capture form builder with OTP verification, form analytics, and a sales-ready dashboard."
+        datePublished={PUBLISHED}
+        dateModified={UPDATED}
+        faqs={faqItems}
+        extraSchemas={[productSchema]}
+      />
       <Navbar />
       <main>
         {/* Hero */}
@@ -119,9 +124,16 @@ export default function TypeformAlternativePage() {
                 Lead capture built for{" "}
                 <span className="hero-highlight">verified B2B leads</span>
               </h1>
+              <BlogArticleDates slug="typeform-alternative" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Typeform is strong on form design. If you need verified leads, a branded hub, and sales-ready contacts with transparent monthly pricing, LeadFormHub is built for that.
               </p>
+              <div className="hero-content mx-auto mt-6 max-w-2xl text-left">
+                <QuickAnswer
+                  question="What is the best Typeform alternative for lead capture?"
+                  answer="LeadFormHub is a strong Typeform alternative when your priority is verified B2B leads, not survey-style form design. You get optional OTP phone verification, a branded hub at leadformhub.com/yourbrand, a sales-ready lead dashboard, and transparent monthly pricing—features Typeform does not bundle for lead quality workflows."
+                />
+              </div>
               <Link
                 href="/signup"
                 className="hero-content mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--color-accent)] px-6 text-base font-medium text-white shadow-[var(--shadow-cta)] transition-all hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]"
@@ -226,6 +238,26 @@ export default function TypeformAlternativePage() {
               Frequently Asked Questions
             </h2>
             <ComparisonFAQ items={faqItems} className="mt-10" />
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-12 sm:py-14">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <p className="text-[var(--foreground-muted)]">
+              Compare LeadFormHub and Typeform side by side in our full{" "}
+              <Link href="/blog/typeform-vs-leadformhub" className="font-medium text-[var(--color-accent)] hover:underline">
+                Typeform vs LeadFormHub review
+              </Link>
+              . You can also see how it stacks up as a{" "}
+              <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                Google Forms alternative
+              </Link>
+              {" "}or explore{" "}
+              <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
+                plans and pricing
+              </Link>
+              .
+            </p>
           </Container>
         </section>
 

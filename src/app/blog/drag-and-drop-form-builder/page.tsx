@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -38,6 +39,7 @@ export default function DragAndDropFormBuilderPage() {
               >
                 Drag and Drop Form Builder: Create Lead Capture Forms Without Coding
               </h1>
+              <BlogArticleDates slug="drag-and-drop-form-builder" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 A drag and drop form builder lets you add fields, reorder them, and customise forms visually—no developer needed. Here&apos;s what to look for when choosing one for lead capture.
               </p>

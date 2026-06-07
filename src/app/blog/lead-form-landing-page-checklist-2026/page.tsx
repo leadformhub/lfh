@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
@@ -9,6 +10,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "lead-form-landing-page-checklist-2026";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2026-03-19";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -44,6 +46,7 @@ export default function LeadFormLandingPageChecklist2026Page() {
         headline="Lead Form Landing Page Checklist for 2026"
         description="A practical 2026 checklist to improve lead form landing page conversions."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -68,6 +71,7 @@ export default function LeadFormLandingPageChecklist2026Page() {
               >
                 Lead Form Landing Page Checklist for 2026
               </h1>
+              <BlogArticleDates slug="lead-form-landing-page-checklist-2026" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Traffic without leads usually means the page—not the ad—is leaking trust or adding friction. Walk this 2026 checklist section by section; pair it with{" "}
                 <Link href="/blog/best-lead-form-fields-for-high-conversion" className="font-medium text-[var(--color-accent)] hover:underline">

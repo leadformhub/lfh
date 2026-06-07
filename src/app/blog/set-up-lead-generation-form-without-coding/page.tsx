@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
@@ -9,6 +10,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "set-up-lead-generation-form-without-coding";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2026-03-19";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -64,6 +66,7 @@ export default function SetUpLeadGenerationFormQuicklyPage() {
         headline="How to Set Up a Lead Generation Form Quickly (Without Coding)"
         description="Step-by-step no-code setup for lead generation forms with fast publish and conversion-friendly defaults."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -88,6 +91,7 @@ export default function SetUpLeadGenerationFormQuicklyPage() {
               >
                 How to Set Up a Lead Generation Form Quickly (Without Coding)
               </h1>
+              <BlogArticleDates slug="set-up-lead-generation-form-without-coding" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You do not need a developer to start capturing leads—you need a short setup sequence and a form that respects mobile visitors. This walkthrough is for founders and marketers who want a live form today, with pointers to{" "}
                 <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">

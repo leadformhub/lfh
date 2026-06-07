@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -16,9 +18,20 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/blog/how-to-generate-leads-for-free",
 });
 
+const SLUG = "how-to-generate-leads-for-free";
+const PUBLISHED = "2025-02-18";
+const UPDATED = "2026-06-07";
+
 export default function HowToGenerateLeadsForFreePage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <BlogStructuredData
+        slug={SLUG}
+        headline="How to Generate Leads for Free: Practical Tips for Small Business"
+        description="Learn how to generate leads for free using content, social proof, and simple form-based capture. No big budget required—practical tips for startups and small businesses."
+        datePublished={PUBLISHED}
+        dateModified={UPDATED}
+      />
       <Navbar />
       <main>
         <section
@@ -41,6 +54,7 @@ export default function HowToGenerateLeadsForFreePage() {
               >
                 How to Generate Leads for Free
               </h1>
+              <BlogArticleDates slug="how-to-generate-leads-for-free" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You don&apos;t need a big marketing budget to fill your pipeline. This guide shows you practical ways to generate leads for free—using content, community, and simple tools that work for small businesses and startups.
               </p>
@@ -129,6 +143,17 @@ export default function HowToGenerateLeadsForFreePage() {
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 You can generate leads for free by combining useful content, social proof, and a simple way to capture contact details. Use a form builder that stays free or affordable as you scale, keep your ask minimal, and respond fast. If you&apos;re ready to put this into practice, try a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you can collect leads without worrying about limits—and focus on turning those leads into customers.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                Once you have leads coming in, make sure your forms are optimised. Read the{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  best form builder tools for lead generation
+                </Link>
+                {" "}and learn how to{" "}
+                <Link href="/blog/how-to-follow-up-on-leads-quickly" className="font-medium text-[var(--color-accent)] hover:underline">
+                  follow up on leads quickly
+                </Link>
+                .
               </p>
             </div>
           </Container>

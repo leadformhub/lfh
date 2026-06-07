@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
+import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
+import type { BlogFaqItem } from "@/lib/blog-seo";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "How to Increase Form Submissions: 12 Proven Tactics",
@@ -13,8 +16,34 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/blog/how-to-increase-form-submissions",
 });
 
+const SLUG = "how-to-increase-form-submissions";
+const PUBLISHED = "2025-02-20";
+const UPDATED = "2026-06-07";
+
+const ARTICLE_FAQS: BlogFaqItem[] = [
+  {
+    question: "What is a good form submission rate?",
+    answer:
+      "A good form submission rate depends on your traffic and offer. Many sites see around 2% to 5% as a common range for form conversion rate. If you are below that, start by cutting fields and clarifying your value. Then test CTA copy and trust signals.",
+  },
+  {
+    question: "How many form fields should I have?",
+    answer:
+      "For most lead forms, aim for 3 to 5 fields. Fewer fields usually means more completions. If you need more detail, use a multi-step flow and conditional logic. Ask easy questions first. Then ask qualifiers after the user starts.",
+  },
+  {
+    question: "Why is my contact form getting no submissions?",
+    answer:
+      "First, confirm the form works and sends submissions. Next, reduce friction: cut required fields, improve mobile spacing, and rewrite your CTA. Add trust cues and a privacy line near the button. If you still get nothing, check if the form is visible and placed near high-intent content.",
+  },
+  {
+    question: "Does form placement on the page matter?",
+    answer:
+      "Yes. Placement matters because people cannot submit what they do not see. Showing the form above the fold increases visibility and can lift submissions. This matters more on mobile because scrolling takes effort. Keep the form close to your value statement and proof.",
+  },
+];
+
 export default function HowToIncreaseFormSubmissionsPage() {
-  const lastUpdated = "April 29, 2026";
   const author = {
     name: "LeadFormHub Editorial Team",
     role: "Lead gen + CRO writers",
@@ -22,6 +51,14 @@ export default function HowToIncreaseFormSubmissionsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <BlogStructuredData
+        slug={SLUG}
+        headline="How to Increase Form Submissions: 12 Proven Tactics"
+        description="Getting fewer form submissions than expected? Use these 12 tactics—from cutting fields to better CTA copy—to increase your form conversion rate and reduce abandonment."
+        datePublished={PUBLISHED}
+        dateModified={UPDATED}
+        faqs={ARTICLE_FAQS}
+      />
       <Navbar />
       <main>
         <section
@@ -44,28 +81,8 @@ export default function HowToIncreaseFormSubmissionsPage() {
               >
                 How to Increase <span className="hero-highlight">Form Submissions</span>: 12 Proven Tactics
               </h1>
-              <div className="hero-content mt-5 flex flex-col items-center justify-center gap-3 text-sm text-[var(--foreground-muted)] sm:flex-row sm:gap-4">
-                <span className="inline-flex items-center gap-2">
-                  <span
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--background-alt)] text-xs font-semibold text-[var(--foreground)]"
-                    aria-hidden
-                  >
-                    LF
-                  </span>
-                  <span className="font-medium text-[var(--foreground)]">{author.name}</span>
-                  <span className="hidden sm:inline" aria-hidden>
-                    •
-                  </span>
-                  <span className="hidden sm:inline">{author.role}</span>
-                </span>
-                <span className="hidden sm:inline" aria-hidden>
-                  •
-                </span>
-                <span>
-                  <span className="font-medium text-[var(--foreground)]">Last updated:</span>{" "}
-                  {lastUpdated}
-                </span>
-              </div>
+              <BlogArticleDates slug="how-to-increase-form-submissions" authorName={author.name} />
+              <p className="hero-content mt-2 text-sm text-[var(--foreground-muted)]">{author.role}</p>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You’ve got traffic, but your form isn’t filling up. Most forms leak leads for simple reasons. You can fix them fast. Use these 12 tactics to increase form submissions and reduce form abandonment.
               </p>
@@ -435,51 +452,6 @@ export default function HowToIncreaseFormSubmissionsPage() {
               >
                 Frequently asked questions
               </h2>
-              <script
-                type="application/ld+json"
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{
-                  __html: JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "FAQPage",
-                    mainEntity: [
-                      {
-                        "@type": "Question",
-                        name: "What is a good form submission rate?",
-                        acceptedAnswer: {
-                          "@type": "Answer",
-                          text: "A good form submission rate depends on your traffic and offer. Many sites see around 2% to 5% as a common range for form conversion rate. If you are below that, start by cutting fields and clarifying your value. Then test CTA copy and trust signals.",
-                        },
-                      },
-                      {
-                        "@type": "Question",
-                        name: "How many form fields should I have?",
-                        acceptedAnswer: {
-                          "@type": "Answer",
-                          text: "For most lead forms, aim for 3 to 5 fields. Fewer fields usually means more completions. If you need more detail, use a multi-step flow and conditional logic. Ask easy questions first. Then ask qualifiers after the user starts.",
-                        },
-                      },
-                      {
-                        "@type": "Question",
-                        name: "Why is my contact form getting no submissions?",
-                        acceptedAnswer: {
-                          "@type": "Answer",
-                          text: "First, confirm the form works and sends submissions. Next, reduce friction: cut required fields, improve mobile spacing, and rewrite your CTA. Add trust cues and a privacy line near the button. If you still get nothing, check if the form is visible and placed near high-intent content.",
-                        },
-                      },
-                      {
-                        "@type": "Question",
-                        name: "Does form placement on the page matter?",
-                        acceptedAnswer: {
-                          "@type": "Answer",
-                          text: "Yes. Placement matters because people cannot submit what they do not see. Showing the form above the fold increases visibility and can lift submissions. This matters more on mobile because scrolling takes effort. Keep the form close to your value statement and proof.",
-                        },
-                      },
-                    ],
-                  }),
-                }}
-              />
-
               <details className="mt-6">
                 <summary className="cursor-pointer font-medium text-[var(--foreground)]">
                   What is a good form submission rate?
@@ -519,6 +491,21 @@ export default function HowToIncreaseFormSubmissionsPage() {
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 Try building your first optimized form on LeadFormHub. It takes under 5 minutes.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                The right form builder makes a big difference. See the{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  best form builders for lead generation
+                </Link>
+                {" "}or learn how to{" "}
+                <Link href="/blog/how-to-reduce-fake-leads-from-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  reduce fake leads from your forms
+                </Link>
+                .{" "}
+                <Link href="/signup" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Start free with LeadFormHub
+                </Link>
+                .
               </p>
             </div>
           </Container>

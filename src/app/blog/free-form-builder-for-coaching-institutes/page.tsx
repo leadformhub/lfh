@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -41,6 +42,7 @@ export default function FreeFormBuilderForCoachingInstitutesPage() {
               >
                 Free Form Builder for Coaching Institutes: Collect Leads Without the Fuss
               </h1>
+              <BlogArticleDates slug="free-form-builder-for-coaching-institutes" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Why coaching centres need a free form builder that&apos;s simple and reliable. How to choose one, what to use it for—enquiries, trial signups, batch registration—and what to avoid.
               </p>

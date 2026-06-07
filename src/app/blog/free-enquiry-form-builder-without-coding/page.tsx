@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function FreeEnquiryFormBuilderWithoutCodingPage() {
               >
                 Free Enquiry Form Builder <span className="hero-highlight">Without Coding</span>: Get Started in Minutes
               </h1>
+              <BlogArticleDates slug="free-enquiry-form-builder-without-coding" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You don’t need a developer or a single line of code to collect enquiries. A free enquiry form builder without coding lets you add fields, change labels, and get a shareable link or embed—all from a simple interface. Here’s what to expect and how to pick one.
               </p>

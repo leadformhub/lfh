@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
@@ -11,6 +12,7 @@ import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "how-to-reduce-fake-leads-from-forms";
 const PUBLISHED = "2026-04-30";
+const UPDATED_AT = "2026-06-07";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Reduce Fake Leads from Forms (7 Ways) | Guide",
@@ -48,7 +50,6 @@ const ARTICLE_FAQS: BlogFaqItem[] = [
 ];
 
 export default function HowToReduceFakeLeadsFromFormsPage() {
-  const lastUpdated = "April 30, 2026";
   const author = {
     name: "LeadFormHub Editorial Team",
     role: "Workflow + lead ops writers",
@@ -62,7 +63,7 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
         headline="How to Reduce Fake Leads from Forms (7 Proven Ways)"
         description="Seven practical ways to reduce fake and spam leads from web forms without destroying conversion rate."
         datePublished={PUBLISHED}
-        dateModified={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -82,28 +83,8 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
               >
                 How to <span className="hero-highlight">Reduce Fake Leads from Forms</span> (7 Proven Ways)
               </h1>
-
-              <div className="hero-content mt-5 flex flex-col items-center justify-center gap-3 text-sm text-[var(--foreground-muted)] sm:flex-row sm:gap-4">
-                <span className="inline-flex items-center gap-2">
-                  <span
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--background-alt)] text-xs font-semibold text-[var(--foreground)]"
-                    aria-hidden
-                  >
-                    LF
-                  </span>
-                  <span className="font-medium text-[var(--foreground)]">{author.name}</span>
-                  <span className="hidden sm:inline" aria-hidden>
-                    •
-                  </span>
-                  <span className="hidden sm:inline">{author.role}</span>
-                </span>
-                <span className="hidden sm:inline" aria-hidden>
-                  •
-                </span>
-                <span>
-                  <span className="font-medium text-[var(--foreground)]">Last updated:</span> {lastUpdated}
-                </span>
-              </div>
+              <BlogArticleDates slug="how-to-reduce-fake-leads-from-forms" authorName={author.name} />
+              <p className="hero-content mt-2 text-sm text-[var(--foreground-muted)]">{author.role}</p>
 
               <p className="hero-content mt-4 text-sm text-[var(--foreground-muted)]">{author.bio}</p>
 
@@ -555,6 +536,21 @@ export default function HowToReduceFakeLeadsFromFormsPage() {
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 LeadFormHub includes OTP verification, honeypot protection, and real-time validation built in. You can enable them from your dashboard — no developer or third-party account needed. Try it free at leadformhub.com.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                LeadFormHub has built-in fake lead filtering. See all features in our{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  lead generation form builder guide
+                </Link>
+                {" "}or compare it to{" "}
+                <Link href="/blog/typeform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Typeform
+                </Link>
+                {" "}and{" "}
+                <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Google Forms
+                </Link>
+                .
               </p>
             </div>
           </Container>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
@@ -9,6 +10,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "unlimited-form-submissions-why-it-matters";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2025-02-21";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -49,6 +51,7 @@ export default function UnlimitedFormSubmissionsWhyItMattersPage() {
         headline="Why Unlimited Form Submissions Matter for Growing Businesses"
         description="How submission caps interrupt campaigns, when unlimited forms matter, and how to compare builders before you scale paid traffic."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -73,6 +76,7 @@ export default function UnlimitedFormSubmissionsWhyItMattersPage() {
               >
                 Why Unlimited Form Submissions Matter for Growing Businesses
               </h1>
+              <BlogArticleDates slug="unlimited-form-submissions-why-it-matters" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 A capped form is a silent revenue leak: ads still run, landing pages still load, but submissions stop saving. This guide explains how limits work, where they hurt small teams most, and how to compare{" "}
                 <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">

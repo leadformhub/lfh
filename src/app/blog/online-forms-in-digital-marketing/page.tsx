@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogImageBlock } from "@/components/blog/BlogImageBlock";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -38,6 +39,7 @@ export default function OnlineFormsInDigitalMarketingPage() {
               >
                 Online Forms in Digital Marketing: Capture Leads at Every Touchpoint
               </h1>
+              <BlogArticleDates slug="online-forms-in-digital-marketing" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Online forms are the bridge between your digital marketing—ads, content, email—and your CRM. Here&apos;s how to use them effectively for lead capture, conversion, and follow-up.
               </p>

@@ -1,14 +1,26 @@
 import { SITE_URL } from "@/lib/seo";
 
-/** Posts targeted for indexing (GSC “Discovered – currently not indexed”). */
+/** High-value posts for homepage/blog hub internal links and sitemap priority. */
 export const INDEX_PRIORITY_SLUGS = [
   "best-form-builder-tools-for-lead-generation-forms",
-  "best-lead-form-fields-for-high-conversion",
+  "google-forms-alternative",
+  "typeform-alternative",
+  "typeform-vs-leadformhub",
+  "google-forms-vs-business-form-builders",
   "how-to-reduce-fake-leads-from-forms",
-  "lead-form-landing-page-checklist-2026",
+  "how-to-increase-form-submissions",
+  "how-to-follow-up-on-leads-quickly",
+  "how-to-generate-leads-for-free",
+  "best-lead-form-fields-for-high-conversion",
   "set-up-lead-generation-form-without-coding",
   "unlimited-form-submissions-why-it-matters",
 ] as const;
+
+export function getBlogSitemapPriority(slug: string): number {
+  if ((INDEX_PRIORITY_SLUGS as readonly string[]).includes(slug)) return 0.8;
+  if (slug.includes("alternative") || slug.includes("-vs-")) return 0.75;
+  return 0.65;
+}
 
 export type BlogFaqItem = { question: string; answer: string };
 

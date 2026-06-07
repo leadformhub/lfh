@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogCompareTable } from "@/components/blog/BlogCompareTable";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
@@ -11,7 +12,7 @@ import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "google-forms-vs-business-form-builders";
 const PUBLISHED = "2025-02-10";
-const UPDATED = "2026-05-28";
+const UPDATED = "2026-06-07";
 
 /**
  * CTR title options (under 60 chars) — current pick balances ranking phrase + legacy query:
@@ -237,6 +238,7 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
               >
                 Google Forms vs <span className="hero-highlight">Business Form Builders</span>
               </h1>
+              <BlogArticleDates slug="google-forms-vs-business-form-builders" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Choosing between a simple, free tool and dedicated lead capture software built for teams. Google Forms is easy for internal surveys and basic lead generation forms; modern business form builders focus on branded experiences, better data, and follow-up. This guide walks through ease of use, customization, lead capture features, data quality, analytics, and pricing.
               </p>
@@ -606,6 +608,21 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
                 Free tiers work for testing. Before scaling ads, check submission caps, branding, notifications, and whether you need lead capture software with verification. See{" "}
                 <Link href="/blog/free-online-form-builders" className="font-medium text-[var(--color-accent)] hover:underline">free online form builders</Link>{" "}
                 for selection criteria.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                For a deeper look, read our guide to the{" "}
+                <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                  best form builders for lead generation
+                </Link>
+                {" "}or see why businesses choose LeadFormHub as their{" "}
+                <Link href="/blog/google-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Google Forms alternative
+                </Link>
+                .{" "}
+                <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
+                  View pricing
+                </Link>
+                {" "}to start free today.
               </p>
             </div>
           </Container>

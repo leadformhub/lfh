@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Navbar, ComparisonTable, CTA, Footer } from "@/components/landing";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
+import ComparisonTable from "@/app/components/ComparisonTable";
+import QuickAnswer from "@/app/components/QuickAnswer";
+import { Navbar, ComparisonTable as LandingComparisonTable, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
@@ -8,6 +11,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "google-forms-alternative";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2025-02-01";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -136,6 +140,7 @@ export default function GoogleFormsAlternativePage() {
         headline="Best Google Forms Alternative for Lead Generation"
         description="What a Google Forms alternative is, the best options for lead capture, comparison with LeadFormHub, and when to switch."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={faqItems}
         extraSchemas={[productSchema, bestAlternativesItemListSchema]}
       />
@@ -162,9 +167,28 @@ export default function GoogleFormsAlternativePage() {
               >
                 Best <span className="hero-highlight">Google Forms Alternative</span> for Lead Generation
               </h1>
+              <BlogArticleDates slug="google-forms-alternative" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 <strong className="text-[var(--foreground-heading)]">Short answer:</strong> The best Google Forms alternative for lead generation is a business form builder with branded URLs, optional OTP verification, instant notifications, and a lead dashboard—not just a Google Sheet. LeadFormHub is built for that workflow; Google Forms remains fine for internal surveys.
               </p>
+              <div className="hero-content mx-auto mt-6 max-w-2xl text-left">
+                <QuickAnswer
+                  question="What is the best Google Forms alternative for lead generation?"
+                  answer="The best Google Forms alternative for lead generation is a business form builder like LeadFormHub. It replaces forms.google.com links with branded URLs, optional OTP phone verification, instant team notifications, and a dedicated lead dashboard—so sales teams get verified, actionable contacts instead of managing spreadsheets manually."
+                />
+                <ComparisonTable
+                  usName="LeadFormHub"
+                  themName="Google Forms"
+                  rows={[
+                    { feature: "OTP verification", us: "Yes (optional)", them: "No", winner: "us" },
+                    { feature: "Branded hub", us: "leadformhub.com/yourbrand", them: "forms.google.com URLs", winner: "us" },
+                    { feature: "Lead dashboard", us: "Dedicated lead inbox", them: "Google Sheets; manual setup", winner: "us" },
+                    { feature: "Pricing", us: "Free tier + monthly paid plans", them: "Free / Google Workspace", winner: "tie" },
+                    { feature: "Flexible payments", us: "Monthly payment options", them: "N/A", winner: "us" },
+                    { feature: "Setup speed", us: "Fast; built for B2B lead capture", them: "Fast (but limited for B2B)", winner: "tie" },
+                  ]}
+                />
+              </div>
               <Link
                 href="/signup"
                 className="hero-content mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[var(--color-accent)] px-6 text-base font-medium text-white shadow-[var(--shadow-cta)] transition-all hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]"
@@ -260,7 +284,7 @@ export default function GoogleFormsAlternativePage() {
               LeadFormHub is a Google Forms alternative focused on verified, branded B2B lead capture.
             </p>
             <div className="mt-10">
-              <ComparisonTable competitorLabel="Google Forms" competitorCells={googleCompetitorCells} />
+              <LandingComparisonTable competitorLabel="Google Forms" competitorCells={googleCompetitorCells} />
             </div>
           </Container>
         </section>
@@ -355,6 +379,26 @@ export default function GoogleFormsAlternativePage() {
                 </div>
               ))}
             </dl>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-white py-12 sm:py-14">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <p className="text-[var(--foreground-muted)]">
+              See how LeadFormHub compares feature by feature in our{" "}
+              <Link href="/blog/google-forms-vs-business-form-builders" className="font-medium text-[var(--color-accent)] hover:underline">
+                Google Forms vs business form builders breakdown
+              </Link>
+              . You can also explore the{" "}
+              <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">
+                best form builders for lead generation
+              </Link>
+              {" "}or check{" "}
+              <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
+                LeadFormHub pricing
+              </Link>
+              {" "}to get started free.
+            </p>
           </Container>
         </section>
 

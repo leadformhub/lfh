@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function OnlineAdmissionFormCreatorForSchoolsPage() {
               >
                 An Online Admission Form Creator for <span className="hero-highlight">Schools</span> That Parents Will Finish
               </h1>
+              <BlogArticleDates slug="online-admission-form-creator-for-schools" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Admission season means hundreds of forms—and parents filling them on phones, in between work and school runs. An online admission form creator for schools should make your life easier and theirs. Here’s what to look for, what to put in the form, and how to avoid the usual drop-off and chaos.
               </p>
@@ -140,6 +142,21 @@ export default function OnlineAdmissionFormCreatorForSchoolsPage() {
               </h3>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 Usually because the form is too long, hard to use on mobile, or unclear. Long forms and too many required fields increase drop-off. So does a form that looks untrustworthy or doesn’t say what happens after submit. Short, mobile-friendly forms with a clear next step get more completions.
+              </p>
+              <p className="mt-2 text-[var(--foreground-muted)]">
+                LeadFormHub works for more than schools. See how it helps with{" "}
+                <Link href="/blog/lead-capture-form-for-facebook-ads-landing-page" className="font-medium text-[var(--color-accent)] hover:underline">
+                  Facebook ads lead capture
+                </Link>
+                {" "}or explore the{" "}
+                <Link href="/blog/free-form-builder-for-coaching-institutes" className="font-medium text-[var(--color-accent)] hover:underline">
+                  free form builder for coaching institutes
+                </Link>
+                .{" "}
+                <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
+                  View plans
+                </Link>
+                .
               </p>
             </div>
           </Container>

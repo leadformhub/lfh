@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
@@ -8,6 +9,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "form-builder-with-auto-email-response-for-clients";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2025-02-11";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -53,6 +55,7 @@ export default function FormBuilderWithAutoEmailResponseForClientsPage() {
         headline="Form Builder With Auto Email Response for Clients"
         description="How auto-reply emails work in form builders, what to write, when to enable them, and how they improve client experience."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -77,6 +80,7 @@ export default function FormBuilderWithAutoEmailResponseForClientsPage() {
               >
                 Form Builder With <span className="hero-highlight">Auto Email Response for Clients</span>
               </h1>
+              <BlogArticleDates slug="form-builder-with-auto-email-response-for-clients" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Someone submits your form and closes the tab—did it work? An auto email response answers instantly with “We got it” and when you’ll reply, so clients feel heard and you look professional before you pick up the lead.
               </p>

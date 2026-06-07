@@ -6,7 +6,9 @@ import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { BlogCompareTable } from "@/components/blog/BlogCompareTable";
 import { BlogInlineCta } from "@/components/blog/BlogInlineCta";
 import { BlogProsConsGrid } from "@/components/blog/BlogProsConsGrid";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Container } from "@/components/ui/Container";
+import { getBlogPostBySlug } from "@/lib/blog";
 import type { ComparisonPageData, CtaVariant } from "@/lib/comparison-blog/types";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
@@ -60,6 +62,8 @@ export function ComparisonBlogPost({ data }: ComparisonBlogPostProps) {
     faqs,
   } = data;
 
+  const postDates = getBlogPostBySlug(slug);
+
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <BlogStructuredData
@@ -67,6 +71,7 @@ export function ComparisonBlogPost({ data }: ComparisonBlogPostProps) {
         headline={schemaHeadline}
         description={schemaDescription}
         datePublished={published}
+        dateModified={postDates?.updatedAt}
         faqs={faqs}
       />
       <Navbar />
@@ -97,6 +102,7 @@ export function ComparisonBlogPost({ data }: ComparisonBlogPostProps) {
                   h1
                 )}
               </h1>
+              <BlogArticleDates slug={slug} />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 <strong className="text-[var(--foreground-heading)]">Short answer:</strong> {shortAnswer}
               </p>

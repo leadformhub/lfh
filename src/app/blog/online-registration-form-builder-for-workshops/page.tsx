@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function OnlineRegistrationFormBuilderForWorkshopsPage() {
               >
                 Online Registration Form Builder for <span className="hero-highlight">Workshops</span>: Signups Made Simple
               </h1>
+              <BlogArticleDates slug="online-registration-form-builder-for-workshops" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You’re running a workshop—in person or online. You need names, contacts, and maybe a bit more. An online registration form builder for workshops lets you create the form once, share the link, and collect all signups in one place. No spreadsheets from five different sources, no “I thought I registered” confusion.
               </p>

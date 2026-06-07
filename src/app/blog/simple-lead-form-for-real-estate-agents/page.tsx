@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function SimpleLeadFormForRealEstateAgentsPage() {
               >
                 A Simple Lead Form for <span className="hero-highlight">Real Estate Agents</span> That Actually Gets Filled
               </h1>
+              <BlogArticleDates slug="simple-lead-form-for-real-estate-agents" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Buyers and sellers find you on Facebook, Google, or your website. They’re not always ready to call. A simple lead form for real estate agents catches them at the right moment—name, phone, and what they’re looking for—so you can follow up before they move on to the next agent.
               </p>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function ContactFormWithInstantEmailNotificationPage() {
               >
                 Contact Form With <span className="hero-highlight">Instant Email Notification</span>: Why It Matters
               </h1>
+              <BlogArticleDates slug="contact-form-with-instant-email-notification" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Someone fills your contact form at 11 p.m. Do you find out the next morning—or the next day? A contact form with instant email notification pushes every submission straight to your inbox so you can respond while the lead is still warm.
               </p>

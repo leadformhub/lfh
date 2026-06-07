@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function FormBuilderForSmallDigitalMarketingAgenciesPage() {
               >
                 A Form Builder for <span className="hero-highlight">Small Digital Marketing Agencies</span> That Scales With Your Clients
               </h1>
+              <BlogArticleDates slug="form-builder-for-small-digital-marketing-agencies" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 You run ads and landing pages for several clients. Each one needs a lead form—enquiry, demo request, newsletter, event signup. A form builder for small digital marketing agencies lets you create and manage those forms in one place without building something new from scratch every time.
               </p>

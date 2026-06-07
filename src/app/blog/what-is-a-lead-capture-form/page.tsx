@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function WhatIsALeadCaptureFormPage() {
               >
                 What Is a <span className="hero-highlight">Lead Capture Form?</span>
               </h1>
+              <BlogArticleDates slug="what-is-a-lead-capture-form" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 A lead capture form is a web form that collects contact information from visitors so your business can follow up and turn them into leads or customers. In this post we define what a lead capture form is, why it matters for businesses, show real-world examples, share best practices, and highlight common mistakes to avoid.
               </p>

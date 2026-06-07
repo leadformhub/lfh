@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +38,7 @@ export default function CreateClientIntakeFormOnlineFreePage() {
               >
                 Create a <span className="hero-highlight">Client Intake Form Online Free</span>—No Paper, No PDFs
               </h1>
+              <BlogArticleDates slug="create-client-intake-form-online-free" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Coaches, consultants, freelancers, and small agencies need to collect info from new clients before the first call or project. You can create a client intake form online free with a form builder—no coding, no monthly fee to start. Here’s what to put in it and how to get it live.
               </p>

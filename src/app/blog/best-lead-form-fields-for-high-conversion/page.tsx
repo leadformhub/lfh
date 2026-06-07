@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import { Navbar, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
@@ -9,6 +10,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 const SLUG = "best-lead-form-fields-for-high-conversion";
+const UPDATED_AT = "2026-06-07";
 const PUBLISHED = "2026-03-19";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -44,6 +46,7 @@ export default function BestLeadFormFieldsForHighConversionPage() {
         headline="Best Lead Form Fields for High Conversion (What to Ask and What to Skip)"
         description="A practical framework for choosing lead form fields that balance conversion rate and lead quality."
         datePublished={PUBLISHED}
+        dateModified={UPDATED_AT}
         faqs={ARTICLE_FAQS}
       />
       <Navbar />
@@ -68,6 +71,7 @@ export default function BestLeadFormFieldsForHighConversionPage() {
               >
                 Best Lead Form Fields for High Conversion (What to Ask and What to Skip)
               </h1>
+              <BlogArticleDates slug="best-lead-form-fields-for-high-conversion" />
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
                 Field count beats button color for most teams: ask too much and completion drops; ask too little and sales chases ghosts. Use this framework to design fields that match how you actually follow up—then pair it with our{" "}
                 <Link href="/blog/lead-form-landing-page-checklist-2026" className="font-medium text-[var(--color-accent)] hover:underline">
