@@ -137,6 +137,9 @@ export function getRelatedPosts(slug: string): RelatedPost[] {
   return RELATED_BY_SLUG[slug] ?? DEFAULT_RELATED;
 }
 
+const BLOG_POSTING_IMAGE_URL = `${SITE_URL}/og.png`;
+const PUBLISHER_LOGO_URL = `${SITE_URL}/logo-b1.png`;
+
 export function buildBlogPostingSchema(options: {
   slug: string;
   headline: string;
@@ -144,6 +147,7 @@ export function buildBlogPostingSchema(options: {
   datePublished: string;
   dateModified?: string;
   authorName?: string;
+  image?: string;
 }) {
   const url = getBlogCanonicalUrl(options.slug);
   return {
@@ -152,6 +156,7 @@ export function buildBlogPostingSchema(options: {
     headline: options.headline,
     description: options.description,
     url,
+    image: options.image ?? BLOG_POSTING_IMAGE_URL,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     author: {
       "@type": "Organization",
@@ -161,6 +166,10 @@ export function buildBlogPostingSchema(options: {
       "@type": "Organization",
       name: "LeadFormHub",
       url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: PUBLISHER_LOGO_URL,
+      },
     },
     datePublished: options.datePublished,
     dateModified: options.dateModified ?? options.datePublished,
