@@ -8,12 +8,15 @@ import { buildPageMetadata, canonicalUrlFromPath } from "@/lib/seo";
 
 const PAGE_PATH = "/free-online-form-builder-unlimited";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Free Form Builder With Unlimited Submissions",
-  description:
-    "Free online form builder with unlimited submissions—no monthly caps. Lead capture, events, OTP optional. Compare limits vs unlimited and start free.",
-  path: PAGE_PATH,
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Free Form Builder With Unlimited Submissions",
+    description:
+      "Free online form builder with unlimited submissions—no monthly caps. Lead capture, events, OTP optional. Compare limits vs unlimited and start free.",
+    path: PAGE_PATH,
+  }),
+  alternates: { canonical: "https://leadformhub.com/free-online-form-builder-unlimited" },
+};
 
 const breadcrumbSchema = buildWebPageBreadcrumbSchema(PAGE_PATH, "Free form builder");
 

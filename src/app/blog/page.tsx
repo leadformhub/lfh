@@ -9,12 +9,17 @@ import { getBlogPath, INDEX_PRIORITY_SLUGS } from "@/lib/blog-seo";
 /**
  * Blog — Long-tail SEO: lead capture blog, lead generation forms tips, form builder best practices.
  */
-export const metadata: Metadata = buildPageMetadata({
-  title: "Lead Capture Form & Lead Generation Blog | Tips & Best Practices",
-  description:
-    "Your lead capture blog for lead generation forms tips and form builder best practices. Guides, comparisons, and how-tos to build better forms and capture more leads.",
-  path: "/blog",
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Lead Capture Form & Lead Generation Blog | Tips & Best Practices",
+    description:
+      "Your lead capture blog for lead generation forms tips and form builder best practices. Guides, comparisons, and how-tos to build better forms and capture more leads.",
+    path: "/blog",
+  }),
+  alternates: {
+    canonical: "https://leadformhub.com/blog",
+  },
+};
 
 const blogFaqSchema = {
   "@context": "https://schema.org",

@@ -6,12 +6,17 @@ import { Container } from "@/components/ui/Container";
 import { buildPageMetadata, SITE_URL } from "@/lib/seo";
 import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Pricing | LeadFormHub",
-  description:
-    "Choose a LeadFormHub plan to capture more leads, follow up faster, and convert more visitors into paying customers.",
-  path: "/pricing",
-});
+export function generateMetadata(): Metadata {
+  return {
+    ...buildPageMetadata({
+      title: "LeadFormHub Pricing — Free and Pro Plans for Lead Capture 2026",
+      description:
+        "LeadFormHub has a free plan with unlimited forms plus Pro plans with CRM sync, conditional logic and lead routing. No credit card needed. See all plans.",
+      path: "/pricing",
+    }),
+    alternates: { canonical: "https://leadformhub.com/pricing" },
+  };
+}
 
 const PRICE_VALID_UNTIL = "2026-12-31";
 const PRODUCT_IMAGE_URL = `${SITE_URL}/og.png`;
@@ -151,6 +156,37 @@ export default async function PricingPage() {
     },
   ] as const;
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How much does LeadFormHub cost?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "LeadFormHub offers a free plan and paid Pro plans. The free plan includes unlimited forms and basic email notifications. Pro plans add CRM integration, conditional logic, and lead routing.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Does LeadFormHub have a free plan?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. LeadFormHub free plan includes unlimited form creation with no credit card required. Upgrade to Pro at any time for advanced features.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is included in LeadFormHub Pro?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "LeadFormHub Pro includes CRM integration, conditional logic, lead routing, OTP verification, instant email notifications, and priority support.",
+        },
+      },
+    ],
+  };
+
   const pricingSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -226,6 +262,7 @@ export default async function PricingPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }} />
       <Navbar />
 

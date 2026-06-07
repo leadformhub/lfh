@@ -24,12 +24,15 @@ import {
 } from "@/components/landing";
 import { buildPageMetadata, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: HOMEPAGE_SEO_TITLE,
-  description:
-    "Capture verified leads with OTP-validated forms built for Indian B2B teams. Reduce fake submissions, notify sales instantly, and manage every lead from one dashboard.",
-  path: "/",
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: HOMEPAGE_SEO_TITLE,
+    description:
+      "Capture verified leads with OTP-validated forms built for Indian B2B teams. Reduce fake submissions, notify sales instantly, and manage every lead from one dashboard.",
+    path: "/",
+  }),
+  alternates: { canonical: "https://leadformhub.com" },
+};
 
 /** Product image for Merchant/Product schema (absolute URL). Ensure public/og.png exists. */
 const PRODUCT_IMAGE_URL = `${SITE_URL}/og.png`;

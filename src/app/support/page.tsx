@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar, Footer } from "@/components/landing";
@@ -27,6 +28,10 @@ const SUPPORT_FAQS: CompanyFaqItem[] = [
       "Yes. Choose Technical Support and describe which form needs OTP. We can confirm plan eligibility and walk through enabling verification without breaking your conversion flow.",
   },
 ];
+
+export const metadata: Metadata = {
+  alternates: { canonical: "https://leadformhub.com/support" },
+};
 
 const breadcrumbSchema = buildWebPageBreadcrumbSchema("/support", "Support");
 const faqSchema = buildCompanyFaqSchema(SUPPORT_FAQS);

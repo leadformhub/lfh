@@ -14,12 +14,15 @@ import { buildPageMetadata, SITE_URL } from "@/lib/seo";
  * Zoho Forms Alternative — SEO: zoho forms alternative, form builder SaaS.
  */
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Zoho Forms Alternative – Form Builder SaaS for Lead Capture",
-  description:
-    "A simpler Zoho Forms alternative: standalone form builder SaaS focused on verified leads, form analytics, and speed.",
-  path: "/zoho-forms-alternative",
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Zoho Forms Alternative – Form Builder SaaS for Lead Capture",
+    description:
+      "A simpler Zoho Forms alternative: standalone form builder SaaS focused on verified leads, form analytics, and speed.",
+    path: "/zoho-forms-alternative",
+  }),
+  alternates: { canonical: "https://leadformhub.com/zoho-forms-alternative" },
+};
 
 const zohoCompetitorCells = {
   otp: "Limited / add-on",

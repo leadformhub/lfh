@@ -48,7 +48,7 @@ export function normalizePublicPath(path: string): string {
 /** Absolute canonical URL on production host (https://leadformhub.com/path). */
 export function canonicalUrlFromPath(path: string): string {
   const normalized = normalizePublicPath(path);
-  return normalized === "/" ? SITE_URL : `${SITE_URL}${normalized}`;
+  return normalized === "/" ? PRODUCTION_SITE_URL : `${PRODUCTION_SITE_URL}${normalized}`;
 }
 
 type BuildPageMetadataOptions = {

@@ -15,7 +15,6 @@ const nextConfig: NextConfig = {
       },
       // blog.leadformhub.com → leadformhub.com/blog (all posts + legacy slug renames).
       ...buildBlogSubdomainNextRedirects(),
-      { source: "/typeform-alternative", destination: "/blog/typeform-alternative", permanent: true },
       { source: "/google-forms-alternative", destination: "/blog/google-forms-alternative", permanent: true },
       // Legacy subscribe URLs → canonical pricing (fixes GSC "Page with redirect")
       { source: "/subscribe/free", destination: "/pricing", permanent: true },

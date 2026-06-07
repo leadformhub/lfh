@@ -7,12 +7,15 @@ import Image from "next/image";
 import { buildWebPageBreadcrumbSchema } from "@/lib/company-page-seo";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Knowledge Base | How to Use LeadFormHub",
-  description:
-    "Step-by-step LeadFormHub guides: create forms, share links, enable OTP, read analytics, and troubleshoot—written for non-technical users.",
-  path: "/knowledge-base",
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Knowledge Base | How to Use LeadFormHub",
+    description:
+      "Step-by-step LeadFormHub guides: create forms, share links, enable OTP, read analytics, and troubleshoot—written for non-technical users.",
+    path: "/knowledge-base",
+  }),
+  alternates: { canonical: "https://leadformhub.com/knowledge-base" },
+};
 
 const breadcrumbSchema = buildWebPageBreadcrumbSchema("/knowledge-base", "Knowledge Base");
 

@@ -21,15 +21,6 @@ const NON_DASHBOARD_FIRST = new Set(["api", "login", "signup", "forgot-password"
 /** Second segment values that indicate dashboard area (auth required). */
 const DASHBOARD_SEGMENTS = new Set(["dashboard", "forms", "leads", "settings", "analytics", "integrations", "raise-request", "payment-success", "access-denied"]);
 
-/** 301 www → non-www apex (canonical host). */
-function redirectWwwToApex(req: NextRequest): NextResponse | null {
-  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
-  if (host !== "www.leadformhub.com") return null;
-  const path = req.nextUrl.pathname + req.nextUrl.search;
-  const destination = path === "/" ? CANONICAL_ORIGIN : `${CANONICAL_ORIGIN}${path}`;
-  return NextResponse.redirect(destination, 301);
-}
-
 function shouldRedirectHttpToHttps(req: NextRequest): boolean {
   const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const proto = (req.headers.get("x-forwarded-proto") ?? req.nextUrl.protocol.replace(":", "")).toLowerCase();
@@ -101,8 +92,14 @@ function nextWithPathname(req: NextRequest): NextResponse {
 }
 
 export async function middleware(req: NextRequest) {
-  const wwwRedirect = redirectWwwToApex(req);
-  if (wwwRedirect) return wwwRedirect;
+  const host = req.headers.get("host") || "";
+
+  if (host.startsWith("www.")) {
+    const newHost = host.replace(/^www\./, "");
+    const url = req.nextUrl.clone();
+    url.host = newHost;
+    return NextResponse.redirect(url, { status: 301 });
+  }
 
   const blogRedirect = redirectBlogSubdomainToCanonical(req);
   if (blogRedirect) return blogRedirect;
@@ -142,3 +139,7 @@ export async function middleware(req: NextRequest) {
 
   return nextWithPathname(req);
 }
+
+export const config = {
+  matcher: ["/((?!_next|favicon.ico).*)"],
+};

@@ -157,6 +157,18 @@
       "permanent": true
     },
     {
+      "source": "/free-online-form-builder-unlimited",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
+      "source": "/free-online-form-builder-unlimited/",
+      "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
+      "destination": "https://leadformhub.com/free-online-form-builder-unlimited",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "blog.leadformhub.com" }],
       "destination": "https://leadformhub.com/blog/:path*",

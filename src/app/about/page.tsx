@@ -24,12 +24,15 @@ const ABOUT_FAQS: CompanyFaqItem[] = [
   },
 ];
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "About LeadFormHub | Verified Lead Capture",
-  description:
-    "Meet LeadFormHub: mission, team, and product philosophy behind OTP-verified lead capture for agencies, startups, and sales teams in India.",
-  path: "/about",
-});
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "About LeadFormHub | Verified Lead Capture",
+    description:
+      "Meet LeadFormHub: mission, team, and product philosophy behind OTP-verified lead capture for agencies, startups, and sales teams in India.",
+    path: "/about",
+  }),
+  alternates: { canonical: "https://leadformhub.com/about" },
+};
 
 const breadcrumbSchema = buildWebPageBreadcrumbSchema("/about", "About");
 const faqSchema = buildCompanyFaqSchema(ABOUT_FAQS);

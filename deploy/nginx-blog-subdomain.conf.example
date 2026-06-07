@@ -23,6 +23,9 @@ server {
     location = /free-online-form-builder {
         return 301 https://leadformhub.com/free-online-form-builder-unlimited;
     }
+    location = /free-online-form-builder-unlimited {
+        return 301 https://leadformhub.com/free-online-form-builder-unlimited;
+    }
 
     # Non-blog paths on the old subdomain
     location = /login { return 301 https://leadformhub.com/login; }
