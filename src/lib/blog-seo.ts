@@ -2,6 +2,10 @@ import { SITE_URL } from "@/lib/seo";
 
 /** High-value posts for homepage/blog hub internal links and sitemap priority. */
 export const INDEX_PRIORITY_SLUGS = [
+  "lead-capture-software-pricing-compared",
+  "otp-verification-form-builder-comparison",
+  "best-form-building-tools-lead-generation-campaigns-2026",
+  "lead-capture-form-tools-comparison-2026",
   "best-form-builder-tools-for-lead-generation-forms",
   "google-forms-alternative",
   "typeform-alternative",
@@ -18,7 +22,8 @@ export const INDEX_PRIORITY_SLUGS = [
 
 export function getBlogSitemapPriority(slug: string): number {
   if ((INDEX_PRIORITY_SLUGS as readonly string[]).includes(slug)) return 0.8;
-  if (slug.includes("alternative") || slug.includes("-vs-")) return 0.75;
+  if (slug.startsWith("case-study")) return 0.75;
+  if (slug.includes("alternative") || slug.includes("-vs-") || slug.includes("comparison")) return 0.75;
   return 0.65;
 }
 
@@ -27,7 +32,50 @@ export type BlogFaqItem = { question: string; answer: string };
 export type RelatedPost = { slug: string; title: string };
 
 const RELATED_BY_SLUG: Record<string, RelatedPost[]> = {
+  "lead-capture-form-tools-comparison-2026": [
+    { slug: "otp-verification-form-builder-comparison", title: "OTP form builder comparison" },
+    { slug: "lead-capture-software-pricing-compared", title: "Lead capture pricing compared" },
+    { slug: "best-form-builder-tools-for-lead-generation-forms", title: "Best form builders for lead gen" },
+    { slug: "case-study-b2b-saas-otp-lead-quality", title: "Case study: OTP lead quality" },
+  ],
+  "lead-capture-software-pricing-compared": [
+    { slug: "lead-capture-form-tools-comparison-2026", title: "B2B lead capture tools" },
+    { slug: "leadformhub-vs-hubspot-forms", title: "LeadFormHub vs HubSpot Forms" },
+    { slug: "best-form-building-tools-lead-generation-campaigns-2026", title: "Form tools for campaigns" },
+    { slug: "best-form-builder-tools-for-lead-generation-forms", title: "10 best form builders" },
+  ],
+  "otp-verification-form-builder-comparison": [
+    { slug: "how-to-reduce-fake-leads-from-forms", title: "Reduce fake leads" },
+    { slug: "case-study-b2b-saas-otp-lead-quality", title: "OTP case study" },
+    { slug: "lead-capture-form-tools-comparison-2026", title: "Lead capture tools compared" },
+    { slug: "best-zoho-forms-alternative", title: "Zoho Forms alternative" },
+  ],
+  "best-form-building-tools-lead-generation-campaigns-2026": [
+    { slug: "lead-capture-software-pricing-compared", title: "Lead capture pricing" },
+    { slug: "lead-capture-form-for-facebook-ads-landing-page", title: "Facebook ads lead form" },
+    { slug: "best-form-builder-tools-for-lead-generation-forms", title: "10 best form builders" },
+    { slug: "case-study-agency-cost-per-qualified-lead", title: "Agency CPL case study" },
+  ],
+  "case-study-b2b-saas-otp-lead-quality": [
+    { slug: "otp-verification-form-builder-comparison", title: "OTP builder comparison" },
+    { slug: "how-to-reduce-fake-leads-from-forms", title: "Reduce fake leads" },
+    { slug: "case-study-agency-cost-per-qualified-lead", title: "Agency case study" },
+    { slug: "typeform-alternative", title: "Typeform alternative" },
+  ],
+  "case-study-agency-cost-per-qualified-lead": [
+    { slug: "best-form-building-tools-lead-generation-campaigns-2026", title: "Campaign form tools" },
+    { slug: "lead-capture-form-for-facebook-ads-landing-page", title: "Facebook lead capture" },
+    { slug: "case-study-typeform-to-leadformhub-migration", title: "Typeform migration" },
+    { slug: "set-up-lead-generation-form-without-coding", title: "Set up a lead gen form" },
+  ],
+  "case-study-typeform-to-leadformhub-migration": [
+    { slug: "typeform-vs-leadformhub", title: "Typeform vs LeadFormHub" },
+    { slug: "typeform-alternative", title: "Typeform alternative" },
+    { slug: "case-study-b2b-saas-otp-lead-quality", title: "OTP case study" },
+    { slug: "leadformhub-vs-jotform", title: "LeadFormHub vs Jotform" },
+  ],
   "best-form-builder-tools-for-lead-generation-forms": [
+    { slug: "lead-capture-software-pricing-compared", title: "Lead capture pricing compared" },
     { slug: "set-up-lead-generation-form-without-coding", title: "Set up a lead gen form without coding" },
     { slug: "best-lead-form-fields-for-high-conversion", title: "Best lead form fields for conversion" },
     { slug: "how-to-reduce-fake-leads-from-forms", title: "Reduce fake leads from forms" },

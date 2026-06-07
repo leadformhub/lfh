@@ -2,6 +2,7 @@
  * Published blog posts — single source for listing and metadata.
  * Add new posts here and create the corresponding page under app/blog/[slug].
  */
+import { OFF_TOPIC_BLOG_SLUGS } from "./off-topic-blog-redirects";
 export type BlogPost = {
   slug: string;
   title: string;
@@ -14,6 +15,62 @@ export type BlogPost = {
 export const BLOG_FRESHNESS_DATE = "2026-06-07";
 
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: "lead-capture-software-pricing-compared",
+    title: "Lead Capture Software Pricing Compared (2026 Plans)",
+    description:
+      "Lead capture software pricing compared—LeadFormHub, HubSpot, Typeform, Jotform & Google Forms. Free tiers, INR monthly plans, and hidden costs.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "otp-verification-form-builder-comparison",
+    title: "OTP Verification Form Builder Comparison (2026)",
+    description:
+      "Compare form builders with OTP phone verification—LeadFormHub, Zotform, Typeform, HubSpot & Zoho for B2B lead quality.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "best-form-building-tools-lead-generation-campaigns-2026",
+    title: "Best Form Building Tools for Lead Generation Campaigns (2026)",
+    description:
+      "Best form building tools for lead generation campaigns—OTP, CRM sync, ad landing pages. Ranked for B2B marketers.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "lead-capture-form-tools-comparison-2026",
+    title: "Best B2B Lead Capture Form Tools Compared (2026)",
+    description:
+      "Best B2B lead capture form tools compared—OTP, CRM, branding & pricing for sales-ready leads in 2026.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "case-study-b2b-saas-otp-lead-quality",
+    title: "Case Study: B2B SaaS Cut Bad Phone Leads ~40% with OTP",
+    description:
+      "How a B2B SaaS team used OTP verification on lead forms to cut wrong phone numbers from ~40% to near zero.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "case-study-agency-cost-per-qualified-lead",
+    title: "Case Study: Agency Cut Cost per Qualified Lead ~33%",
+    description:
+      "Performance agency unified client forms with OTP and cut cost per qualified lead by about one-third in two months.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
+  {
+    slug: "case-study-typeform-to-leadformhub-migration",
+    title: "Case Study: D2C Brand Migrated from Typeform in One Afternoon",
+    description:
+      "Growth team switched from Typeform to LeadFormHub in one afternoon—verified leads and one hub, same day.",
+    publishedAt: "2026-06-07",
+    updatedAt: "2026-06-07",
+  },
   {
     slug: "leadformhub-vs-jotform",
     title: "LeadFormHub vs Jotform: Which Form Builder Is Better in 2026?",
@@ -301,7 +358,9 @@ export function getBlogPostBySlug(slug: string): BlogPost | undefined {
 }
 
 export function getPublishedPosts(): BlogPost[] {
-  return [...BLOG_POSTS].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  return [...BLOG_POSTS]
+    .filter((post) => !OFF_TOPIC_BLOG_SLUGS.has(post.slug))
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
 }
 
 export function formatBlogDate(iso: string): string {

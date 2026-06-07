@@ -69,14 +69,14 @@ export default function FreeOnlineFormBuildersPage() {
                 Use cases: contact, enquiry, registration
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Free online form builders work for contact forms, enquiry forms, event and webinar registration, demo requests, and feedback. The key is to keep fields minimal and match the form to your campaign. For more on specific use cases, see our <Link href="/blog/free-enquiry-form-builder-without-coding" className="font-medium text-[var(--color-accent)] hover:underline">free enquiry form builder</Link>, <Link href="/blog/contact-form-with-instant-email-notification" className="font-medium text-[var(--color-accent)] hover:underline">contact form with instant email notification</Link>, and <Link href="/blog/online-forms-in-digital-marketing" className="font-medium text-[var(--color-accent)] hover:underline">online forms in digital marketing</Link>.
+                Free online form builders work for contact forms, enquiry forms, event and webinar registration, demo requests, and feedback. The key is to keep fields minimal and match the form to your campaign. For more on specific use cases, see our <Link href="/blog/free-enquiry-form-builder-without-coding" className="font-medium text-[var(--color-accent)] hover:underline">free enquiry form builder</Link>, <Link href="/blog/contact-form-with-instant-email-notification" className="font-medium text-[var(--color-accent)] hover:underline">contact form with instant email notification</Link>, and our <Link href="/lead-generation-form-builder" className="font-medium text-[var(--color-accent)] hover:underline">lead generation form builder</Link>.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">
                 Getting started
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Pick a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with unlimited submissions</Link> so you don&apos;t hit caps as traffic grows. Create a simple contact form first, test it on mobile, and confirm you get instant notifications. Once that works, add more forms for different campaigns or landing pages.
+                Pick a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder</Link> so you don&apos;t hit caps as traffic grows. Create a simple contact form first, test it on mobile, and confirm you get instant notifications. Once that works, add more forms for different campaigns or landing pages.
               </p>
             </div>
           </Container>

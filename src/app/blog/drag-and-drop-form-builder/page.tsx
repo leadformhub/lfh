@@ -76,7 +76,7 @@ export default function DragAndDropFormBuilderPage() {
                 Getting started
               </h2>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                Choose a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder with drag and drop</Link> so you can test it without committing. Create a simple contact form first, share the link, and check that submissions land in one place and that you get instant notifications. Once that works, add more forms for different campaigns or landing pages.
+                Choose a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder</Link> so you can test it without committing. Create a simple contact form first, share the link, and check that submissions land in one place and that you get instant notifications. Once that works, add more forms for different campaigns or landing pages.
               </p>
             </div>
           </Container>

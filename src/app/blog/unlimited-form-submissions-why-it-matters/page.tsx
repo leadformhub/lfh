@@ -231,7 +231,7 @@ export default function UnlimitedFormSubmissionsWhyItMattersPage() {
                   href="/signup"
                   className="inline-flex h-11 items-center justify-center rounded-xl bg-[var(--color-accent)] px-5 text-sm font-medium text-white hover:bg-[var(--color-accent-hover)]"
                 >
-                  Start free — unlimited submissions
+                  Start free — 3 forms, 50 leads/month
                 </Link>
               </p>
 

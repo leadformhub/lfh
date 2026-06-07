@@ -9,6 +9,13 @@ export const PLAN_LIMITS: Record<
   business: { maxForms: Infinity, maxLeadsPerMonth: null, otpLimit: 1000, maxTeamMembers: Infinity },
 };
 
+/** Marketing copy — keep aligned with free tier limits above. */
+export const FREE_PLAN_MARKETING = {
+  forms: 3,
+  leadsPerMonth: 50,
+  summary: "3 forms, 50 leads/month",
+} as const;
+
 export function getMaxTeamMembers(plan: PlanKey): number {
   return getPlanLimits(plan).maxTeamMembers;
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BlogArticleDates } from "@/components/blog/BlogArticleDates";
 import ComparisonTable from "@/app/components/ComparisonTable";
 import QuickAnswer from "@/app/components/QuickAnswer";
-import { Navbar, ComparisonTable as LandingComparisonTable, CTA, Footer } from "@/components/landing";
+import { Navbar, ComparisonTable as LandingComparisonTable, ComparisonFAQ, CTA, Footer } from "@/components/landing";
 import { BlogInternalLinks } from "@/components/blog/BlogInternalLinks";
 import { BlogStructuredData } from "@/components/blog/BlogStructuredData";
 import { Container } from "@/components/ui/Container";
@@ -65,7 +65,7 @@ const faqItems: BlogFaqItem[] = [
   {
     question: "Is there a free Google Forms alternative?",
     answer:
-      "Yes. LeadFormHub offers a free tier to start with branded forms and lead capture. Google Forms is also free, but teams often switch when they need verification, unlimited-style volume, or a professional client-facing experience.",
+      "Yes. LeadFormHub offers a free tier (3 forms, 50 leads/month) with branded forms and lead capture. Google Forms is also free, but teams often switch when they need OTP verification, higher volume on Pro, or a professional client-facing experience.",
   },
   {
     question: "Can Google Forms verify phone numbers with OTP?",
@@ -214,7 +214,7 @@ export default function GoogleFormsAlternativePage() {
               What is the best Google Forms alternative for lead generation?
             </h2>
             <p className="mt-4 text-lg text-[var(--foreground-muted)]">
-              For B2B teams that care about lead quality, <strong className="text-[var(--foreground-heading)]">LeadFormHub</strong> is among the best Google Forms alternatives because it keeps unlimited-style submission volume on the free tier, adds optional OTP on phone fields, sends instant notifications, and stores every lead in one dashboard instead of a spreadsheet you manage by hand.
+              For B2B teams that care about lead quality, <strong className="text-[var(--foreground-heading)]">LeadFormHub</strong> is among the best Google Forms alternatives because the free plan includes 3 forms and 50 leads/month (Pro adds unlimited volume), optional OTP on phone fields, instant notifications, and a lead dashboard instead of a spreadsheet you manage by hand.
             </p>
             <p className="mt-4 text-[var(--foreground-muted)]">
               Compare the broader category in our{" "}
@@ -399,6 +399,18 @@ export default function GoogleFormsAlternativePage() {
               </Link>
               {" "}to get started free.
             </p>
+          </Container>
+        </section>
+
+        <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-16 sm:py-20">
+          <Container size="narrow" className="px-4 sm:px-6">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] text-center">
+              Frequently asked questions
+            </h2>
+            <ComparisonFAQ
+              items={faqItems.map((item) => ({ question: item.question, answer: item.answer }))}
+              className="mt-10"
+            />
           </Container>
         </section>
 

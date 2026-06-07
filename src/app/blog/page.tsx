@@ -11,9 +11,9 @@ import { getBlogPath, INDEX_PRIORITY_SLUGS } from "@/lib/blog-seo";
  */
 export const metadata: Metadata = {
   ...buildPageMetadata({
-    title: "Lead Capture Form & Lead Generation Blog | Tips & Best Practices",
+    title: "Lead Capture & Form Builder Blog — Guides & Comparisons",
     description:
-      "Your lead capture blog for lead generation forms tips and form builder best practices. Guides, comparisons, and how-tos to build better forms and capture more leads.",
+      "Lead capture and form builder guides: comparisons, OTP verification, fake-lead prevention, and setup tips. Practical SEO content for B2B marketing teams.",
     path: "/blog",
   }),
   alternates: {

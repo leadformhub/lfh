@@ -89,7 +89,7 @@ export default function FreeFormBuilderForCoachingInstitutesPage() {
                 <strong>Easy to build.</strong> You should be able to create a form in minutes without coding. Drag-and-drop or simple field selection is ideal. If it takes hours to set up, you won&apos;t use it.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
-                <strong>Submission limits.</strong> Some free tiers cap you at 50–100 submissions per month. Others offer unlimited. If you run ads or have multiple batches, check that the cap fits your expected volume. A <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free form builder with unlimited submissions</Link> avoids surprises.
+                <strong>Submission limits.</strong> Some free tiers cap you at 50–100 submissions per month. LeadFormHub&apos;s free plan includes 50 leads/month; Pro removes caps. If you run ads or have multiple batches, check that the limit fits your expected volume. See our <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">free online form builder</Link> page for plan details.
               </p>
               <p className="mt-2 text-[var(--foreground-muted)]">
                 <strong>Instant notifications.</strong> When someone submits, you need an email alert. Otherwise you&apos;ll miss leads or check too late. Fast follow-up matters—see our guide on <Link href="/blog/how-to-follow-up-on-leads-quickly" className="font-medium text-[var(--color-accent)] hover:underline">how to follow up on leads quickly</Link>.

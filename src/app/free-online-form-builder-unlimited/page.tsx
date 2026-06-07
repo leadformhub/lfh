@@ -5,14 +5,15 @@ import { Navbar, ComparisonFAQ, CTA, Footer, LandingPageExploreLinks } from "@/c
 import { Container } from "@/components/ui/Container";
 import { buildWebPageBreadcrumbSchema } from "@/lib/company-page-seo";
 import { buildPageMetadata, canonicalUrlFromPath } from "@/lib/seo";
+import { FREE_PLAN_MARKETING } from "@/lib/plans";
 
 const PAGE_PATH = "/free-online-form-builder-unlimited";
 
 export const metadata: Metadata = {
   ...buildPageMetadata({
-    title: "Free Form Builder With Unlimited Submissions",
+    title: "Free Online Form Builder — 3 Forms, 50 Leads/Mo",
     description:
-      "Free online form builder with unlimited submissions—no monthly caps. Lead capture, events, OTP optional. Compare limits vs unlimited and start free.",
+      "Free online form builder: 3 forms, 50 leads/month, no credit card. Lead capture, OTP optional. Upgrade to Pro for unlimited forms & submissions from ₹299/mo.",
     path: PAGE_PATH,
   }),
   alternates: { canonical: "https://leadformhub.com/free-online-form-builder-unlimited" },
@@ -22,31 +23,31 @@ const breadcrumbSchema = buildWebPageBreadcrumbSchema(PAGE_PATH, "Free form buil
 
 const whyBullets = [
   {
-    title: "No response caps",
-    desc: "Collect every lead. When traffic spikes or a campaign converts, you don't hit a limit or lose submissions.",
+    title: "Transparent free tier",
+    desc: `Start with ${FREE_PLAN_MARKETING.summary}—no credit card. Limits are clear upfront so you know when to upgrade.`,
   },
   {
     title: "One dashboard for all forms",
-    desc: "Contact, demo request, event signup—all submissions in one place. No juggling tools or quotas.",
+    desc: "Contact, demo request, event signup—all submissions in one place. No juggling tools or spreadsheets.",
   },
   {
-    title: "Scale without surprise paywalls",
-    desc: "Start free. Grow traffic and submissions without upgrading the day you hit 50 or 100 responses.",
+    title: "Unlimited on Pro",
+    desc: "When campaigns outgrow 50 leads/month, Pro removes caps on forms and submissions. See pricing before you scale.",
   },
 ];
 
 const useCases = [
   {
     title: "Lead capture",
-    description: "Landing pages, contact forms, demo requests. Capture name, email, phone—no cap on how many people submit.",
+    description: "Landing pages, contact forms, demo requests. Capture name, email, and phone on up to 3 forms on the free plan.",
   },
   {
     title: "Events & webinars",
-    description: "Registration and signup forms that accept every submission. No closing the form early when signups surge.",
+    description: "Registration and signup forms for workshops and webinars. Upgrade to Pro when volume exceeds 50 leads/month.",
   },
   {
     title: "Multiple forms, one tool",
-    description: "Run contact, enquiry, and newsletter forms without each one eating into a shared response quota.",
+    description: "Run contact, enquiry, and newsletter forms (up to 3 on Free). All submissions appear in one dashboard.",
   },
 ];
 
@@ -67,24 +68,24 @@ const benefitsBullets = [
 
 const faqItems = [
   {
-    question: "Is it really unlimited?",
+    question: "What does the free plan include?",
     answer:
-      "Yes. On the free tier, there is no cap on the number of submissions. You can collect as many leads as your campaigns bring in. Some advanced features (such as OTP verification) may have usage limits on the free plan; submissions themselves are unlimited.",
+      "The free plan includes 3 forms and 50 leads per month, plus CSV export, dashboard access, form embed, and instant email notifications. No credit card required to start.",
   },
   {
-    question: "Are there any hidden submission caps?",
+    question: "When do I need unlimited submissions?",
     answer:
-      "No. There are no hidden caps on form submissions. The free tier is designed so you don't hit a limit and lose leads mid-campaign. If limits apply to other features (e.g. OTP), they're clearly stated in the plan.",
+      "If your campaigns regularly exceed 50 leads per month, upgrade to Pro for unlimited forms and unlimited leads. Pro also adds OTP verification, analytics, and team seats.",
   },
   {
     question: "Is LeadFormHub free?",
     answer:
-      "Yes. LeadFormHub offers a free tier with unlimited form submissions. You can create forms, collect leads, and use the dashboard without paying. Upgrade when you need more OTP verification or advanced features. No credit card required to start.",
+      "Yes. LeadFormHub offers a free tier with 3 forms and 50 leads per month. You can create forms, collect leads, and use the dashboard without paying. Upgrade when you need higher volume or OTP verification.",
   },
   {
     question: "Can I create multiple forms?",
     answer:
-      "Yes. You can create multiple forms—contact, enquiry, event registration, demo request, and more. Each form gets its own link and embed code, and all submissions appear in one dashboard.",
+      "Yes. The free plan supports up to 3 forms—contact, enquiry, event registration, demo request, and more. Each form gets its own link and embed code; all submissions appear in one dashboard. Pro adds unlimited forms.",
   },
   {
     question: "Is this suitable for small businesses?",
@@ -118,7 +119,7 @@ const productSchema = {
   "@type": "SoftwareApplication",
   name: "LeadFormHub",
   applicationCategory: "BusinessApplication",
-  description: "Free online form builder with unlimited submissions. Lead capture, events, contact forms. No caps, no paywalls.",
+  description: `Free online form builder (${FREE_PLAN_MARKETING.summary}). Lead capture with optional OTP. Pro plan adds unlimited forms and submissions.`,
   url: canonicalUrlFromPath(PAGE_PATH),
   offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
 };
@@ -150,13 +151,13 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
                 id="landing-hero-heading"
                 className="font-heading text-4xl font-extrabold leading-[1.15] tracking-tight text-[var(--foreground-heading)] sm:text-5xl lg:text-6xl"
               >
-                Free online form builder with{" "}
-                <span className="hero-highlight">unlimited submissions</span>
+                Free online form builder —{" "}
+                <span className="hero-highlight">{FREE_PLAN_MARKETING.summary}</span>
               </h1>
               <p className="hero-content mt-6 text-lg leading-relaxed text-[var(--foreground-muted)]">
-                Most free form tools quietly cap you at 50–100 responses, then block new leads mid-campaign. LeadFormHub&apos;s free tier keeps accepting submissions so paid ads, viral posts, and batch signups do not hit a wall—pair it with{" "}
+                Start free with {FREE_PLAN_MARKETING.summary}—no credit card. Most free form tools hide caps until mid-campaign; we state limits upfront. Need more volume? Pro adds unlimited forms and leads from ₹299/month. Compare{" "}
                 <Link href="/blog/unlimited-form-submissions-why-it-matters" className="font-medium text-[var(--color-accent)] hover:underline">
-                  why unlimited matters
+                  when unlimited matters
                 </Link>{" "}
                 and our{" "}
                 <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">
@@ -201,17 +202,17 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
         <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              Why unlimited submissions matter for lead capture
+              Free tier vs Pro: know your limits before you launch
             </h2>
             <p className="mt-6 text-[var(--foreground-muted)]">
-              Submission caps look harmless on a pricing page—50 or 100 responses per month sounds enough until a Facebook ad, a WhatsApp blast, or an admission week sends real volume. The form stops accepting entries, shows an upgrade wall, or silently drops late submissions. You paid for the click; the form became the bottleneck. That is the core problem a{" "}
+              Submission caps look harmless until a Facebook ad or webinar week sends real volume. LeadFormHub&apos;s free plan gives you {FREE_PLAN_MARKETING.summary}—enough to test and launch. When campaigns scale, Pro removes caps. Read{" "}
               <Link href="/blog/unlimited-form-submissions-why-it-matters" className="font-medium text-[var(--color-accent)] hover:underline">
-                free builder without caps
+                why unlimited submissions matter
               </Link>{" "}
-              solves: marketing can scale while capture keeps working.
+              for the full comparison.
             </p>
             <p className="mt-4 text-[var(--foreground-muted)]">
-              Coaching centres see batch registrations spike in 48 hours. Agencies run multi-client campaigns where one landing page can burn through a shared quota. Real-estate teams get enquiry waves after open houses. With unlimited submissions on the free tier, you focus on follow-up speed—not counting responses before month-end.
+              Coaching centres, agencies, and real-estate teams often start on Free, then move to Pro when lead volume grows. You focus on follow-up speed—not surprise paywalls.
             </p>
             <ul className="mt-8 space-y-4">
               {whyBullets.map((b) => (
@@ -234,7 +235,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
-              Capped free tiers vs unlimited submissions
+              Free plan vs Pro: submission limits compared
             </h2>
             <p className="mt-4 text-[var(--foreground-muted)]">
               Before you publish a campaign, compare what happens when traffic exceeds a free-plan limit. Our{" "}
@@ -249,7 +250,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
                   <tr className="border-b border-[var(--border-subtle)]">
                     <th className="py-3 pr-4 font-semibold text-[var(--foreground-heading)]">Scenario</th>
                     <th className="py-3 pr-4 font-semibold text-[var(--foreground-heading)]">Typical capped builder</th>
-                    <th className="py-3 font-semibold text-[var(--foreground-heading)]">LeadFormHub (unlimited)</th>
+                    <th className="py-3 font-semibold text-[var(--foreground-heading)]">LeadFormHub Pro (unlimited)</th>
                   </tr>
                 </thead>
                 <tbody className="text-[var(--foreground-muted)]">
@@ -279,7 +280,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
             <figure className="mt-8 overflow-hidden rounded-xl border border-[var(--border-subtle)]">
               <Image
                 src="/og.png"
-                alt="LeadFormHub dashboard collecting unlimited form submissions"
+                alt="LeadFormHub dashboard for lead capture forms"
                 width={1200}
                 height={630}
                 className="h-auto w-full"
@@ -294,7 +295,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
         <section className="border-t border-[var(--border-subtle)] bg-white py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl text-center">
-              Use cases that need uncapped submissions
+              Use cases for the free form builder
             </h2>
             <p className="mt-6 text-center text-[var(--foreground-muted)] max-w-2xl mx-auto">
               Pick the scenario closest to you—then follow the linked guide to launch faster.
@@ -348,7 +349,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
         <section className="border-t border-[var(--border-subtle)] bg-[var(--background-alt)] py-14 sm:py-16">
           <Container size="narrow" className="px-4 sm:px-6">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)]">
-              What you get beyond unlimited volume
+              What you get on Free and Pro
             </h2>
             <p className="mt-4 text-[var(--foreground-muted)]">
               Submission count is only half the story. You still need mobile layouts, instant alerts, and—when quality matters—verification. Read{" "}
@@ -407,7 +408,7 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
               <li>Add name, email, phone, and one intent field. Keep it short; see <Link href="/blog/what-is-a-lead-capture-form" className="font-medium text-[var(--color-accent)] hover:underline">lead capture form basics</Link>.</li>
               <li>Share the link on ads or embed on your site. Test once on your phone.</li>
               <li>Turn on email notifications and respond within minutes—<Link href="/blog/how-to-follow-up-on-leads-quickly" className="font-medium text-[var(--color-accent)] hover:underline">speed wins deals</Link>.</li>
-              <li>Clone the form for new campaigns; volume stays uncapped on the free tier.</li>
+              <li>Clone the form for new campaigns; upgrade to Pro when you need unlimited volume.</li>
             </ol>
             <p className="mt-8 text-[var(--foreground-muted)]">
               Stuck? Use the <Link href="/knowledge-base" className="font-medium text-[var(--color-accent)] hover:underline">knowledge base</Link> or{" "}
@@ -433,14 +434,14 @@ export default function FreeOnlineFormBuilderUnlimitedPage() {
           <Container size="default" className="px-4 text-center sm:px-6">
             <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Get started</p>
             <h2 className="mt-2 font-heading text-2xl font-bold tracking-tight text-[var(--foreground-heading)] sm:text-3xl">
-              No submission caps. No credit card required.
+              Start free — {FREE_PLAN_MARKETING.summary}
             </h2>
             <p className="mt-2 text-[var(--foreground-muted)]">
-              Create your account and your first form in minutes. Compare plans on{" "}
-              <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">pricing</Link> when you need more OTP or seats.
+              Create your account and your first form in minutes. Upgrade on{" "}
+              <Link href="/pricing" className="font-medium text-[var(--color-accent)] hover:underline">pricing</Link> for unlimited forms, unlimited leads, and OTP.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Unlimited submissions</span>
+              <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">{FREE_PLAN_MARKETING.summary}</span>
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Mobile-friendly</span>
               <span className="rounded-full border border-[var(--border-default)] bg-[var(--neutral-50)] px-4 py-2 text-sm font-medium text-[var(--foreground-heading)]">Instant notifications</span>
             </div>

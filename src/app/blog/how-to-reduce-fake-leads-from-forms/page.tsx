@@ -15,9 +15,9 @@ const PUBLISHED = "2026-04-30";
 const UPDATED_AT = "2026-06-07";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Reduce Fake Leads from Forms (7 Ways) | Guide",
+  title: "How to Reduce Fake Leads from Forms (7 Proven Ways)",
   description:
-    "Stop spam and bot submissions on lead forms: honeypots, OTP verification, rate limits, and tiered setups that protect quality without killing conversions.",
+    "Stop fake and bot leads on contact forms: honeypots, OTP verification, rate limits & tiered setups that protect lead quality without killing conversions.",
   path: `/blog/${SLUG}`,
 });
 

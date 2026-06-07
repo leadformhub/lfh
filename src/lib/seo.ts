@@ -31,7 +31,10 @@ function getSiteUrl(): string {
 export const SITE_URL = getSiteUrl();
 export const HOMEPAGE_H1_PREFIX = "Verified Lead Capture Forms for";
 export const HOMEPAGE_H1_HIGHLIGHT = "Indian B2B Teams";
-export const HOMEPAGE_SEO_TITLE = `${HOMEPAGE_H1_PREFIX} ${HOMEPAGE_H1_HIGHLIGHT} | LeadFormHub`;
+/** Global title tag — India positioning lives in meta description and on-page H1. */
+export const HOMEPAGE_SEO_TITLE = "Lead Capture Form Builder with OTP Verification | LeadFormHub";
+export const HOMEPAGE_SEO_DESCRIPTION =
+  "Lead capture form builder with OTP verification for B2B teams. Built for Indian SMBs with INR pricing—reduce fake leads, notify sales instantly, one dashboard.";
 
 /**
  * Normalize a URL path for canonical/sitemap use: leading slash, no trailing slash (except "/"),

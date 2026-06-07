@@ -32,8 +32,11 @@ const useCaseLinks = [
 ];
 
 const compareLinks = [
-  { label: "Free form builder (unlimited)", href: "/free-online-form-builder-unlimited" },
-  { label: "Typeform alternative", href: "/blog/typeform-alternative" },
+  { label: "Lead generation form builder", href: "/lead-generation-form-builder" },
+  { label: "Free form builder", href: "/free-online-form-builder-unlimited" },
+  { label: "Typeform alternative", href: "/typeform-alternative" },
+  { label: "Jotform alternative", href: "/jotform-alternative" },
+  { label: "HubSpot Forms alternative", href: "/hubspot-forms-alternative" },
   { label: "Google Forms alternative", href: "/blog/google-forms-alternative" },
   { label: "Zoho Forms alternative", href: "/zoho-forms-alternative" },
 ];
@@ -47,6 +50,7 @@ const resourcesLinks = [
 
 const companyLinks = [
   { label: "About", href: "/about" },
+  { label: "Press", href: "/press" },
   { label: "Blog", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
   { label: "Raise Support Request", href: "/support" },

@@ -11,9 +11,9 @@ import { buildPageMetadata } from "@/lib/seo";
 import type { BlogFaqItem } from "@/lib/blog-seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Typeform vs LeadFormHub: Compare Form Builders & Lead Capture",
+  title: "Typeform vs LeadFormHub: Which Form Builder Wins in 2026?",
   description:
-    "Compare Typeform and LeadFormHub for lead capture: ease of use, form builder pricing, OTP verification, and best use cases. See who should choose which tool.",
+    "Typeform vs LeadFormHub for lead capture: pricing, OTP verification, branded hub & dashboard compared. See which tool fits B2B teams and agencies.",
   path: "/blog/typeform-vs-leadformhub",
 });
 
@@ -49,7 +49,7 @@ export default function TypeformVsLeadformhubPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <BlogStructuredData
         slug={SLUG}
-        headline="Typeform vs LeadFormHub: Compare Form Builders & Lead Capture"
+        headline="Typeform vs LeadFormHub: Which Form Builder Wins in 2026?"
         description="Compare Typeform and LeadFormHub for lead capture: ease of use, form builder pricing, OTP verification, and best use cases. See who should choose which tool."
         datePublished={PUBLISHED}
         dateModified={UPDATED}

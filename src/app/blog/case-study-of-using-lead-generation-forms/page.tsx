@@ -62,7 +62,7 @@ export default function CaseStudyLeadGenerationFormsPage() {
               </h2>
               <BlogImageBlock variant="lead-capture" caption="A simple form, one dashboard—no lost leads." />
               <p className="mt-2 text-[var(--foreground-muted)]">
-                The team set up a single enquiry form on their website with fields for name, phone, email, and message. They chose a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">form builder with unlimited submissions</Link> so they could drive traffic without hitting caps. Every submission landed in one dashboard, and they turned on instant email notifications so the admissions team could respond within minutes.
+                The team set up a single enquiry form on their website with fields for name, phone, email, and message. They chose a <Link href="/free-online-form-builder-unlimited" className="font-medium text-[var(--color-accent)] hover:underline">form builder</Link> so they could drive traffic without hitting caps. Every submission landed in one dashboard, and they turned on instant email notifications so the admissions team could respond within minutes.
               </p>
 
               <h2 className="font-heading mt-8 text-xl font-semibold text-[var(--foreground)]">

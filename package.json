@@ -14,6 +14,9 @@
     "script:create-business-user": "tsx scripts/create-business-user.ts",
     "script:backfill-email-verified": "tsx scripts/backfill-email-verified.ts",
     "script:update-plan-quotas": "tsx scripts/update-plan-quotas.ts",
+    "seo:submit-sitemap": "tsx scripts/submit-sitemap.ts",
+    "seo:ctr-report": "tsx scripts/gsc-ctr-report.ts",
+    "seo:directories": "tsx scripts/seo-directories.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {

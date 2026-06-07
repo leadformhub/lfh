@@ -22,13 +22,12 @@ import {
   FAQ,
   Footer,
 } from "@/components/landing";
-import { buildPageMetadata, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
+import { buildPageMetadata, HOMEPAGE_SEO_DESCRIPTION, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   ...buildPageMetadata({
     title: HOMEPAGE_SEO_TITLE,
-    description:
-      "Capture verified leads with OTP-validated forms built for Indian B2B teams. Reduce fake submissions, notify sales instantly, and manage every lead from one dashboard.",
+    description: HOMEPAGE_SEO_DESCRIPTION,
     path: "/",
   }),
   alternates: { canonical: "https://leadformhub.com" },

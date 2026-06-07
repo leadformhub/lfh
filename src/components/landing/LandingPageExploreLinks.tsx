@@ -26,7 +26,7 @@ export function LandingPageExploreLinks() {
           Explore LeadFormHub
         </h2>
         <p className="mt-3 text-[var(--foreground-muted)]">
-          Product pages and guides that pair well with a free unlimited form builder—same URL format, no trailing slashes.
+          Product pages and guides that pair well with a free online form builder—same URL format, no trailing slashes.
         </p>
         <h3 className="mt-8 font-heading text-sm font-semibold uppercase tracking-wider text-[var(--color-accent)]">Product</h3>
         <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2">

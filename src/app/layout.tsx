@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import { HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
+import { HOMEPAGE_SEO_DESCRIPTION, HOMEPAGE_SEO_TITLE, SITE_URL } from "@/lib/seo";
+import { ORGANIZATION_SAME_AS } from "@/lib/directory-listings";
 import { RecaptchaScript } from "@/components/RecaptchaScript";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -33,8 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       default: HOMEPAGE_SEO_TITLE,
       template: "%s | LeadFormHub",
     },
-    description:
-      "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+    description: HOMEPAGE_SEO_DESCRIPTION,
     keywords: [
       "lead capture form builder",
       "online form builder",
@@ -48,8 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     openGraph: {
       title: HOMEPAGE_SEO_TITLE,
-      description:
-        "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+      description: HOMEPAGE_SEO_DESCRIPTION,
       url: SITE_URL,
       siteName: "LeadFormHub",
       type: "website",
@@ -57,8 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: HOMEPAGE_SEO_TITLE,
-      description:
-        "LeadFormHub is a powerful online form builder to create secure, high-converting lead capture forms with analytics, automation, and OTP validation.",
+      description: HOMEPAGE_SEO_DESCRIPTION,
     },
     robots: "index, follow",
     other: {
@@ -102,6 +100,7 @@ export default async function RootLayout({
         "@id": `${SITE_URL}/#organization`,
         name: "LeadFormHub",
         url: SITE_URL,
+        sameAs: [...ORGANIZATION_SAME_AS],
         description: "Lead capture form builder and online form builder for lead generation forms. Secure lead capture software with analytics and OTP validation.",
       },
       {

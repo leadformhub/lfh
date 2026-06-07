@@ -9,9 +9,9 @@ import { getPublicPlanPricingPayload } from "@/lib/super-admin-plan-pricing";
 export function generateMetadata(): Metadata {
   return {
     ...buildPageMetadata({
-      title: "LeadFormHub Pricing — Free and Pro Plans for Lead Capture 2026",
+      title: "Lead Capture Software Pricing — Free + Pro from ₹299/mo",
       description:
-        "LeadFormHub has a free plan with unlimited forms plus Pro plans with CRM sync, conditional logic and lead routing. No credit card needed. See all plans.",
+        "Lead capture software pricing: free plan (3 forms, 50 leads/mo), Pro from ₹299/mo with unlimited forms & leads. No credit card to start. Compare plans →",
       path: "/pricing",
     }),
     alternates: { canonical: "https://leadformhub.com/pricing" },
@@ -159,32 +159,11 @@ export default async function PricingPage() {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "How much does LeadFormHub cost?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "LeadFormHub offers a free plan and paid Pro plans. The free plan includes unlimited forms and basic email notifications. Pro plans add CRM integration, conditional logic, and lead routing.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Does LeadFormHub have a free plan?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. LeadFormHub free plan includes unlimited form creation with no credit card required. Upgrade to Pro at any time for advanced features.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What is included in LeadFormHub Pro?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "LeadFormHub Pro includes CRM integration, conditional logic, lead routing, OTP verification, instant email notifications, and priority support.",
-        },
-      },
-    ],
+    mainEntity: faqs.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
   };
 
   const pricingSchema = {

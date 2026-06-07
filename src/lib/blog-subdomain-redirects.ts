@@ -19,8 +19,11 @@ const APEX_SITE_PATHS = [
   "disclaimer",
   "api-docs",
   "typeform-alternative",
+  "jotform-alternative",
+  "hubspot-forms-alternative",
+  "lead-generation-form-builder",
   "zoho-forms-alternative",
-  "free-online-form-builder-unlimited",
+  "press",
   "signup",
 ] as const;
 

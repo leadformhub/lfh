@@ -23,9 +23,9 @@ const UPDATED = "2026-06-07";
  * 5. Best Lead Form Builder Alternatives for Businesses
  */
 export const metadata: Metadata = buildPageMetadata({
-  title: "Google Forms vs Business Builders | Lead Form Alternatives",
+  title: "Alternatives to Basic Lead Generation Forms (2026)",
   description:
-    "Alternatives to basic lead generation forms compared—Google Forms, Jotform, Typeform, HubSpot, Zoho, Wufoo & LeadFormHub. CRM, automation, branding & lead capture.",
+    "Alternatives to basic lead generation forms compared—Google Forms, Jotform, Typeform, HubSpot, Zoho & LeadFormHub. CRM, OTP, branding & pricing side by side.",
   path: `/blog/${SLUG}`,
 });
 
@@ -209,8 +209,8 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
     <div className="min-h-screen bg-[var(--background)]">
       <BlogStructuredData
         slug={SLUG}
-        headline="Google Forms vs Business Form Builders"
-        description="Alternatives to basic lead generation forms—compare Google Forms vs modern form builders for lead capture, CRM, automation, and branding."
+        headline="Alternatives to Basic Lead Generation Forms (2026)"
+        description="Alternatives to basic lead generation forms compared—Google Forms, Jotform, Typeform, HubSpot, Zoho & LeadFormHub. CRM, OTP, branding & pricing side by side."
         datePublished={PUBLISHED}
         dateModified={UPDATED}
         faqs={EXTENDED_FAQS}
@@ -470,8 +470,8 @@ export default function GoogleFormsVsBusinessFormBuildersPage() {
               />
               <p className="mt-4 text-sm text-[var(--foreground-muted)]">
                 Deeper dives:{" "}
-                <Link href="/blog/leadformhub-vs-jotform" className="font-medium text-[var(--color-accent)] hover:underline">LeadFormHub vs Jotform</Link>,{" "}
-                <Link href="/blog/leadformhub-vs-hubspot-forms" className="font-medium text-[var(--color-accent)] hover:underline">vs HubSpot Forms</Link>,{" "}
+                <Link href="/jotform-alternative" className="font-medium text-[var(--color-accent)] hover:underline">LeadFormHub vs Jotform</Link>,{" "}
+                <Link href="/hubspot-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">vs HubSpot Forms</Link>,{" "}
                 <Link href="/blog/best-zoho-forms-alternative" className="font-medium text-[var(--color-accent)] hover:underline">Zoho Forms alternative</Link>,{" "}
                 <Link href="/blog/hubspot-forms-vs-typeform-vs-google-forms" className="font-medium text-[var(--color-accent)] hover:underline">HubSpot vs Typeform vs Google</Link>, and the ranked{" "}
                 <Link href="/blog/best-form-builder-tools-for-lead-generation-forms" className="font-medium text-[var(--color-accent)] hover:underline">best form builder tools</Link>{" "}
