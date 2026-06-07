@@ -27,8 +27,26 @@ server {
         return 301 https://leadformhub.com/free-online-form-builder-unlimited;
     }
 
-    # Non-blog paths on the old subdomain
+    # Non-blog paths on the old subdomain (apex pages — no /blog prefix)
     location = /login { return 301 https://leadformhub.com/login; }
+    location = /features { return 301 https://leadformhub.com/features; }
+    location = /knowledge-base { return 301 https://leadformhub.com/knowledge-base; }
+    location = /terms-and-conditions { return 301 https://leadformhub.com/terms-and-conditions; }
+    location = /pricing { return 301 https://leadformhub.com/pricing; }
+    location = /about { return 301 https://leadformhub.com/about; }
+    location = /contact { return 301 https://leadformhub.com/contact; }
+    location = /faq { return 301 https://leadformhub.com/faq; }
+    location = /support { return 301 https://leadformhub.com/support; }
+    location = /integrations { return 301 https://leadformhub.com/integrations; }
+    location = /privacy-policy { return 301 https://leadformhub.com/privacy-policy; }
+    location = /disclaimer { return 301 https://leadformhub.com/disclaimer; }
+    location = /api-docs { return 301 https://leadformhub.com/api-docs; }
+    location = /typeform-alternative { return 301 https://leadformhub.com/typeform-alternative; }
+    location = /zoho-forms-alternative { return 301 https://leadformhub.com/zoho-forms-alternative; }
+    location = /signup { return 301 https://leadformhub.com/signup; }
+    location = /leadformhub-com-best-free-online-form-builder {
+        return 301 https://leadformhub.com/free-online-form-builder-unlimited;
+    }
     location = /home { return 301 https://leadformhub.com/blog; }
     location = /category/blog { return 301 https://leadformhub.com/blog; }
 

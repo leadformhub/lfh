@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
-import { buildBlogSubdomainNextRedirects } from "./src/lib/blog-subdomain-redirects";
+import {
+  APEX_BLOG_PREFIX_MISTAKE_REDIRECTS,
+  buildBlogSubdomainNextRedirects,
+} from "./src/lib/blog-subdomain-redirects";
 import { OFF_TOPIC_BLOG_REDIRECTS } from "./src/lib/off-topic-blog-redirects";
 
 const nextConfig: NextConfig = {
@@ -16,6 +19,11 @@ const nextConfig: NextConfig = {
       // blog.leadformhub.com → leadformhub.com/blog (all posts + legacy slug renames).
       ...buildBlogSubdomainNextRedirects(),
       { source: "/google-forms-alternative", destination: "/blog/google-forms-alternative", permanent: true },
+      ...Object.entries(APEX_BLOG_PREFIX_MISTAKE_REDIRECTS).map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
       // Legacy subscribe URLs → canonical pricing (fixes GSC "Page with redirect")
       { source: "/subscribe/free", destination: "/pricing", permanent: true },
       { source: "/subscribe/basic", destination: "/pricing", permanent: true },

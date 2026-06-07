@@ -4,6 +4,46 @@ import { OFF_TOPIC_BLOG_REDIRECTS } from "./off-topic-blog-redirects";
 export const BLOG_SUBDOMAIN_HOST = "blog.leadformhub.com";
 export const CANONICAL_ORIGIN = "https://leadformhub.com";
 
+/** Apex pages that lived at blog.leadformhub.com/:page — not under /blog on the canonical host. */
+const APEX_SITE_PATHS = [
+  "features",
+  "knowledge-base",
+  "terms-and-conditions",
+  "pricing",
+  "about",
+  "contact",
+  "faq",
+  "support",
+  "integrations",
+  "privacy-policy",
+  "disclaimer",
+  "api-docs",
+  "typeform-alternative",
+  "zoho-forms-alternative",
+  "free-online-form-builder-unlimited",
+  "signup",
+] as const;
+
+const APEX_SITE_REDIRECTS: Readonly<Record<string, string>> = Object.fromEntries(
+  APEX_SITE_PATHS.map((segment) => [`/${segment}`, `/${segment}`])
+);
+
+/** Retired WordPress slugs on the blog subdomain that are not in BLOG_POSTS. */
+const BLOG_SUBDOMAIN_WORDPRESS_LEGACY: Readonly<Record<string, string>> = {
+  "/leadformhub-com-best-free-online-form-builder": "/free-online-form-builder-unlimited",
+};
+
+/**
+ * Wrong /blog/:slug on leadformhub.com when :slug is an apex page (from old subdomain catch-all).
+ * Fixes GSC 404s on URLs like /blog/features and /blog/knowledge-base.
+ */
+export const APEX_BLOG_PREFIX_MISTAKE_REDIRECTS: Readonly<Record<string, string>> = {
+  ...Object.fromEntries(APEX_SITE_PATHS.map((segment) => [`/blog/${segment}`, `/${segment}`])),
+  ...Object.fromEntries(
+    Object.entries(BLOG_SUBDOMAIN_WORDPRESS_LEGACY).map(([source, dest]) => [`/blog${source}`, dest])
+  ),
+};
+
 /**
  * Legacy paths on blog.leadformhub.com that do not follow the default /blog/:slug pattern.
  * Keys are normalized paths (no trailing slash). Values are full paths on leadformhub.com.
@@ -19,6 +59,8 @@ const BLOG_SUBDOMAIN_LEGACY_REDIRECTS: Readonly<Record<string, string>> = {
   "/best-free-online-form-builder": "/free-online-form-builder-unlimited",
   "/free-online-form-builder": "/free-online-form-builder-unlimited",
   "/free-online-form-builder-unlimited": "/free-online-form-builder-unlimited",
+  ...APEX_SITE_REDIRECTS,
+  ...BLOG_SUBDOMAIN_WORDPRESS_LEGACY,
   ...Object.fromEntries(
     Object.entries(OFF_TOPIC_BLOG_REDIRECTS).filter(([source]) => !source.startsWith("/blog/"))
   ),

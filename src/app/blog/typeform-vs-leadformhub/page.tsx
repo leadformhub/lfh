@@ -12,9 +12,49 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/blog/typeform-vs-leadformhub",
 });
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Is LeadFormHub a good Typeform alternative for lead capture?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. LeadFormHub is built as a Typeform alternative for teams that prioritise lead capture and lead quality. You get optional OTP verification, a branded hub, and a unified lead dashboard. If your main goal is verified, actionable leads rather than survey-style form experience, LeadFormHub is a strong fit.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Does Typeform have OTP or phone verification for leads?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No. Typeform does not offer built-in OTP or phone verification. You receive whatever phone number or email the respondent enters. LeadFormHub offers optional OTP verification so you can confirm that leads have access to the phone number they submitted.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How does form builder pricing compare between Typeform and LeadFormHub?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Typeform prices in USD with a free tier and paid subscriptions. LeadFormHub offers a free tier and paid plans with monthly payment options. Check our pricing page for current plans.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Which is better for B2B lead generation forms?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "For B2B lead generation forms where you need real, reachable contacts (e.g. demo requests, contact forms), LeadFormHub is often the better fit because of OTP verification and a lead-focused dashboard. Typeform is better when the main goal is survey or feedback experience rather than verified lead quality.",
+      },
+    },
+  ],
+};
+
 export default function TypeformVsLeadformhubPage() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <Navbar />
       <main>
         <section
